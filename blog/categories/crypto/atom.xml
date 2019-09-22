@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Crypto | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/crypto/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-09-22T22:12:19+08:00</updated>
+  <updated>2019-09-22T22:14:57+08:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -333,7 +333,7 @@ aNULL
 <p>上面是举个例子，读者不要自己去研究怎么配置，这太容易搞错。
 请按照mozilla官方给出的这个<a href="https://wiki.mozilla.org/Security/Server_Side_TLS#Recommended_configurations">权威文档</a>，复制粘贴就好了。</p>
 
-<p>CipherSuite的更多解释，配置方法等，可以参考byron之前写的一篇文章 <a href="//blog/2015/01/23/ssl_tls_ciphersuite_intro/">SSL/TLS CipherSuite 介绍</a></p>
+<p>CipherSuite的更多解释，配置方法等，可以参考byron之前写的一篇文章 <a href="/blog/2015/01/23/ssl_tls_ciphersuite_intro/">SSL/TLS CipherSuite 介绍</a></p>
 
 <a name="L4.............."></a>
 <h2>4. 协议分层</h2>
@@ -4055,7 +4055,7 @@ ECDSA是未来的趋势，例如bitcoin就用ECDSA
 
 <p>  /dev/urandom 等</p>
 
-<p><a href="//blog/2015/06/05/modern-crypto/">现代密码学实践指南[2015年]</a></p>
+<p><a href="/blog/2015/06/05/modern-crypto/">现代密码学实践指南[2015年]</a></p>
 
 <a name="L...................."></a>
 <h1>八. 参考文献：</h1>
