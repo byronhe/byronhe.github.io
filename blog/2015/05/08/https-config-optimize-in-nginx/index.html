@@ -404,7 +404,9 @@ ln -s libssl.so.1.0.0 libssl.so.10
   <a href="https://github.com/byronhe">@byronhe</a> on GitHub
   
   <script type="text/javascript">
-    $(document).ready(function(){
+
+    //$(document).ready(function(){
+    document.addEventListener("DOMContentLoaded", function(event) { 
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -421,7 +423,7 @@ ln -s libssl.so.1.0.0 libssl.so.10
         });
     });
   </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
+  <script async src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
 
 
