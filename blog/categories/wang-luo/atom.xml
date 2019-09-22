@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 网络 | Tech Ideas]]></title>
+  <link href="https://blog.helong.info//blog/categories/wang-luo/atom.xml" rel="self"/>
+  <link href="https://blog.helong.info//"/>
+  <updated>2019-09-18T22:22:08+08:00</updated>
+  <id>https://blog.helong.info//</id>
+  <author>
+    <name><![CDATA[byronhe]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A Http Proxy Script]]></title>
+    <link href="https://blog.helong.info//2013/11/18/a-http-proxy-script/"/>
+    <updated>2013-11-18T00:00:00+08:00</updated>
+    <id>https://blog.helong.info//2013/11/18/a-http-proxy-script</id>
+    <content type="html"><![CDATA[<pre><code class="python">#!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+
+import base64
+import select
+import socket
+import httplib
+import os
+import sys
+#base64.encodestring("das\120xsdada\s")
+
+def usage ():
+    print "connect_to_http_proxy %s"
+    print "usage: connect_to_http_proxy &amp;lt;desthost&amp;gt; &amp;lt;destport&amp;gt;"
+
+if len(sys.argv) != 3:
+    usage()
+    print sys.argv
+    sys.exit()
+
+proxy_host="web-proxy-domain.com"
+proxy_port="8080"
+dest_host=""
+dest_port=""
+dest_host, dest_port=sys.argv[1:]
+
+sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+sock.connect((proxy_host,int(proxy_port)))
+sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+req="CONNECT "+dest_host+":"+dest_port + " HTTP/1.0\r\n\r\n"
+sock.send(req)
+resp=sock.recv(100000)
+if resp.find("200") &amp;lt; 0:
+    print req,resp
+    exit(-1)
+
+ep=select.epoll()
+ep.register(sock.fileno(),select.EPOLLIN)
+ep.register(sys.stdin.fileno(),select.EPOLLIN)
+while True:
+    events=ep.poll(1,2)
+    for fd,event in events:
+        if event &amp; select.EPOLLERR:
+            sys.exit(0)
+        if event &amp; select.EPOLLIN and fd==sock.fileno():
+            os.write(sys.stdout.fileno(),sock.recv(1024*100)) 
+        if event &amp; select.EPOLLIN and fd==sys.stdin.fileno():
+            os.write(sock.fileno(),sys.stdin.read()) 
+
+#conn=httplib.HTTPConnection(proxy_host+":"+proxy_port)
+#conn.request("CONNECT",dest_host+":"+dest_port)
+#res=conn.getresponse()
+#print res.read()
+#if res.status != 200:
+#    print res.status,res.reason
+#    sys.exit()
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Libpcap试玩]]></title>
+    <link href="https://blog.helong.info//2013/08/04/libpcap%e8%af%95%e7%8e%a9/"/>
+    <updated>2013-08-04T00:00:00+08:00</updated>
+    <id>https://blog.helong.info//2013/08/04/libpcap%e8%af%95%e7%8e%a9</id>
+    <content type="html"><![CDATA[<p>libpcap驱动了tcpdump,和wireshark这类抓包工具.提供了高度灵活的包过滤语言. 据wikipedia,高性能的包过滤最早是在bsd上作为一个问题被解决,被称为bpf,在内核实现了一个解释器,进行包匹配,用户态提供一个字符设备, linux作为后来者,支持与bsd基本相同的packet filter,称为lpf,不同的是,linux是通过在一个raw socket来支持包过滤的,通过setsockopt来SO_ATTACH_FILTER,挂载过滤器. strace 可知,libpcap实际上进行了如下syscall:</p>
+
+<pre>socket(PF_PACKET, SOCK_RAW, 768) = 59 
+setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, "\1\0\0\0\0\0\0\0\250\327Vc\375\177\0\0", 16) = 0</pre>
+
+
+<p>libpcap的api文档和demo代码可以参见</p>
+
+<ol>
+<li><a href="http://www.tcpdump.org/pcap3_man.html" target="_blank"><a href="http://www.tcpdump.org/pcap3_man.html">http://www.tcpdump.org/pcap3_man.html</a></a></li>
+<li><a href="http://www.tcpdump.org/sniffex.c" target="_blank"><a href="http://www.tcpdump.org/sniffex.c">http://www.tcpdump.org/sniffex.c</a></a></li>
+</ol>
+
+
+<p>参考文档了demo,我写了一个小的sniffer,</p>
+
+<!--more-->
+
+
+<p>如下:</p>
+
+<pre><code class="cpp">class Sniffer{
+public:
+    Sniffer():handle(NULL),cap_exp(""),net_if("any"),exp_compiled(false){}
+    ~Sniffer(){
+        if(handle){
+            pcap_freecode(&amp;filter_code);
+        }
+        if(exp_compiled){
+            pcap_close(handle);
+        }
+    }
+    string help(){
+        string h("avaliable net_interface:");
+        pcap_if_t* alldev=NULL;
+        if(0==pcap_findalldevs(&amp;alldev, errbuf)){
+            for(pcap_if_t * dev =alldev;NULL!=dev;dev=dev-&amp;gt;next){
+                h+=dev-&amp;gt;name;
+                h+=" ";
+            }
+            pcap_freealldevs(alldev);
+        }
+        char * default_if=pcap_lookupdev(errbuf);
+        if(default_if){
+            h+=" default interface:";
+            h+=default_if;
+        }
+        return h;
+    }
+
+    string err(){
+        return pcap_geterr(handle);
+    }
+
+    bool configure(const string &amp; net_interface,const string &amp; exp){
+        if(net_interface!="")
+            net_if=net_interface;
+        cap_exp=exp;
+
+        if(0!=pcap_lookupnet(net_if.data(),&amp;netp,&amp;maskp,errbuf)){
+            return false;
+        }
+
+        handle=pcap_create(net_if.data(),errbuf);
+        if(NULL==handle){
+            return false;
+        }
+        if(0!=pcap_activate(handle)){
+            return false;
+        }
+        //ignore:?
+        //pcap_set_snaplen
+        //pcap_set_promisc
+        //pcap_set_rfmon
+        //pcap_set_timeout
+        //pcap_set_buffer_size
+        //pcap_set_tstamp_type
+
+        //only cap ethernet packet
+        if(DLT_EN10MB!=pcap_datalink(handle)){
+            return false;
+        }
+
+        if (0!=pcap_compile(handle, &amp;filter_code, cap_exp.data(), 0, maskp)) {
+            return false;
+        }
+        exp_compiled=true;
+
+        if (0!=pcap_setfilter(handle, &amp;filter_code)) {
+            return false;
+        }
+    }
+
+    bool loop(int pkg_num=-1){
+        typedef void (*pcap_handler)(u_char *user, const struct pcap_pkthdr *h,
+                const u_char *bytes);
+        pcap_loop(handle,pkg_num,&amp;(Sniffer::pcap_callback),(u_char*)this);
+    }
+
+    static void pcap_callback(u_char *user, const struct pcap_pkthdr *h,
+        const u_char *bytes){
+    Sniffer * p_this=(Sniffer*) user;
+    p_this-&amp;gt;dispatch(h,bytes);
+    }
+
+private:
+
+    void dispatch(const struct pcap_pkthdr *h, const u_char *bytes){
+        got_packet(NULL,h,bytes);
+    }
+
+    private:
+    pcap_t *handle;             // packet capture handle 
+    string net_if; //e.g. "eth0"
+    string cap_exp; //e.g "tcp and dst port 80"
+    bool exp_compiled;
+    struct bpf_program filter_code;         // compiled filter program (expression) 
+    bpf_u_int32 netp;
+    bpf_u_int32 maskp;
+    char errbuf[PCAP_ERRBUF_SIZE];
+};
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

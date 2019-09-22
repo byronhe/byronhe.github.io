@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>GB 规模语料上的高性能新词发现算法 - Tech Ideas</title>
+  <meta name="author" content="byronhe">
+
+  
+  <meta name="description" content="现代密码学实践指南[2015年]">
+  <meta name="keywords" content="search , segment, 分词, algorithm, server">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://blog.helong.info//blog/2019/09/18/newwords_discovery/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Tech Ideas" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-49290834-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Tech Ideas</a></h1>
+  
+    <h2>C++,Linux,Algorithm,Crypto,Lisp,etc</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.helong.info/">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">GB 规模语料上的高性能新词发现算法</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-09-18T22:19:00+00:00'><span class='date'>2019-09-18</span> <span class='time'>10:19 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><hr />
+
+<p>分词是中文搜索的重要环节，目前分词算法已经比较成熟，分词错误的主要是由于未登录词。</p>
+
+<p>因此发现业务领域语料库中的新词，减少未登录词，对改善搜索引擎的用户体验有重要意义。</p>
+
+<p>新词发现的一种常用算法，是 matrix67 大神 2012 年提出的 《互联网时代的社会语言学：基于SNS的文本数据挖掘》
+<a href="https://www.matrix67.com/blog/archives/5044">https://www.matrix67.com/blog/archives/5044</a></p>
+
+<p>其主要思路，是统计语料中出现的所有 ngram 子字符串的凝固度，自由度，信息熵。</p>
+
+<p>算法中需要统计所有 ngram 子字符串的 左熵右熵，实现该算法时，一般以子字符串为 key，用哈希表来存。</p>
+
+<p>但随着语料库变大时，内存消耗变大，</p>
+
+<p>比如之前的 python 版本实现，对 200MB 的语料，就需要约 30G 内存来存哈希表，</p>
+
+<p>导致单机内存不足无法运行，而且对这样规模的语料库，算法需要跑一两天才能出结果。</p>
+
+<p>这里我应用一些工程实现方面的技巧，
+把用哈希表统计左熵右熵的计算，拆分成多个子哈希表，分批计算，并利用多核并行，大幅度优化了算法的性能。</p>
+
+<p>最终实现了 GB 大小语料上的新词发现，并把运行时间缩减到了 30 分钟左右 。</p>
+
+<p><a href="https://github.com/hankcs/HanLP/wiki/%E6%96%B0%E8%AF%8D%E8%AF%86%E5%88%AB">https://github.com/hankcs/HanLP/wiki/%E6%96%B0%E8%AF%8D%E8%AF%86%E5%88%AB</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">byronhe</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2019-09-18T22:19:00+00:00'><span class='date'>2019-09-18</span> <span class='time'>10:19 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/search/'>search</a>, <a class='category' href='/blog/categories/server/'>server</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/" title="Previous Post: TLS协议分析 与 现代加密通信协议设计">&laquo; TLS协议分析 与 现代加密通信协议设计</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2019/09/18/newwords_discovery/">GB 规模语料上的高性能新词发现算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/">TLS协议分析 与 现代加密通信协议设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/05/modern-crypto/">现代密码学实践指南[2015年]</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/08/https-config-optimize-in-nginx/">Nginx下配置高性能，高安全性的https TLS服务</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/">【翻译】密码学一小时必知</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/byronhe">@byronhe</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'byronhe',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - byronhe -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'byronheblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'https://blog.helong.info//blog/2019/09/18/newwords_discovery/';
+        var disqus_url = 'https://blog.helong.info//blog/2019/09/18/newwords_discovery/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

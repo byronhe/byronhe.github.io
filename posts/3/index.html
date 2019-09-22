@@ -1,0 +1,1116 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Tech Ideas</title>
+  <meta name="author" content="byronhe">
+
+  
+  <meta name="description" content="小项目，练手的。 1.使用了java.util.concurrent包里的线程池，可以飙升到满带宽，在100M带宽上，可以达到10MB/s。 2.使用了java.nio里的channels，性能比自己缓冲有一些提高。 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://blog.helong.info//posts/3/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Tech Ideas" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-49290834-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Tech Ideas</a></h1>
+  
+    <h2>C++,Linux,Algorithm,Crypto,Lisp,etc</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.helong.info/">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/11/15/java%e5%a4%9a%e7%ba%bf%e7%a8%8b%e7%bd%91%e9%a1%b5%e4%b8%8b%e8%bd%bd%e4%bb%a3%e7%a0%81/">Java多线程网页下载代码</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2011-11-15T00:00:00+08:00'><span class='date'>2011-11-15</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>小项目，练手的。</p>
+
+<p>1.使用了java.util.concurrent包里的线程池，可以飙升到满带宽，在100M带宽上，可以达到10MB/s。</p>
+
+<p>2.使用了java.nio里的channels，性能比自己缓冲有一些提高。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileOutputStream</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.net.URL</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.net.URLConnection</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.nio.channels.Channels</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.nio.channels.FileChannel</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.nio.channels.ReadableByteChannel</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Calendar</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.concurrent.Callable</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.concurrent.ExecutorService</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.concurrent.Executors</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HttpDownloader</span> <span class="kd">implements</span> <span class="n">Callable</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">URLConnection</span> <span class="n">connection</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">FileChannel</span> <span class="n">outputChann</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">ExecutorService</span> <span class="n">poll</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newFixedThreadPool</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="mi">100</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Calendar</span> <span class="n">now</span> <span class="o">=</span> <span class="n">Calendar</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">String</span> <span class="n">fileName</span> <span class="o">=</span> <span class="s">&quot;../data/&quot;</span> <span class="o">+</span> <span class="n">now</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">Calendar</span><span class="o">.</span><span class="na">YEAR</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;年&quot;</span>
+</span><span class='line'>                    <span class="o">+</span> <span class="o">(</span><span class="n">now</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">Calendar</span><span class="o">.</span><span class="na">MONTH</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;月&quot;</span>
+</span><span class='line'>                    <span class="o">+</span> <span class="n">now</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">Calendar</span><span class="o">.</span><span class="na">DAY_OF_MONTH</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;日--&quot;</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="s">&quot;.txt&quot;</span><span class="o">;</span>
+</span><span class='line'>            <span class="n">poll</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="k">new</span> <span class="nf">HttpDownloader</span><span class="o">(</span><span class="s">&quot;http://www.sina.com&quot;</span><span class="o">,</span>
+</span><span class='line'>                    <span class="o">(</span><span class="k">new</span> <span class="nf">FileOutputStream</span><span class="o">(</span><span class="n">fileName</span><span class="o">)).</span><span class="na">getChannel</span><span class="o">()));</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">poll</span><span class="o">.</span><span class="na">shutdown</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kt">long</span> <span class="n">start</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(!</span><span class="n">poll</span><span class="o">.</span><span class="na">isTerminated</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;已运行&quot;</span>
+</span><span class='line'>                    <span class="o">+</span> <span class="o">((</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">start</span><span class="o">)</span> <span class="o">/</span> <span class="mi">1000</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;秒，&quot;</span>
+</span><span class='line'>                    <span class="o">+</span> <span class="n">HttpDownloader</span><span class="o">.</span><span class="na">count</span> <span class="o">+</span> <span class="s">&quot;个任务还在运行&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">HttpDownloader</span><span class="o">(</span><span class="n">String</span> <span class="n">url</span><span class="o">,</span> <span class="n">FileChannel</span> <span class="n">fileChannel</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">HttpDownloader</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">count</span><span class="o">++;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">connection</span> <span class="o">=</span> <span class="o">(</span><span class="k">new</span> <span class="nf">URL</span><span class="o">(</span><span class="n">url</span><span class="o">)).</span><span class="na">openConnection</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">outputChann</span> <span class="o">=</span> <span class="n">fileChannel</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">call</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">connection</span><span class="o">.</span><span class="na">connect</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">InputStream</span> <span class="n">inputStream</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">ReadableByteChannel</span> <span class="n">rChannel</span> <span class="o">=</span> <span class="n">Channels</span><span class="o">.</span><span class="na">newChannel</span><span class="o">(</span><span class="n">inputStream</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">outputChann</span><span class="o">.</span><span class="na">transferFrom</span><span class="o">(</span><span class="n">rChannel</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">Integer</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">);</span>
+</span><span class='line'>        <span class="c1">// System.out.println(Thread.currentThread().getName() + &quot; completed!&quot;);</span>
+</span><span class='line'>        <span class="n">inputStream</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">outputChann</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">HttpDownloader</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">count</span><span class="o">--;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%91mysql%e5%a4%87%e4%bb%bd%e7%9a%84shell%e8%84%9a%e6%9c%ac/">【旧代码】mysql备份的shell脚本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2011-11-15T00:00:00+08:00'><span class='date'>2011-11-15</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'><span class="nv">bk_to</span><span class="o">=</span><span class="s2">&quot;/var/mysql-backup-`date +%Y-%m-%d-%k-%M-%S |tr -d &#39; &#39;`&quot;</span>
+</span><span class='line'><span class="nv">user_name</span><span class="o">=</span><span class="s2">&quot;root&quot;</span>
+</span><span class='line'><span class="nv">user_pw</span><span class="o">=</span><span class="s2">&quot;dev&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">sql</span><span class="o">=</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="s2">flush tables with read lock;</span>
+</span><span class='line'><span class="s2">system cp -pR /var/lib/mysql $bk_to; </span>
+</span><span class='line'><span class="s2">unlock tables;</span>
+</span><span class='line'><span class="s2">&quot;</span>
+</span><span class='line'>mysql -u <span class="nv">$user_name</span> -p<span class="nv">$user_pw</span> -e <span class="s2">&quot;$sql&quot;</span>
+</span><span class='line'><span class="nb">echo</span> <span class="nv">$sql</span>
+</span><span class='line'>tar cjf <span class="nv">$bk_to</span>.bz2 <span class="nv">$bk_to</span>
+</span><span class='line'>rm -rf <span class="nv">$bk_to</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%91fortran%e4%b8%ad%e7%9a%84%e6%8c%87%e9%92%88%e5%ae%9e%e7%8e%b0%e9%93%be%e8%a1%a8%e7%9a%84%e4%bb%a3%e7%a0%81/">【旧代码】fortran中的指针实现链表的代码</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2011-11-15T00:00:00+08:00'><span class='date'>2011-11-15</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>我不喜欢fortran，</p>
+
+<p>奇怪的词法规则（竟然不用空格分开token），</p>
+
+<p>io操作竟然是语言的一部分（这种非本质的东西像C那样用库来扩展多好）</p>
+
+<p>。。。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+</pre></td><td class='code'><pre><code class='fortran'><span class='line'><span class="k">program </span><span class="nb">link</span>
+</span><span class='line'><span class="k">implicit none</span>
+</span><span class='line'><span class="k">type </span><span class="nv">node</span>
+</span><span class='line'>    <span class="kt">character</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="nv">name</span>
+</span><span class='line'>    <span class="kt">integer </span><span class="nv">id</span>
+</span><span class='line'>    <span class="kt">integer </span><span class="nv">score</span>
+</span><span class='line'>    <span class="k">type</span><span class="p">(</span><span class="nv">node</span><span class="p">),</span><span class="k">pointer</span> <span class="kd">::</span><span class="nv">next</span>
+</span><span class='line'><span class="k">end type</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">integer</span><span class="p">,</span><span class="k">parameter</span><span class="kd">::</span><span class="nv">num</span><span class="o">=</span><span class="mi">3</span>
+</span><span class='line'><span class="k">type</span><span class="p">(</span><span class="nv">node</span><span class="p">),</span><span class="k">pointer</span> <span class="kd">::</span><span class="nv">students</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">call </span><span class="nv">init_all</span><span class="p">(</span><span class="nv">students</span><span class="p">,</span><span class="nv">num</span><span class="p">)</span>
+</span><span class='line'><span class="k">call </span><span class="nv">show_all</span><span class="p">(</span><span class="nv">students</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="o">*</span><span class="p">,</span><span class="s2">&quot;now,we add a student&quot;</span>
+</span><span class='line'><span class="k">call </span><span class="nv">add_node</span><span class="p">(</span><span class="nv">students</span><span class="p">)</span>
+</span><span class='line'><span class="k">call </span><span class="nv">show_all</span><span class="p">(</span><span class="nv">students</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="o">*</span><span class="p">,</span><span class="s2">&quot;now,we delete the student&quot;</span>
+</span><span class='line'><span class="k">call </span><span class="nv">del_node</span><span class="p">(</span><span class="nv">students</span><span class="p">)</span>
+</span><span class='line'><span class="k">call </span><span class="nv">show_all</span><span class="p">(</span><span class="nv">students</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">contains </span>
+</span><span class='line'><span class="k">subroutine </span><span class="nv">add_node</span><span class="p">(</span><span class="nv">pos</span><span class="p">)</span>
+</span><span class='line'><span class="k">type</span><span class="p">(</span><span class="nv">node</span><span class="p">),</span><span class="k">pointer</span> <span class="kd">::</span><span class="nv">pos</span><span class="p">,</span><span class="nv">tmp</span>
+</span><span class='line'><span class="k">allocate</span><span class="p">(</span><span class="nv">tmp</span><span class="p">)</span>
+</span><span class='line'><span class="nv">tmp</span><span class="p">%</span><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;abc&quot;</span>
+</span><span class='line'><span class="nv">tmp</span><span class="p">%</span><span class="nv">id</span><span class="o">=</span><span class="mi">1</span>
+</span><span class='line'><span class="nv">tmp</span><span class="p">%</span><span class="nv">score</span><span class="o">=</span><span class="mi">100</span>
+</span><span class='line'><span class="k">print</span><span class="o">*</span><span class="p">,</span><span class="s2">&quot;please input name,id,end score of one students&quot;</span>
+</span><span class='line'><span class="k">read</span><span class="o">*</span><span class="p">,</span><span class="nv">tmp</span><span class="p">%</span><span class="nv">name</span><span class="p">,</span><span class="nv">tmp</span><span class="p">%</span><span class="nv">id</span><span class="p">,</span><span class="nv">tmp</span><span class="p">%</span><span class="nv">score</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nb">associated</span><span class="p">(</span><span class="nv">pos</span><span class="p">%</span><span class="nv">next</span><span class="p">))</span> <span class="k">then</span>
+</span><span class='line'><span class="nv">tmp</span><span class="p">%</span><span class="nv">next</span><span class="o">=&gt;</span><span class="nv">pos</span><span class="p">%</span><span class="nv">next</span>
+</span><span class='line'><span class="nv">pos</span><span class="p">%</span><span class="nv">next</span><span class="o">=&gt;</span><span class="nv">tmp</span>
+</span><span class='line'><span class="k">else </span>
+</span><span class='line'><span class="k">nullify</span><span class="p">(</span><span class="nv">tmp</span><span class="p">%</span><span class="nv">next</span><span class="p">)</span>
+</span><span class='line'><span class="nv">pos</span><span class="p">%</span><span class="nv">next</span><span class="o">=&gt;</span><span class="nv">tmp</span>
+</span><span class='line'><span class="k">end if</span>
+</span><span class='line'><span class="k">end subroutine</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">subroutine </span><span class="nv">del_node</span><span class="p">(</span><span class="nv">pos</span><span class="p">)</span>
+</span><span class='line'><span class="k">type</span><span class="p">(</span><span class="nv">node</span><span class="p">),</span><span class="k">pointer</span> <span class="kd">::</span><span class="nv">pos</span><span class="p">,</span><span class="nv">next</span>
+</span><span class='line'><span class="nv">next</span><span class="o">=&gt;</span><span class="nv">pos</span><span class="p">%</span><span class="nv">next</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nb">associated</span><span class="p">(</span><span class="nv">next</span><span class="p">%</span><span class="nv">next</span><span class="p">))</span> <span class="k">then</span>
+</span><span class='line'><span class="nv">pos</span><span class="p">%</span><span class="nv">next</span><span class="o">=&gt;</span><span class="nv">next</span><span class="p">%</span><span class="nv">next</span>
+</span><span class='line'><span class="k">deallocate</span><span class="p">(</span><span class="nv">next</span><span class="p">)</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'><span class="k">nullify</span><span class="p">(</span><span class="nv">pos</span><span class="p">%</span><span class="nv">next</span><span class="p">)</span>
+</span><span class='line'><span class="k">deallocate</span><span class="p">(</span><span class="nv">next</span><span class="p">)</span>
+</span><span class='line'><span class="k">end if</span>
+</span><span class='line'><span class="k">end subroutine</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">subroutine </span><span class="nv">show_all</span><span class="p">(</span><span class="nv">pos</span><span class="p">)</span>
+</span><span class='line'><span class="k">type</span><span class="p">(</span><span class="nv">node</span><span class="p">),</span><span class="k">pointer</span> <span class="kd">::</span><span class="nv">pos</span><span class="p">,</span><span class="nv">tmp</span>
+</span><span class='line'><span class="kt">integer</span> <span class="kd">::</span><span class="nv">cnt</span>
+</span><span class='line'><span class="nv">cnt</span><span class="o">=</span><span class="mi">1</span>
+</span><span class='line'><span class="k">print</span><span class="o">*</span><span class="p">,</span><span class="s2">&quot;all students are:&quot;</span>
+</span><span class='line'><span class="nv">tmp</span><span class="o">=&gt;</span><span class="nv">pos</span>
+</span><span class='line'><span class="k">do while</span><span class="p">(</span><span class="nb">associated</span><span class="p">(</span><span class="nv">tmp</span><span class="p">))</span>
+</span><span class='line'><span class="k">print</span><span class="o">*</span><span class="p">,</span><span class="nv">cnt</span><span class="p">,</span><span class="s2">&quot;th &quot;</span><span class="p">,</span><span class="nv">tmp</span><span class="p">%</span><span class="nv">name</span><span class="p">,</span><span class="nv">tmp</span><span class="p">%</span><span class="nv">id</span><span class="p">,</span><span class="nv">tmp</span><span class="p">%</span><span class="nv">score</span>
+</span><span class='line'><span class="nv">tmp</span><span class="o">=&gt;</span><span class="nv">tmp</span><span class="p">%</span><span class="nv">next</span>
+</span><span class='line'><span class="nv">cnt</span><span class="o">=</span><span class="nv">cnt</span><span class="o">+</span><span class="mi">1</span>
+</span><span class='line'><span class="k">end do</span>
+</span><span class='line'><span class="k">end subroutine</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">subroutine </span><span class="nv">init_all</span><span class="p">(</span><span class="nv">pos</span><span class="p">,</span><span class="nv">num</span><span class="p">)</span>
+</span><span class='line'><span class="k">type</span><span class="p">(</span><span class="nv">node</span><span class="p">),</span><span class="k">pointer</span> <span class="kd">::</span><span class="nv">pos</span><span class="p">,</span><span class="nv">tmp</span><span class="p">,</span><span class="nv">walk</span>
+</span><span class='line'><span class="kt">integer </span><span class="nv">num</span>
+</span><span class='line'><span class="kt">integer </span><span class="nv">i</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">allocate</span><span class="p">(</span><span class="nv">tmp</span><span class="p">)</span>
+</span><span class='line'><span class="k">nullify</span><span class="p">(</span><span class="nv">tmp</span><span class="p">%</span><span class="nv">next</span><span class="p">)</span>
+</span><span class='line'><span class="k">call </span><span class="nv">add_node</span><span class="p">(</span><span class="nv">tmp</span><span class="p">)</span>
+</span><span class='line'><span class="nv">pos</span><span class="o">=&gt;</span><span class="nv">tmp</span><span class="p">%</span><span class="nv">next</span>
+</span><span class='line'><span class="k">deallocate</span><span class="p">(</span><span class="nv">tmp</span><span class="p">)</span>
+</span><span class='line'><span class="nv">walk</span><span class="o">=&gt;</span><span class="nv">pos</span>
+</span><span class='line'><span class="k">do </span><span class="nv">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">num</span><span class="o">-</span><span class="mi">1</span>
+</span><span class='line'><span class="k">call </span><span class="nv">add_node</span><span class="p">(</span><span class="nv">walk</span><span class="p">)</span>
+</span><span class='line'><span class="nv">walk</span><span class="o">=&gt;</span><span class="nv">walk</span><span class="p">%</span><span class="nv">next</span>
+</span><span class='line'><span class="k">end do</span>
+</span><span class='line'><span class="k">end subroutine</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end program </span><span class="nb">link</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&nbsp;</p>
+
+<p>我很少讨厌某种技术，坦诚的说，关于fortran，是有其他因素参合进来了。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%912010%e5%b9%b4%e7%94%a8matlab%e5%81%9a%e7%9a%84%e5%87%a0%e5%bc%a0%e7%90%86%e6%83%b3%e6%b5%81%e5%9c%ba%e7%9a%84%e5%9b%be/">【旧代码】2010年用matlab做的几张理想流场的图</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2011-11-15T00:00:00+08:00'><span class='date'>2011-11-15</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>就不贴matlab代码了，图比较大。</p>
+
+<p>分别是：</p>
+
+<ol>
+<li><p>无环量流动</p></li>
+<li><p>有环量流动,两个滞止点</p></li>
+<li><p>有环量流动,一个滞止点</p></li>
+<li><p>有环量流动,柱面外一个滞止点</p></li>
+</ol>
+
+
+<p><img src="/images/blog/2012041000071160.png"></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%912010%e5%b9%b4%e7%94%a8matlab%e5%81%9a%e7%9a%84%e5%87%a0%e5%bc%a0%e7%90%86%e6%83%b3%e6%b5%81%e5%9c%ba%e7%9a%84%e5%9b%be/">继续阅读/Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%91%e4%bc%a0%e7%83%ad%e8%bf%87%e7%a8%8b%e6%95%b0%e5%80%bc%e6%a8%a1%e6%8b%9f%ef%bc%88%e3%80%8a%e4%bc%a0%e7%83%ad%e5%ad%a6%e3%80%8b%e5%ae%9e%e9%aa%8c%e6%8c%87/">【旧代码】传热过程数值模拟（《传热学》实验指导书第四部分第一题，第一，第二类边界条件）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2011-11-15T00:00:00+08:00'><span class='date'>2011-11-15</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>2010年十月写的旧代码。</p>
+
+<p>第一类边界条件是给定边界温度。</p>
+
+<p>第二类是对流边界。</p>
+
+<p>区域都是如下形状的:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'> <span class="o">--------------------------------</span>
+</span><span class='line'><span class="o">|</span>                               <span class="o">|</span>
+</span><span class='line'><span class="o">|</span>                               <span class="o">|</span>
+</span><span class='line'><span class="o">|</span>                               <span class="o">|</span>
+</span><span class='line'><span class="o">|</span>          <span class="o">----------------------</span>
+</span><span class='line'><span class="o">|</span>         <span class="o">|</span>
+</span><span class='line'><span class="o">|</span>         <span class="o">|</span>
+</span><span class='line'><span class="o">|</span>         <span class="o">|</span>
+</span><span class='line'><span class="o">|</span>         <span class="o">|</span>
+</span><span class='line'><span class="o">|</span>         <span class="o">|</span>
+</span><span class='line'><span class="o">|</span>         <span class="o">|</span>
+</span><span class='line'><span class="o">|</span>         <span class="o">|</span>
+</span><span class='line'><span class="o">|</span>         <span class="o">|</span>
+</span><span class='line'> <span class="o">---------</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>用C++纯属蛋疼。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%91%e4%bc%a0%e7%83%ad%e8%bf%87%e7%a8%8b%e6%95%b0%e5%80%bc%e6%a8%a1%e6%8b%9f%ef%bc%88%e3%80%8a%e4%bc%a0%e7%83%ad%e5%ad%a6%e3%80%8b%e5%ae%9e%e9%aa%8c%e6%8c%87/">继续阅读/Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/11/13/visual-studio%e9%9d%99%e6%80%81%ef%bc%8c%e5%8a%a8%e6%80%81%e9%93%be%e6%8e%a5%e5%ba%93%e5%bc%80%e5%8f%91%e5%b7%a5%e5%85%b7%e7%ae%80%e5%8d%95%e4%bd%bf%e7%94%a8/">Visual Studio静态，动态链接库开发工具简单使用</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2011-11-13T00:00:00+08:00'><span class='date'>2011-11-13</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这是2011年8月份做过的一点实验，查了MSDN等等很多资料，基本搞明白了。这里我不会使用visual studio的图形界面工具，作为专业人士，还是搞懂自己的工具是怎么运转的，这样比较好。</p>
+
+<p>要使用的是visual studio的命令行工具，其实和gcc那堆工具对应关系挺明显的，大致如下：</p>
+
+<table border="1" cellspacing="1" cellpadding="1">
+  <tr>
+    <td>
+      gcc
+    </td>
+    
+    <td>
+      cl
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      ar
+    </td>
+    
+    <td>
+      lib
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      ld
+    </td>
+    
+    <td>
+      link
+    </td>
+  </tr>
+</table>
+
+
+<p>文件后缀对应关系:</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/2011/11/13/visual-studio%e9%9d%99%e6%80%81%ef%bc%8c%e5%8a%a8%e6%80%81%e9%93%be%e6%8e%a5%e5%ba%93%e5%bc%80%e5%8f%91%e5%b7%a5%e5%85%b7%e7%ae%80%e5%8d%95%e4%bd%bf%e7%94%a8/">继续阅读/Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/10/17/%e9%80%92%e5%a2%9e%e5%ad%90%e5%ba%8f%e5%88%97%e6%95%b0%e7%9b%ae%e8%ae%a1%e7%ae%97%e7%9a%84%e7%ae%97%e6%b3%95/">递增子序列数目计算的算法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2011-10-17T00:00:00+08:00'><span class='date'>2011-10-17</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这是前几天笔试时，考场上想出来的算法，但是算了两次都不一样，最后只好蒙了一个选项，悲催！</p>
+
+<p>问题如下：</p>
+
+<p>给定一个整数序列，例如 4,2,6,3,7,1  ，该序列有多少个递增子序列？</p>
+
+<p>我的算法如下：</p>
+
+<p>记第i个元素为arr[i] ，记以第i个元素结尾的递增子序列有N[i]个，</p>
+
+<p>则，考虑以第i+1个元素结尾的所有递增子序列，</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>首先置N[i+1]=1;//表示只有第i+1个元素一个元素的子序列。
+</span><span class='line'>
+</span><span class='line'>对j=1...i
+</span><span class='line'>
+</span><span class='line'>           如果arr[j]&lt;arr[i+1]
+</span><span class='line'>
+</span><span class='line'>                  N[i+1]+=N[j]
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后结果等于N数组里所有元素之和。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/08/22/%e6%89%be%e5%87%ba%e5%b9%b3%e9%9d%a2%e4%b8%8a%e7%9a%84%e7%89%b9%e6%ae%8a%e6%97%a0%e5%90%91%e5%9b%be%e4%b8%ad%e7%9a%84%e6%89%80%e6%9c%89%e4%b8%89%e8%a7%92%e5%bd%a2%e7%9a%84%e7%ae%97%e6%b3%95/">找出平面上的特殊无向图中的所有三角形的算法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2011-08-22T00:00:00+08:00'><span class='date'>2011-08-22</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>  问题提出背景：在非结构化三角形网格生成过程中，若采用前沿推进法，在推进过程中是不好构造三角形的（而且也没有要），最好在把所有的边都连好以后再找出所有三角形，于是提出了问题：在由三角形构成的平面无向图中如何找出所有三角形？</p>
+
+<p>网格如图：</p>
+
+<p><img src="/images/blog/2012041000563687.png"></p>
+
+<p>要注意的是，这个无向图很特殊，</p>
+
+<p>1.这个图在平面上。</p>
+
+<p>2.这个图是由三角形构成的（如果不是由三角行构成，那这个网格就没有用处了）。</p>
+
+<p>我的算法如下，伪代码表示:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>foreach(点 p in所有的点){
+</span><span class='line'>    foreach(点 np in p的所有邻居点){
+</span><span class='line'>        foreach(点 nnpin np的所有邻居点){
+</span><span class='line'>            if(   p,np,nnp三点两两不重合
+</span><span class='line'>               && p,np,nnp三点两两相连
+</span><span class='line'>               && p==uniqPointOfTriangle(p,np,nnp)
+</span><span class='line'>               && uniqPointOf2Points(np,nnp)==np)  ){
+</span><span class='line'>                   输出p,np,nnp构成的三角形。
+</span><span class='line'>               }
+</span><span class='line'>       }
+</span><span class='line'>   }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>算法的关键在于uniqPointOfTriangle( )和uniqPointOf2Points( )这两个函数。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/2011/08/22/%e6%89%be%e5%87%ba%e5%b9%b3%e9%9d%a2%e4%b8%8a%e7%9a%84%e7%89%b9%e6%ae%8a%e6%97%a0%e5%90%91%e5%9b%be%e4%b8%ad%e7%9a%84%e6%89%80%e6%9c%89%e4%b8%89%e8%a7%92%e5%bd%a2%e7%9a%84%e7%ae%97%e6%b3%95/">继续阅读/Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/05/12/codeblocks%e9%85%8d%e5%90%88gfortran%e4%bd%9c%e4%b8%bafortran%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83%e7%9a%84%e9%85%8d%e7%bd%ae%e6%96%b9%e6%b3%95/">Codeblocks配合gfortran作为fortran开发环境的配置方法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2011-05-12T00:00:00+08:00'><span class='date'>2011-05-12</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;</p>
+
+<p>（以前在bmy bbs发过一次）</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp; 这个方法试过在64位win7和32位winxp上可用。</p>
+
+<p>&nbsp; &nbsp; 1，首先安装codeblockes，必须选完全安装（Full,All plugins,&#8230;），路径可以选默认路径即 C:/Program Files/CodeBlocks</p>
+
+<p>（如果安装到别的路径，后面提到的路径请自行对应更改）,一路点yes，装完后关掉codeblocks。</p>
+
+<p>&nbsp; &nbsp; 2，汉化，把locale这个文件夹拷贝到 C:/Program Files/CodeBlocks/share/CodeBlocks/下（win7下需要管理员权限），确保最后的路径是这样的： C:/Program Files/CodeBlocks/share/CodeBlocks/locale/zh_CN/codeblocks.mo</p>
+
+<p>然后打开codeblocks，如果没有自动汉化，到settings->environment->选左侧view，找到右侧的internationalization里找中文选上，点OK后重启codeblocks，如果汉化不成功，请检查codeblocks.mo文件是否在正确的路径。</p>
+
+<p>&nbsp; &nbsp; 3，安装含有gfortran的gcc，注意：最好选择一个不带空格的路径，更不要用中文路径，如C:/gcc ,把路径记住。</p>
+
+<p>&nbsp; &nbsp; 4,让codeblocks使用gfortran，在codeblocks菜单中选 &ldquo;设置&rdquo;->&ldquo;编译器和调试器&rdquo;，选中&ldquo;GNU GCC 编译器&rdquo;，点&ldquo;复制&rdquo;，然后输入一个好记的名字如&ldquo;my Gfotran compiler&rdquo;，打开&ldquo;可执行工具链&rdquo;，在&ldquo;编译器安装目录&rdquo;里找到C:/gcc，确定。</p>
+
+<p>然后把下面的&ldquo;C编译器&rdquo;，&ldquo;C++编译器&rdquo;，&ldquo;动态库链接器&rdquo;都选成gfortran.exe,&ldquo;调试器&rdquo;选gdb.exe,其他的都不要动，确定。安装完成。</p>
+
+<p>&nbsp; &nbsp; 5，文件->新建->项目，选&ldquo;empty project&rdquo;，输入项目名，保存路径等，然后，在编译器下拉框中，必须选择&ldquo;my Gfotran compiler&rdquo;其余默认，建好项目后，选文件->新建->文件，选&ldquo;empty file&rdquo;，点 &ldquo;&#8230;&rdquo;按钮，输入一个以.f90结尾的文件名，并选中debug和release，确定。就可以在打开的编辑窗口中输入代码了。在菜单上有构建，调试等功能。</p>
+
+<p>&nbsp;</p>
+
+<p>参考链接：</p>
+
+<p><a href="http://wiki.codeblocks.org/index.php?title=Installing_Fortran_Compiler">http://wiki.codeblocks.org/index.php?title=Installing_Fortran_Compiler</a></p>
+
+<p><a href="http://www.d2school.com/codeblocks/doc/codeblocks_setup.html%C3%82%C2%A0">http://www.d2school.com/codeblocks/doc/codeblocks_setup.html&nbsp;&nbsp; </a></p>
+
+<p>&nbsp;</p>
+
+<p>codeblocks下载页面(要上外网)</p>
+
+<p><a href="http://www.codeblocks.org/downloads/26">http://www.codeblocks.org/downloads/26</a></p>
+
+<p>equation solution编译的gcc</p>
+
+<p><a href="http://www.equation.com/servlet/equation.cmd?fa=fortran">http://www.equation.com/servlet/equation.cmd?fa=fortran</a></p>
+
+<p>汉化包&nbsp;</p>
+
+<p><a href="http://www.d2school.com/codeblocks/download/d2school_codeblocks_chinese_locale.7z%C3%82%C2%A0">http://www.d2school.com/codeblocks/download/d2school_codeblocks_chinese_locale.7z&nbsp;</a></p>
+
+<p>&nbsp;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/08/29/%e4%b8%80%e4%b8%aa%e7%94%a8inotify%e7%9b%91%e6%8e%a7apache%e7%9a%84%e8%84%9a%e6%9c%ac/">一个用inotify监控apache的脚本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2010-08-29T00:00:00+08:00'><span class='date'>2010-08-29</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="c">#Author:windydays</span>
+</span><span class='line'><span class="c">#Date : 2010/8/29</span>
+</span><span class='line'><span class="c">#用于监控apache，如果退出就自动重启apache，原理是在如果apache退出，则apache的pid文件会被close，或触发attrib事件，</span>
+</span><span class='line'><span class="c">#只要用inotify监控这个事件，然后重启apache，再重新监控pid文件即可。</span>
+</span><span class='line'><span class="c">#使用方法：用root权限运行即可。</span>
+</span><span class='line'><span class="c">#停止方法：sudo pkill inotifywait.</span>
+</span><span class='line'><span class="nv">pid_file</span><span class="o">=</span>/var/run/apache2.pid
+</span><span class='line'><span class="nv">mon_log</span><span class="o">=</span>/var/log/apache2/mon-apache.sh.log
+</span><span class='line'><span class="k">if</span> ! <span class="o">[</span> -f <span class="nv">$pid_file</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>        <span class="nb">echo</span> <span class="s1">&#39;pid file does NOT exist! maybe it is somewhere else or</span>
+</span><span class='line'><span class="s1">        service is</span>
+</span><span class='line'><span class="s1">        down now.&#39;</span> &gt;&gt;<span class="nv">$mon_log</span><span class="p">;</span>
+</span><span class='line'>        <span class="nb">exit </span><span class="m">1</span> <span class="p">;</span>
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'><span class="c">#如果apache没有出问题，会阻塞在下面这里.</span>
+</span><span class='line'>inotifywait -q -e close <span class="nv">$pid_file</span> &gt;&gt;<span class="nv">$mon_log</span><span class="p">;</span>
+</span><span class='line'><span class="nv">exit_code</span><span class="o">=</span><span class="nv">$?</span><span class="p">;</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;At $(date)&quot;</span> &gt;&gt;<span class="nv">$mon_log</span><span class="p">;</span>
+</span><span class='line'><span class="c">#如果#?不等于0说明inotifywait不正常退出。</span>
+</span><span class='line'><span class="k">if</span>  <span class="o">[</span> <span class="nv">$exit_code</span> <span class="o">=</span> <span class="m">0</span> <span class="o">]</span><span class="p">;</span><span class="k">then</span>
+</span><span class='line'>        /etc/init.d/apache2 restart
+</span><span class='line'>        sleep 8<span class="p">;</span>
+</span><span class='line'>        <span class="nb">exec</span> <span class="nv">$0</span><span class="p">;</span>
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>领会意思即可，这个东西没有实用价值，有一些超时问题无法解决。</p>
+
+<p>实际上还是那种每隔两分钟，就发个HTTP请求，检测apache是否还活着的方式比较稳定可靠，例如monit。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/posts/4">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/posts/2">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2019/09/18/newwords_discovery/">GB 规模语料上的高性能新词发现算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/">TLS协议分析 与 现代加密通信协议设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/05/modern-crypto/">现代密码学实践指南[2015年]</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/08/https-config-optimize-in-nginx/">Nginx下配置高性能，高安全性的https TLS服务</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/">【翻译】密码学一小时必知</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/byronhe">@byronhe</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'byronhe',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - byronhe -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'byronheblog';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

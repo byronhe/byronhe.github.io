@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Science | Tech Ideas]]></title>
+  <link href="https://blog.helong.info//blog/categories/science/atom.xml" rel="self"/>
+  <link href="https://blog.helong.info//"/>
+  <updated>2019-09-18T22:22:08+08:00</updated>
+  <id>https://blog.helong.info//</id>
+  <author>
+    <name><![CDATA[byronhe]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[【旧代码】2010年用matlab做的几张理想流场的图]]></title>
+    <link href="https://blog.helong.info//2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%912010%e5%b9%b4%e7%94%a8matlab%e5%81%9a%e7%9a%84%e5%87%a0%e5%bc%a0%e7%90%86%e6%83%b3%e6%b5%81%e5%9c%ba%e7%9a%84%e5%9b%be/"/>
+    <updated>2011-11-15T00:00:00+08:00</updated>
+    <id>https://blog.helong.info//2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%912010%e5%b9%b4%e7%94%a8matlab%e5%81%9a%e7%9a%84%e5%87%a0%e5%bc%a0%e7%90%86%e6%83%b3%e6%b5%81%e5%9c%ba%e7%9a%84%e5%9b%be</id>
+    <content type="html"><![CDATA[<p>就不贴matlab代码了，图比较大。</p>
+
+<p>分别是：</p>
+
+<ol>
+<li><p>无环量流动</p></li>
+<li><p>有环量流动,两个滞止点</p></li>
+<li><p>有环量流动,一个滞止点</p></li>
+<li><p>有环量流动,柱面外一个滞止点</p></li>
+</ol>
+
+
+<p><img src="/images/blog/2012041000071160.png"></p>
+
+<!--more-->
+
+
+<p><img src="/images/blog/2012041000073889.png"></p>
+
+<p><img src="/images/blog/2012041000075771.png"></p>
+
+<p><img src="/images/blog/2012041000083248.png"></p>
+
+<p><img src="/images/blog/2012041000085174.png"></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[【旧代码】传热过程数值模拟（《传热学》实验指导书第四部分第一题，第一，第二类边界条件）]]></title>
+    <link href="https://blog.helong.info//2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%91%e4%bc%a0%e7%83%ad%e8%bf%87%e7%a8%8b%e6%95%b0%e5%80%bc%e6%a8%a1%e6%8b%9f%ef%bc%88%e3%80%8a%e4%bc%a0%e7%83%ad%e5%ad%a6%e3%80%8b%e5%ae%9e%e9%aa%8c%e6%8c%87/"/>
+    <updated>2011-11-15T00:00:00+08:00</updated>
+    <id>https://blog.helong.info//2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%91%e4%bc%a0%e7%83%ad%e8%bf%87%e7%a8%8b%e6%95%b0%e5%80%bc%e6%a8%a1%e6%8b%9f%ef%bc%88%e3%80%8a%e4%bc%a0%e7%83%ad%e5%ad%a6%e3%80%8b%e5%ae%9e%e9%aa%8c%e6%8c%87</id>
+    <content type="html"><![CDATA[<p>2010年十月写的旧代码。</p>
+
+<p>第一类边界条件是给定边界温度。</p>
+
+<p>第二类是对流边界。</p>
+
+<p>区域都是如下形状的:</p>
+
+<pre><code class="cpp"> --------------------------------
+|                               |
+|                               |
+|                               |
+|          ----------------------
+|         |     
+|         |     
+|         |     
+|         |
+|         |     
+|         |
+|         |     
+|         |
+ ---------
+</code></pre>
+
+<p>用C++纯属蛋疼。</p>
+
+<!--more-->
+
+
+<p>第一类边界条件：</p>
+
+<pre><code class="cpp">
+/*
+ * 等温边界
+ */
+#include&lt;iostream&gt;
+#include&lt;cmath&gt;
+using namespace std;
+const double out_temp=30.0;//外边界温度
+const double in_temp=0.0;//内边界温度
+const double accuracy=0.00000001;//精度
+const double lambda=0.53;//导热系数
+
+const int width=15;//上部点阵宽度
+const int width_bottom=4;//下部点阵宽度
+const int height=4;//上部点阵高度
+const int height_bottom=7;//下部点阵高度
+/*
+//另一组参数
+const int width=16;
+const int width_bottom=6;
+const int height=6;
+const int height_bottom=6;
+*/
+//总共点数
+const int num_of_points=width*height+width_bottom*height_bottom;
+//单个点
+class point
+{
+        public:
+                double temp;//温度
+                int up;//数组下标
+                int down;
+                int left;
+                int right;
+
+                point(){
+                        temp=0.0;//初始化成0摄氏度
+                        up=down=right=left=0;
+                }
+};
+
+ostream &amp; operator&lt;&lt;(ostream &amp; src_stream,const point &amp; src){
+        src_stream&lt;&lt;"temp="&lt;&lt;src.temp;
+        src_stream&lt;&lt;" up="&lt;&lt;src.up&lt;&lt;" down="&lt;&lt;src.down;
+        src_stream&lt;&lt;" left="&lt;&lt;src.left&lt;&lt;" right="&lt;&lt;src.right;
+        return src_stream;
+}
+
+void print_grid(point * points){//输出网格各点的温度
+        cout&lt;&lt;endl;
+        for(int position=0;position&gt;=0;position=points[position].down){
+                for(int tmp=position;tmp&gt;=0;tmp=points[tmp].right){
+                        cout.width(10);
+                        cout&lt;&lt;points[tmp].temp;
+                }
+                cout&lt;&lt;endl&lt;&lt;endl&lt;&lt;endl&lt;&lt;endl;
+        }
+}
+
+double calc_direction(point * points,int direction,double &amp;opposit_weight){
+        //计算给定方向邻点的温度和反方向的权重。
+        switch (direction) {
+                case -1:
+                        return out_temp;
+                        break;
+                case -2:
+                        return in_temp;
+                        break;
+                case -3:
+                        opposit_weight*=2;
+                        return 0.0;
+                        break;
+                default:
+                        return points[direction].temp;
+        }
+}
+
+void compu_point(point * points,int now){
+        //根据周围四个点算出指定点的温度
+        double left_temp;
+        double right_temp;
+        double up_temp;
+        double down_temp;
+        double up_wight=0.25;//上方权重,默认0.25
+        double down_wight=0.25;
+        double left_wight=0.25;
+        double right_wight=0.25;
+        left_temp=calc_direction(points,points[now].left,right_wight);
+        right_temp=calc_direction(points,points[now].right,left_wight);
+        up_temp=calc_direction(points,points[now].up,down_wight);
+        down_temp=calc_direction(points,points[now].down,up_wight);
+        points[now].temp=left_temp*left_wight+right_temp*right_wight+up_temp*up_wight+down_temp*down_wight;
+}
+
+void rec_walk(point * points){
+        // "左=&gt;右"里嵌"上=&gt;下"遍历计算
+        for(int position=0;position&gt;=0;position=points[position].right)
+                for(int tmp=position;tmp&gt;=0;tmp=points[tmp].down)
+                        compu_point(points,tmp);
+}
+
+void heat_rate(point * points){
+        //计算导热量
+        double out_sum=0.0;
+        double in_sum=0.0;
+        //外边界
+        int pos=0;
+        double tmp=0.0;
+        for(;points[pos].right&gt;=0;pos=points[pos].right){
+                tmp=out_temp - points[pos].temp ;
+                if(points[pos].right&lt;=0)
+                        out_sum += 0.5*tmp;
+                else
+                        out_sum+=tmp;
+        }
+        for(pos=points[0].down;points[pos].down&gt;=0;pos=points[pos].down){
+                tmp=out_temp - points[pos].temp ;
+                if(points[pos].down&lt;=0)
+                        out_sum += 0.5*tmp;
+                else
+                        out_sum+=tmp;
+        }
+        //内边界
+        for(pos=num_of_points-1;points[pos].right&lt;0;pos=points[pos].up){
+                tmp = points[pos].temp - in_temp ;
+                if(points[pos].down&lt;=0)
+                        in_sum += 0.5*tmp;
+                else
+                        in_sum +=tmp;
+        }
+        for(pos=points[pos].right;points[pos].right&gt;=0;pos=points[pos].right){
+                tmp = points[pos].temp - in_temp;
+                if(points[pos].right&lt;=0)
+                        in_sum += 0.5*tmp;
+                else
+                        in_sum += tmp;
+        }
+        out_sum*=lambda;
+        in_sum*=lambda;
+        cout&lt;&lt;"外边界导热量="&lt;&lt;out_sum;
+        cout&lt;&lt;"\n内边界导热量="&lt;&lt;in_sum;
+        cout&lt;&lt;"\n误差="&lt;&lt;(in_sum-out_sum)/in_sum*100&lt;&lt;"%"&lt;&lt;endl;
+}
+
+void init_grid(point * points){
+        //初始化网格
+        int position=0;
+        //初始化最上面的边
+        for(int i=0;i&lt;width;i++){
+                points[i].up=-1;//-1表示外边界，-2内边界,-3表示绝热
+                points[i].left=i-1;
+                points[i].right=i+1;
+                points[i].down=i+width;
+                position=i;
+        }
+        points[0].left=-1;//等温
+        points[width-1].right=-3;//绝热
+
+        //上面区域
+        for(int i=1;i&lt;height;i++){
+                for(int j=0;j&lt;width;j++){
+                        points[i*width+j].up   =i*width+j-width;
+                        points[i*width+j].left =i*width+j-1;
+                        points[i*width+j].right=i*width+j+1;
+                        points[i*width+j].down =i*width+j+width;
+                        position=i*width+j;
+                }
+                points[i*width+0].left=-1;
+                points[i*width+width-1].right=-3;
+        }
+
+        position-=width;
+        position++;
+        for(int j=width_bottom;j&lt;width;j++){
+                points[position+j].down =-2;//内边界
+        }
+        position+=width;
+
+        //下面区域
+        for(int i=0;i&lt;height_bottom;i++){
+                for(int j=0;j&lt;width_bottom;j++){
+                        if(i)
+                                points[position+i*width_bottom+j].up=position+i*width_bottom+j-width_bottom;
+                        else
+                                points[position+i*width_bottom+j].up=position+i*width_bottom+j-width;
+
+                        points[position+i*width_bottom+j].left=position+i*width_bottom+j-1;
+                        points[position+i*width_bottom+j].right=position+i*width_bottom+j+1;
+                        points[position+i*width_bottom+j].down=position+i*width_bottom+j+width_bottom;
+                }
+                points[position+i*width_bottom+0].left=-1;
+                points[position+i*width_bottom+width_bottom-1].right=-2;
+        }
+
+        //下边界
+        position+=width_bottom*height_bottom;
+        position-=width_bottom;
+        for(int j=0;j&lt;width_bottom;j++){
+                points[position+j].down=-3;
+        }
+        position+=width_bottom;
+}
+
+int main(){
+        point * points=new point[num_of_points];
+        init_grid(points);
+        //初始化完。输出看看。
+        //for(int i=0;i&lt;num_of_points;i++)
+        //        cout&lt;&lt;i&lt;&lt;" =&gt; "&lt;&lt;points[i]&lt;&lt;'\n';
+        cout&lt;&lt;"初始温度分布（最外层和最内层没有显示）：\n";
+        print_grid(points);
+        //开始迭代计算
+        double diff=out_temp;
+        int times=0;
+        for(;diff&gt;out_temp*accuracy;times++){
+                //"上=&gt;下" 里嵌 "左=&gt;右"遍历计算
+                diff=0.0;
+                for(int now=0;now&lt;num_of_points;now++){
+                        double tmp=points[now].temp;
+                        compu_point(points,now);
+                        tmp=abs(tmp-points[now].temp);
+                        diff = diff&gt;tmp?diff:tmp;
+                }
+        }
+        cout&lt;&lt;"\n迭代计算"&lt;&lt;times&lt;&lt;"次得到的温度分布（最外层和最内层没有显示）：\n";
+        print_grid(points);
+        heat_rate(points);
+        delete [] points;
+        return 0;
+}
+</code></pre>
+
+<p>第二类边界条件：</p>
+
+<pre><code class="cpp">/*
+ * 对流边界
+ */
+#include&lt;iostream&gt;
+#include&lt;cmath&gt;
+using namespace std;
+const double out_temp=30.0;//外边界温度
+const double out_h=10.0;//外边界对流换热系数
+const double in_temp=10.0;//内边界温度
+const double in_h=4
+.0;//内边界对流换热系数
+const double accuracy=0.00000001;//精度
+const double lambda=0.53;//导热系数
+
+const int width=15;//上部点阵宽度
+const int width_bottom=4;//下部点阵宽度
+const int height=4;//上部点阵高度
+const int height_bottom=7;//下部点阵高度
+
+const double delta_x=3.0/(2*width+1);
+const double out_Bi=out_h*delta_x/lambda;//外表面网格Bi数
+const double in_Bi = in_h*delta_x/lambda;//内表面网格Bi数
+/*
+//另一组参数
+const int width=150;
+const int width_bottom=40;
+const int height=40;
+const int height_bottom=70;
+*/
+//总共点数
+const int num_of_points=width*height+width_bottom*height_bottom;
+//单个点
+class point
+{
+        public:
+                double temp;//温度
+                int up;//数组下标
+                int down;
+                int left;
+                int right;
+
+                point(){
+                        temp=0.0;//初始化成0摄氏度
+                        up=down=right=left=0;
+                }
+};
+
+ostream &amp; operator&lt;&lt;(ostream &amp; src_stream,const point &amp; src){
+        src_stream&lt;&lt;"temp="&lt;&lt;src.temp;
+        src_stream&lt;&lt;" up="&lt;&lt;src.up&lt;&lt;" down="&lt;&lt;src.down;
+        src_stream&lt;&lt;" left="&lt;&lt;src.left&lt;&lt;" right="&lt;&lt;src.right;
+        return src_stream;
+}
+
+void print_grid(point * points){//输出网格各点的温度
+        cout&lt;&lt;endl;
+        for(int position=0;position&gt;=0;position=points[position].down){
+                for(int tmp=position;tmp&gt;=0;tmp=points[tmp].right){
+                        cout.width(10);
+                        cout&lt;&lt;points[tmp].temp;
+                }
+                cout&lt;&lt;endl&lt;&lt;endl&lt;&lt;endl&lt;&lt;endl;
+        }
+}
+
+void dump_all(point * points){//便于调试
+        for(int i=0;i&lt;num_of_points;i++)
+                cout&lt;&lt;i&lt;&lt;" =&gt; "&lt;&lt;points[i]&lt;&lt;'\n';
+}
+
+double calc_direction(point * points,int direction,double &amp;opposit_weight,double &amp;this_weight){
+        //计算给定方向邻点的温度和反方向的权重。
+        switch (direction) {
+                case -1://外边界
+                        this_weight*=out_Bi;
+                        return out_temp;
+                        break;
+                case -2://内边界
+                        this_weight*=in_Bi;
+                        return in_temp;
+                        break;
+                case -3://绝热
+                        this_weight=0.0;
+                        opposit_weight*=2;
+                        return 0.0;
+                        break;
+                default:
+                        return points[direction].temp;
+        }
+}
+
+void compu_point(point * points,int now){
+        //根据周围四个点算出指定点的温度
+        double left_temp;
+        double right_temp;
+        double up_temp;
+        double down_temp;
+        double up_wight=1;//上方权重
+        double down_wight=1;
+        double left_wight=1;
+        double right_wight=1;
+        left_temp=calc_direction(points,points[now].left,right_wight,left_wight);
+        right_temp=calc_direction(points,points[now].right,left_wight,right_wight);
+        up_temp=calc_direction(points,points[now].up,down_wight,up_wight);
+        down_temp=calc_direction(points,points[now].down,up_wight,down_wight);
+        double Bi_sum=up_wight+down_wight+right_wight+left_wight;
+        points[now].temp=(left_temp*left_wight+right_temp*right_wight+up_temp*up_wight+down_temp*down_wight)/Bi_sum;
+}
+
+void rec_walk(point * points){
+        // "左=&gt;右"里嵌"上=&gt;下"遍历计算
+        for(int position=0;position&gt;=0;position=points[position].right)
+                for(int tmp=position;tmp&gt;=0;tmp=points[tmp].down)
+                        compu_point(points,tmp);
+}
+
+void heat_rate(point * points){
+        //计算导热量
+        double out_sum=0.0;
+        double in_sum=0.0;
+        //外边界
+        int pos=0;
+        double tmp=0.0;
+        for(;points[pos].right&gt;=0;pos=points[pos].right){
+                tmp=out_temp - points[pos].temp ;
+                if(points[pos].right&lt;=0)
+                        out_sum += 0.5*tmp;
+                else
+                        out_sum+=tmp;
+        }
+        for(pos=points[0].down;points[pos].down&gt;=0;pos=points[pos].down){
+                tmp=out_temp - points[pos].temp ;
+                if(points[pos].down&lt;=0)
+                        out_sum += 0.5*tmp;
+                else
+                        out_sum+=tmp;
+        }
+        //内边界
+        for(pos=num_of_points-1;points[pos].right&lt;0;pos=points[pos].up){
+                tmp = points[pos].temp - in_temp ;
+                if(points[pos].down&lt;=0)
+                        in_sum += 0.5*tmp;
+                else
+                        in_sum +=tmp;
+        }
+        for(pos=points[pos].right;points[pos].right&gt;=0;pos=points[pos].right){
+                tmp = points[pos].temp - in_temp;
+                if(points[pos].right&lt;=0)
+                        in_sum += 0.5*tmp;
+                else
+                        in_sum += tmp;
+        }
+        out_sum*=out_h*delta_x;
+        in_sum *=in_h *delta_x;
+        cout&lt;&lt;"外边界导热量="&lt;&lt;out_sum;
+        cout&lt;&lt;"\n内边界导热量="&lt;&lt;in_sum;
+        cout&lt;&lt;"\n误差="&lt;&lt;(in_sum-out_sum)/in_sum*100&lt;&lt;"%"&lt;&lt;endl;
+}
+
+void init_grid(point * points){
+        //初始化网格
+        int position=0;
+        //初始化最上面的边
+        for(int i=0;i&lt;width;i++){
+                points[i].up=-1;//-1表示外边界，-2内边界,-3表示绝热
+                points[i].left=i-1;
+                points[i].right=i+1;
+                points[i].down=i+width;
+                position=i;
+        }
+        points[0].left=-1;//对流
+        points[width-1].right=-3;//绝热
+
+        //上面区域
+        for(int i=1;i&lt;height;i++){
+                for(int j=0;j&lt;width;j++){
+                        points[i*width+j].up   =i*width+j-width;
+                        points[i*width+j].left =i*width+j-1;
+                        points[i*width+j].right=i*width+j+1;
+                        points[i*width+j].down =i*width+j+width;
+                        position=i*width+j;
+                }
+                points[i*width+0].left=-1;
+                points[i*width+width-1].right=-3;
+        }
+
+        position-=width;
+        position++;
+        for(int j=width_bottom;j&lt;width;j++){
+                points[position+j].down =-2;//内边界
+        }
+        position+=width;
+
+        //下面区域
+        for(int i=0;i&lt;height_bottom;i++){
+                for(int j=0;j&lt;width_bottom;j++){
+                        if(i)
+                                points[position+i*width_bottom+j].up=position+i*width_bottom+j-width_bottom;
+                        else
+                                points[position+i*width_bottom+j].up=position+i*width_bottom+j-width;
+
+                        points[position+i*width_bottom+j].left=position+i*width_bottom+j-1;
+                        points[position+i*width_bottom+j].right=position+i*width_bottom+j+1;
+                        points[position+i*width_bottom+j].down=position+i*width_bottom+j+width_bottom;
+                }
+                points[position+i*width_bottom+0].left=-1;
+                points[position+i*width_bottom+width_bottom-1].right=-2;
+        }
+
+        //下边界
+        position+=width_bottom*height_bottom;
+        position-=width_bottom;
+        for(int j=0;j&lt;width_bottom;j++){
+                points[position+j].down=-3;
+        }
+        position+=width_bottom;
+}
+
+int main(){
+        point * points=new point[num_of_points];
+        init_grid(points);
+        //dump_all(points);
+        cout&lt;&lt;"初始温度分布（最外层和最内层没有显示）：\n";
+        print_grid(points);
+        //开始迭代计算
+        double diff=out_temp;
+        int times=0;
+        for(;diff&gt;out_temp*accuracy;times++){
+                //"上=&gt;下" 里嵌 "左=&gt;右"遍历计算
+                diff=0.0;
+                for(int now=0;now&lt;num_of_points;now++){
+                        double tmp=points[now].temp;
+                        compu_point(points,now);
+                        tmp=abs(tmp-points[now].temp);
+                        diff = diff&gt;tmp?diff:tmp;
+                }
+        }
+        cout&lt;&lt;"\n迭代计算"&lt;&lt;times&lt;&lt;"次得到的温度分布（最外层和最内层没有显示）：\n";
+        print_grid(points);
+        heat_rate(points);
+        delete [] points;
+        return 0;
+}
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

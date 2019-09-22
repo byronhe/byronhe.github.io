@@ -1,0 +1,773 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Mock C++ Function for Unit Test - Tech Ideas</title>
+  <meta name="author" content="byronhe">
+
+  
+  <meta name="description" content="用运行时生成跳转代码，替换一般函数的方法，实现普通C++函数的单元测试">
+  <meta name="keywords" content="unit test, 单元测试，gmock，运行时代码生成">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://blog.helong.info//blog/2014/03/27/mock-c-plus-plus-function-for-unit-test/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Tech Ideas" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-49290834-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Tech Ideas</a></h1>
+  
+    <h2>C++,Linux,Algorithm,Crypto,Lisp,etc</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.helong.info/">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Mock C++ Function for Unit Test</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-03-27T10:05:55+00:00'><span class='date'>2014-03-27</span> <span class='time'>10:05 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>在单元测试中，我们需要提供业务逻辑的mock版本，
+当业务逻辑实现为C++的virtual function时，这是很容易的，我们只需要写一个子类，
+实现virtual function就行了，Google 的 gmock就针对这种情况设计。</p>
+
+<p>可是，如果遗留代码中有一般C函数，非virtual的类成员函数，模板函数，inline函数，如何提供mock版本呢？</p>
+
+<p>下面的代码用一点trick实现了上述函数的运行时mock。</p>
+
+<!--more-->
+
+
+<p>原理是，在运行时，修改目标函数的机器码，改为jmp到mock版本的函数中。</p>
+
+<p>实现如下：</p>
+
+<figure class='code'><figcaption><span>patch实现 cpp (patch_elf.cpp)</span> <a href='/downloads/code/patch_elf/patch_elf.cpp'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;stdint.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;sys/mman.h&gt;</span>
+</span><span class='line'><span class="cp">#include &quot;patch_elf.h&quot;</span>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">print_op</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span> <span class="n">addr</span><span class="p">,</span><span class="kt">int</span> <span class="n">leng</span><span class="p">){</span>
+</span><span class='line'>    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">op</span><span class="o">=</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="n">addr</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="o">&lt;&lt;</span><span class="s">&quot;addr:&quot;</span><span class="o">&lt;&lt;</span><span class="n">addr</span><span class="o">&lt;&lt;</span><span class="s">&quot; code:&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">leng</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">){</span>
+</span><span class='line'>        <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;0x&quot;</span><span class="o">&lt;&lt;</span><span class="n">hex</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">)</span><span class="n">op</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;&lt;</span><span class="s">&quot; &quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">patch_func</span><span class="p">(</span><span class="kt">void</span>  <span class="o">*</span> <span class="n">original</span><span class="p">,</span><span class="kt">void</span> <span class="o">*</span> <span class="n">mock</span><span class="p">){</span>
+</span><span class='line'>    <span class="cm">/*</span>
+</span><span class='line'><span class="cm">    cout&lt;&lt;endl&lt;&lt;&quot;----------------------------------------------------------------------&quot;</span>
+</span><span class='line'><span class="cm">        &lt;&lt;endl&lt;&lt;__func__&lt;&lt;&quot; ,i am going to patch &quot;&lt;&lt;original&lt;&lt;&quot; to &quot;&lt;&lt;mock</span>
+</span><span class='line'><span class="cm">        &lt;&lt;endl;</span>
+</span><span class='line'><span class="cm">        */</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//rax 用于保存函数调用的返回值，所以可以占用</span>
+</span><span class='line'>    <span class="c1">//4010e1:       b8 20 0c 40 00          mov    $0x400c20,%eax</span>
+</span><span class='line'>    <span class="c1">//4010e6:       ff e0                   jmpq   *%rax</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">uint32_t</span> <span class="n">addr</span><span class="o">=</span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">mock</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">const</span> <span class="kt">int</span> <span class="n">code_len</span><span class="o">=</span><span class="mi">7</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">char</span> <span class="n">inject_code</span><span class="p">[</span><span class="n">code_len</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="mh">0xb8</span><span class="p">,</span><span class="mh">0x00</span><span class="p">,</span><span class="mh">0x00</span><span class="p">,</span><span class="mh">0x00</span><span class="p">,</span><span class="mh">0x00</span><span class="p">,</span><span class="mh">0xff</span><span class="p">,</span><span class="mh">0xe0</span><span class="p">};</span>
+</span><span class='line'>    <span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">inject_code</span><span class="p">[</span><span class="mi">1</span><span class="p">],(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">addr</span><span class="p">,</span><span class="mi">4</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//print_op(inject_code,code_len);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//接下来，把inject_code复制到original这个位置</span>
+</span><span class='line'>    <span class="c1">//print_op(original,100);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//首先，要改掉内存的权限，增加写权限</span>
+</span><span class='line'>    <span class="k">const</span> <span class="kt">size_t</span> <span class="n">length</span> <span class="o">=</span> <span class="n">sysconf</span><span class="p">(</span><span class="n">_SC_PAGESIZE</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="o">*</span> <span class="n">code_addr</span><span class="o">=</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="p">(</span> <span class="p">(</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">original</span><span class="o">/</span><span class="n">length</span><span class="p">)</span><span class="o">*</span><span class="n">length</span> <span class="p">);</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">ret</span><span class="o">=</span><span class="n">mprotect</span><span class="p">(</span><span class="n">code_addr</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span> <span class="o">|</span> <span class="n">PROT_EXEC</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span> <span class="mi">0</span><span class="o">!=</span><span class="n">ret</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">cerr</span><span class="o">&lt;&lt;</span><span class="s">&quot;mprotect failed! ret=&quot;</span><span class="o">&lt;&lt;</span><span class="n">ret</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//修改代码</span>
+</span><span class='line'>    <span class="n">memcpy</span><span class="p">(</span> <span class="n">original</span><span class="p">,</span><span class="n">inject_code</span><span class="p">,</span><span class="n">code_len</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//再去掉写权限</span>
+</span><span class='line'>    <span class="n">ret</span><span class="o">=</span><span class="n">mprotect</span><span class="p">(</span><span class="n">code_addr</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span>  <span class="n">PROT_EXEC</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span> <span class="mi">0</span><span class="o">!=</span><span class="n">ret</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">cerr</span><span class="o">&lt;&lt;</span><span class="s">&quot;mprotect failed! ret=&quot;</span><span class="o">&lt;&lt;</span><span class="n">ret</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//print_op(original,100);</span>
+</span><span class='line'>    <span class="c1">//cout&lt;&lt;&quot;----------------------------------------------------------------------&quot;</span>
+</span><span class='line'>    <span class="c1">//  &lt;&lt;endl&lt;&lt;endl;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>测试了</p>
+
+<p>1.一般函数 2.inline函数 3.一般成员函数 4.模板函数</p>
+
+<p>并在 ：32位，64位; -O2, -O0，参数下编译</p>
+
+<p>除了 inline函数没办法，其它的都有效</p>
+
+<figure class='code'><figcaption><span>被测试的函数  (func.h)</span> <a href='/downloads/code/patch_elf/func.h'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#pragma once</span>
+</span><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;cstdio&gt;</span>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">ST1</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span><span class="o">:</span>
+</span><span class='line'>        <span class="kt">uint32_t</span> <span class="n">a</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">uint64_t</span> <span class="n">b</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span><span class="p">[</span><span class="mi">200</span><span class="p">];</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">d</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">ST1</span> <span class="o">*</span> <span class="n">e</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">ST1</span><span class="p">()</span><span class="o">:</span><span class="n">a</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">b</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">d</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">e</span><span class="p">(</span><span class="mi">0</span><span class="p">){</span>
+</span><span class='line'>            <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//类的成员函数</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">member_func</span><span class="p">();</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="nf">member_func_mock</span><span class="p">();</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">member_func_extern</span><span class="p">(</span><span class="n">ST1</span> <span class="o">*</span> <span class="n">st</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//一般函数</span>
+</span><span class='line'><span class="kt">int</span> <span class="nf">original_func</span><span class="p">(</span><span class="n">ST1</span> <span class="o">*</span> <span class="n">para1</span><span class="p">,</span><span class="n">ST1</span> <span class="n">para2</span><span class="p">,</span><span class="kt">void</span> <span class="o">*</span> <span class="n">para3</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="nf">mock_func</span><span class="p">(</span><span class="n">ST1</span> <span class="o">*</span> <span class="n">para1</span><span class="p">,</span><span class="n">ST1</span> <span class="n">para2</span><span class="p">,</span><span class="kt">void</span> <span class="o">*</span> <span class="n">para3</span><span class="p">);</span>
+</span><span class='line'><span class="c1">//int ref_func(ST1 * para1,ST1 para2,void * para3);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Base</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">private</span><span class="o">:</span>
+</span><span class='line'>        <span class="kt">uint32_t</span> <span class="n">b</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">ST1</span> <span class="n">st</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">public</span><span class="o">:</span>
+</span><span class='line'>        <span class="kt">uint32_t</span> <span class="n">a</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Base</span><span class="p">()</span><span class="o">:</span><span class="n">b</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">a</span><span class="p">(</span><span class="mi">0</span><span class="p">){}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//inline 函数</span>
+</span><span class='line'><span class="kr">inline</span> <span class="kt">int</span> <span class="nf">inline_func</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span><span class="kt">int</span> <span class="n">b</span><span class="p">){</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">c</span><span class="o">=</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span> <span class="mh">0x1111</span> <span class="o">*</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">/</span><span class="mh">0x1111</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">__func__</span><span class="p">,</span><span class="n">c</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">inline</span> <span class="kt">int</span> <span class="nf">inline_func_mock</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span><span class="kt">int</span> <span class="n">b</span><span class="p">){</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">c</span><span class="o">=</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="mi">100</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">__func__</span><span class="p">,</span><span class="n">c</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//模板函数</span>
+</span><span class='line'><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+</span><span class='line'><span class="kt">uint32_t</span> <span class="n">get_member_a</span><span class="p">(</span><span class="n">T</span> <span class="o">&amp;</span> <span class="n">t</span><span class="p">){</span>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">__func__</span><span class="o">&lt;&lt;</span><span class="s">&quot; a=&quot;</span><span class="o">&lt;&lt;</span><span class="n">t</span><span class="p">.</span><span class="n">a</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">t</span><span class="p">.</span><span class="n">a</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+</span><span class='line'><span class="kt">uint32_t</span> <span class="n">get_member_b</span><span class="p">(</span><span class="n">T</span> <span class="o">&amp;</span> <span class="n">t</span><span class="p">){</span>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">__func__</span><span class="o">&lt;&lt;</span><span class="s">&quot; b=&quot;</span><span class="o">&lt;&lt;</span><span class="n">t</span><span class="p">.</span><span class="n">b</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">t</span><span class="p">.</span><span class="n">b</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span>被测试的函数和mock函数 cpp (func.cpp)</span> <a href='/downloads/code/patch_elf/func.cpp'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;stdint.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="cp">#include &quot;func.h&quot;</span>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">original_func</span><span class="p">(</span><span class="n">ST1</span> <span class="o">*</span> <span class="n">para1</span><span class="p">,</span><span class="n">ST1</span> <span class="n">para2</span><span class="p">,</span><span class="kt">void</span> <span class="o">*</span> <span class="n">para3</span><span class="p">){</span>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">__func__</span><span class="o">&lt;&lt;</span><span class="s">&quot;</span><span class="se">\t</span><span class="s">called! &quot;</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="s">&quot; a+a &quot;</span><span class="o">&lt;&lt;</span><span class="n">para1</span><span class="o">-&gt;</span><span class="n">a</span><span class="o">+</span><span class="n">para2</span><span class="p">.</span><span class="n">a</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="s">&quot; b+b &quot;</span><span class="o">&lt;&lt;</span><span class="n">para1</span><span class="o">-&gt;</span><span class="n">b</span><span class="o">+</span><span class="n">para2</span><span class="p">.</span><span class="n">b</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="s">&quot; c+c &quot;</span><span class="o">&lt;&lt;</span><span class="n">para1</span><span class="o">-&gt;</span><span class="n">c</span><span class="o">&lt;&lt;</span><span class="n">para2</span><span class="p">.</span><span class="n">c</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="s">&quot; d+d &quot;</span><span class="o">&lt;&lt;</span><span class="n">para1</span><span class="o">-&gt;</span><span class="n">d</span><span class="o">+</span><span class="n">para2</span><span class="p">.</span><span class="n">d</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="s">&quot; e+e &quot;</span><span class="o">&lt;&lt;</span><span class="n">para1</span><span class="o">-&gt;</span><span class="n">e</span><span class="o">&lt;&lt;</span><span class="n">para2</span><span class="p">.</span><span class="n">e</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="n">para3</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">mock_func</span><span class="p">(</span><span class="n">ST1</span> <span class="o">*</span> <span class="n">para1</span><span class="p">,</span><span class="n">ST1</span> <span class="n">para2</span><span class="p">,</span><span class="kt">void</span> <span class="o">*</span> <span class="n">para3</span><span class="p">){</span>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">__func__</span><span class="o">&lt;&lt;</span><span class="s">&quot;</span><span class="se">\t</span><span class="s">called!&quot;</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">ref_func</span><span class="p">(</span><span class="n">ST1</span> <span class="o">*</span> <span class="n">para1</span><span class="p">,</span><span class="n">ST1</span> <span class="n">para2</span><span class="p">,</span><span class="kt">void</span> <span class="o">*</span> <span class="n">para3</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">mock_func</span><span class="p">(</span><span class="n">para1</span><span class="p">,</span><span class="n">para2</span><span class="p">,</span><span class="n">para3</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">ST1</span><span class="o">::</span><span class="n">member_func</span><span class="p">(){</span>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">__func__</span><span class="o">&lt;&lt;</span><span class="s">&quot; called! &quot;</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="s">&quot; a=&quot;</span><span class="o">&lt;&lt;</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">a</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="s">&quot; b=&quot;</span><span class="o">&lt;&lt;</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">b</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="s">&quot; c=&quot;</span><span class="o">&lt;&lt;</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">c</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="s">&quot; d=&quot;</span><span class="o">&lt;&lt;</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">d</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">ST1</span><span class="o">::</span><span class="n">member_func_mock</span><span class="p">(){</span>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">__func__</span><span class="o">&lt;&lt;</span><span class="s">&quot; called! i do nothing.&quot;</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">member_func_extern</span><span class="p">(</span><span class="n">ST1</span> <span class="o">*</span> <span class="n">st</span><span class="p">){</span>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">__func__</span><span class="o">&lt;&lt;</span><span class="s">&quot; called! i am not member function.&quot;</span>
+</span><span class='line'>        <span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>demo cpp (main.cpp)</span> <a href='/downloads/code/patch_elf/main.cpp'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;stdint.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;sys/mman.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &quot;func.h&quot;</span>
+</span><span class='line'><span class="cp">#include &quot;patch_elf.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">test</span><span class="p">(){</span>
+</span><span class='line'>    <span class="n">ST1</span> <span class="n">s1</span><span class="p">,</span><span class="n">s2</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">char</span> <span class="n">str</span><span class="p">[]</span><span class="o">=</span><span class="s">&quot;hello&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">s1</span><span class="p">.</span><span class="n">a</span><span class="o">=</span><span class="n">s1</span><span class="p">.</span><span class="n">b</span><span class="o">=</span><span class="n">s1</span><span class="p">.</span><span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">s1</span><span class="p">.</span><span class="n">e</span><span class="o">=</span><span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">s2</span><span class="p">.</span><span class="n">a</span><span class="o">=</span><span class="n">s2</span><span class="p">.</span><span class="n">b</span><span class="o">=</span><span class="n">s2</span><span class="p">.</span><span class="n">d</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">s1</span><span class="p">.</span><span class="n">e</span><span class="o">=</span><span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;----------------------------------------------------------------------&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//mock original_func，替换成mock_func</span>
+</span><span class='line'>    <span class="n">original_func</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s1</span><span class="p">,</span><span class="n">s2</span><span class="p">,</span><span class="o">&amp;</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">patch_func</span><span class="p">((</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">original_func</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">mock_func</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">original_func</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s1</span><span class="p">,</span><span class="n">s2</span><span class="p">,</span><span class="o">&amp;</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;----------------------------------------------------------------------&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//mock inline 函数貌似不行</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">a</span><span class="o">=</span><span class="n">s1</span><span class="p">.</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">s1</span><span class="p">.</span><span class="n">b</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">inline_func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">patch_func</span><span class="p">(</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">inline_func</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">inline_func_mock</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">inline_func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;----------------------------------------------------------------------&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">s1</span><span class="p">.</span><span class="n">member_func</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">patch_func</span><span class="p">(</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">ST1</span><span class="o">::</span><span class="n">member_func</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">ST1</span><span class="o">::</span><span class="n">member_func_mock</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">s1</span><span class="p">.</span><span class="n">member_func</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">patch_func</span><span class="p">(</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">ST1</span><span class="o">::</span><span class="n">member_func</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">member_func_extern</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">s1</span><span class="p">.</span><span class="n">member_func</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;----------------------------------------------------------------------&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">get_member_a</span><span class="p">(</span><span class="n">s1</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">patch_func</span><span class="p">(</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">get_member_a</span><span class="o">&lt;</span><span class="n">ST1</span><span class="o">&gt;</span> <span class="p">,</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">get_member_b</span><span class="o">&lt;</span><span class="n">ST1</span><span class="o">&gt;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">get_member_a</span><span class="p">(</span><span class="n">s1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+</span><span class='line'>    <span class="n">test</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">byronhe</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-03-27T10:05:55+00:00'><span class='date'>2014-03-27</span> <span class='time'>10:05 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/c-plus-plus/'>c++</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/03/24/move-to-octopress/" title="Previous Post: 博客迁移到octopress">&laquo; 博客迁移到octopress</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/01/23/ssl_tls_ciphersuite_intro/" title="Next Post: SSL/TLS CipherSuite 介绍">SSL/TLS CipherSuite 介绍 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2019/09/18/newwords_discovery/">GB 规模语料上的高性能新词发现算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/">TLS协议分析 与 现代加密通信协议设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/05/modern-crypto/">现代密码学实践指南[2015年]</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/08/https-config-optimize-in-nginx/">Nginx下配置高性能，高安全性的https TLS服务</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/">【翻译】密码学一小时必知</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/byronhe">@byronhe</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'byronhe',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - byronhe -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'byronheblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'https://blog.helong.info//blog/2014/03/27/mock-c-plus-plus-function-for-unit-test/';
+        var disqus_url = 'https://blog.helong.info//blog/2014/03/27/mock-c-plus-plus-function-for-unit-test/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

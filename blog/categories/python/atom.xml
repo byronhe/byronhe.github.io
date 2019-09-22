@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Python | Tech Ideas]]></title>
+  <link href="https://blog.helong.info//blog/categories/python/atom.xml" rel="self"/>
+  <link href="https://blog.helong.info//"/>
+  <updated>2019-09-18T22:22:08+08:00</updated>
+  <id>https://blog.helong.info//</id>
+  <author>
+    <name><![CDATA[byronhe]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[一个使用KuaiPan备份linux服务器的脚本]]></title>
+    <link href="https://blog.helong.info//2014/02/08/%e4%b8%80%e4%b8%aa%e4%bd%bf%e7%94%a8kuaipan%e5%a4%87%e4%bb%bdlinux%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%9a%84%e8%84%9a%e6%9c%ac/"/>
+    <updated>2014-02-08T00:00:00+08:00</updated>
+    <id>https://blog.helong.info//2014/02/08/%e4%b8%80%e4%b8%aa%e4%bd%bf%e7%94%a8kuaipan%e5%a4%87%e4%bb%bdlinux%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%9a%84%e8%84%9a%e6%9c%ac</id>
+    <content type="html"><![CDATA[<p>近日需要给服务器做备份，在网上找到了一个现成的金山快盘的api：<a href="https://github.com/deren/python-kuaipan" target="_blank"><a href="https://github.com/deren/python-kuaipan">https://github.com/deren/python-kuaipan</a></a> （感谢！）<br/>
+试了一下，遂决定备份到金山快盘上。</p>
+
+<p>备份脚本考虑了以下几个方面的要求：<br/>
+1.上传之前一定要加密，对比之后，使用了openssl的aes-256-cbc加密算法<br/>
+2.增量备份，最开始尝试用<a href="http://duplicity.nongnu.org" target="_blank">duplicity</a> ,写了一个duplicity的backend，然后发现，好复杂！猛然发现，linux上的tar就有<a href="http://www.gnu.org/software/tar/manual/html_node/Incremental-Dumps.html#Incremental-Dumps" target="_blank">增量备份功能</a>，于是直接用了tar<br/>
+3.分卷，KuaiPan有文件大小限制，此处用了split把tar文件分卷</p>
+
+<p>代码放在 <a href="https://github.com/windydays/kuaipan_backup" target="_blank"><a href="https://github.com/windydays/kuaipan_backup">https://github.com/windydays/kuaipan_backup</a></a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A Http Proxy Script]]></title>
+    <link href="https://blog.helong.info//2013/11/18/a-http-proxy-script/"/>
+    <updated>2013-11-18T00:00:00+08:00</updated>
+    <id>https://blog.helong.info//2013/11/18/a-http-proxy-script</id>
+    <content type="html"><![CDATA[<pre><code class="python">#!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+
+import base64
+import select
+import socket
+import httplib
+import os
+import sys
+#base64.encodestring("das\120xsdada\s")
+
+def usage ():
+    print "connect_to_http_proxy %s"
+    print "usage: connect_to_http_proxy &amp;lt;desthost&amp;gt; &amp;lt;destport&amp;gt;"
+
+if len(sys.argv) != 3:
+    usage()
+    print sys.argv
+    sys.exit()
+
+proxy_host="web-proxy-domain.com"
+proxy_port="8080"
+dest_host=""
+dest_port=""
+dest_host, dest_port=sys.argv[1:]
+
+sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+sock.connect((proxy_host,int(proxy_port)))
+sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+req="CONNECT "+dest_host+":"+dest_port + " HTTP/1.0\r\n\r\n"
+sock.send(req)
+resp=sock.recv(100000)
+if resp.find("200") &amp;lt; 0:
+    print req,resp
+    exit(-1)
+
+ep=select.epoll()
+ep.register(sock.fileno(),select.EPOLLIN)
+ep.register(sys.stdin.fileno(),select.EPOLLIN)
+while True:
+    events=ep.poll(1,2)
+    for fd,event in events:
+        if event &amp; select.EPOLLERR:
+            sys.exit(0)
+        if event &amp; select.EPOLLIN and fd==sock.fileno():
+            os.write(sys.stdout.fileno(),sock.recv(1024*100)) 
+        if event &amp; select.EPOLLIN and fd==sys.stdin.fileno():
+            os.write(sock.fileno(),sys.stdin.read()) 
+
+#conn=httplib.HTTPConnection(proxy_host+":"+proxy_port)
+#conn.request("CONNECT",dest_host+":"+dest_port)
+#res=conn.getresponse()
+#print res.read()
+#if res.status != 200:
+#    print res.status,res.reason
+#    sys.exit()
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[一个基于约束传播的，玩具级微型计算语言的设计和简单实现]]></title>
+    <link href="https://blog.helong.info//2012/04/09/%e4%b8%80%e4%b8%aa%e5%9f%ba%e4%ba%8e%e7%ba%a6%e6%9d%9f%e4%bc%a0%e6%92%ad%e7%9a%84%ef%bc%8c%e7%8e%a9%e5%85%b7%e7%ba%a7%e5%be%ae%e5%9e%8b%e8%ae%a1%e7%ae%97%e8%af%ad%e8%a8%80%e7%9a%84%e8%ae%be%e8%ae%a1/"/>
+    <updated>2012-04-09T00:00:00+08:00</updated>
+    <id>https://blog.helong.info//2012/04/09/%e4%b8%80%e4%b8%aa%e5%9f%ba%e4%ba%8e%e7%ba%a6%e6%9d%9f%e4%bc%a0%e6%92%ad%e7%9a%84%ef%bc%8c%e7%8e%a9%e5%85%b7%e7%ba%a7%e5%be%ae%e5%9e%8b%e8%ae%a1%e7%ae%97%e8%af%ad%e8%a8%80%e7%9a%84%e8%ae%be%e8%ae%a1</id>
+    <content type="html"><![CDATA[<p>这个程序就是做来玩和练习的，代码是玩具级别的，用的python，基本可以正常工作了。</p>
+
+<p>先介绍应用背景：</p>
+
+<p>在流体机械设计中，通常根据性能参数进行设计，算出其它变量，但问题是，在设计过程中，需要进行变量的<strong>手工调整</strong>，例如圆整，修正到某一范围，校核等等。</p>
+
+<p>其计算模式举例如下：</p>
+
+<p>1.定义变量，如输入压力P<sub><span style="font-size: 12px;">in</span></sub>=0.98，输入温度T<sub>in</sub>=27,输入流量Q<sub>vin</sub>=400,k<sub>v2，</sub>φ<sub>2r，</sub>b2，D2，u2，qin等等。。。</p>
+
+<p>2.根据某些物理公式，算出几个新的量，如转速 n=33.9<em>sqrt(k<sub>v2</sub></em>φ<sub>2r<em></sub>b2/D2</em>(u2<sup>3</sup>)/qin)</p>
+
+<p>3.把n从8296.93圆整为整数8300，</p>
+
+<p>4.重新计算b2/D2=0.06455，校核可知0.02&lt;0.06455&lt;0.065，符合要求</p>
+
+<p>5.根据n计算出其它新的变量，修正，校核。。。</p>
+
+<p>。。。</p>
+
+<p>观察可以发现，这种计算模式，和《计算机程序的构造与解释》中提到的约束传播系统很像，如果把一个变量看作一个对象，那么，当它位于一个公式的左侧，例如n，也就意味着，右侧变量例如k<sub>v2</sub>更新时，应该给它发送一个消息，让它重新计算自己的值，当n更新后，如果它发现有别的变量依赖于自己，它应该发消息通知它们更新自己的值。</p>
+
+<p>还可以看出，这种依赖关系形成了一个图，例如应该有一条从k<sub>v2</sub>到n的边，把n称为k<sub>v2</sub>的订阅者。</p>
+
+<p>所以这种计算模式可以用约束传播系统建模，但是此处和书里的约束传播系统有差异：此处的约束传播系统是<strong>有向图</strong>，而书里是无向图，设计成有向图主要是为了简单，无向图的消息发送顺序是难以控制的，而且构造的时候公式中的每个变量都要持有其它对象的引用，太麻烦，有向图只需要在公式左侧的那个变量哪里保存公式右侧的每个变量的引用。</p>
+
+<p>形成有向图后，每个变量的状态设为invaild，这种状态下，不会向它的会订阅者发送更新消息，收到获取值的消息时报错。</p>
+
+<p>有向图中，还有一些源点，是最初给定值的变量。</p>
+
+<p>当某个变量被赋值时，它把自己设为新值，同时向它的订阅者发送更新消息。订阅者计算自己的新值，如果和旧值相同，就沉默；否则，更新自己，通知订阅者更新。</p>
+
+<p>so，想象一下，在你的面前，虚空之中漂浮着一张有向图， 由k<sub>v2</sub>&#8212;>n这样的一条条边练成，当一个点被赋予值，从这点荡出一圈圈涟漪，传到它的下一级，再从更新过的点荡出新的波纹，传开，传开。。。直到所有的点都收敛，水面恢复宁静。</p>
+
+<p>&nbsp;</p>
+
+<!--more-->
+
+
+<p>好了，说代码，每一个变量都要保存它的订阅者，它的表达式，注意到，数字1.1是一种变量，变量a是一种表达式，所以代码如下：</p>
+
+<pre><code class="python">#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+变量is-a表达式
+数值is-a表达式
+故有如下继承关系
+
+通过env的符号表可以查到Expr的实例
+"""
+__all__ = ['Expr','Var','Number']
+
+class Expr(object):
+    op=""               #a function
+    parameters=[]       #Expr list
+    desc=""
+
+    def __init__(self,op,paras,desc=""):
+        self.op=op
+        self.parameters=paras
+        self.desc=desc
+
+    def get_value(self):
+        pl=[p.get_value() for p in self.parameters]
+        return self.op(*pl)
+
+    def set_desc(self,d):
+        self.desc=d
+
+    def dump(self):
+        pas=[]
+        if len(self.parameters):
+            pas=[s.dump() for s in self.parameters]
+        pas.insert(0, '('+self.op.__name__)
+        return ' '.join(pas) + ')'
+
+
+class Number(Expr):
+    value=0.0
+    def __init__(self,v):
+        self.value=v
+
+    def get_value(self):
+        return self.value
+
+    def dump(self):
+        return str(self.value)
+
+    def update(self):
+        pass
+
+class Var(Expr):
+    name=""
+    desc=""
+    expr=None
+    value=0.0
+    subscribers=[]
+    state="invaild"
+
+    def __init__(self,name,desc=""):
+        self.name=name
+        self.desc=desc
+        self.state="invaild"
+
+    def broadcast(self):
+        for s in self.subscribers:
+            s.update()
+
+    def update(self):
+        self.state="normal"
+        new_value=self.expr.get_value()
+        if new_value == self.value:
+            return
+        self.value=new_value
+        self.broadcast()
+
+    def set_expr(self,exp):
+        self.expr=exp
+        if isinstance(exp,Number):
+            self.update()
+
+    def set_value(self,v):
+        self.value=v
+        self.state="normal"
+        self.broadcast()
+
+    def get_value(self):
+        if self.state=="invaild":
+            self.update()
+        assert self.state=="normal"
+        return self.value
+
+    def subscribe(self,subs):
+        for sub in subs:
+            self.subscribers.append(sub)
+
+    def dump(self):
+        expr_d=""
+        if self.expr:
+            expr_d=' '+self.expr.dump()
+        return str(self.name) +"="+str(self.value)+expr_d#+" "+self.desc
+
+
+def test():
+    a=Var("a","变量a")
+    b=Var("b","变量b")
+
+if __name__=="__main__":
+    test()
+</code></pre>
+
+<p>所有的变量当然是要保存到一个符号表（或称环境）里的，同时，这个环境里还要有加减乘除，sin，sqrt这样的基本运算的定义，pi，e这样的常数的定义，python的operator和math模块就够用了。</p>
+
+<pre><code class="python">#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import math
+import operator
+from expr import Var,Number,Expr
+from parser import Parser
+
+class CmdFilter(object):
+    def __init__(self,env,input_file):
+        self.env=env
+        self.input_file=input_file
+
+    def readline(self):
+        while True:
+            s=self.input_file.readline()
+            if not s:
+                return s
+            if self.env.filter_cmd(s):
+                return s
+
+class Env(object):
+    """
+    求值环境，提供变量符号表和函数符号表
+    """
+    symbol_table={} #存放变量
+    expr_table=[]   #存放自由表达式
+    function_table={}#存放函数，对外只读
+    cmds=['dump','run']    #env先于parser处理掉一些命令,如dump
+    parser=None
+
+    def __init__(self):
+        self.fill_function_table()
+        self.fill_symbol_table()
+        self.parser=Parser(self)
+
+    def dump(self):
+        print "-"*70,"\ndump all variables and expressions:"
+        for k,v in self.symbol_table.items():
+            print k+":",v.get_value()
+        print "\nall checkings:"
+        for e in self.expr_table:
+            print e.get_value(),"=",e.dump()
+        print "-"*70
+
+    def run(self):
+        for k,v in self.symbol_table.items():
+            v.update()
+
+    def fill_function_table(self):
+        #算术运算符
+        #1.+,-,*,/,^,=,(,)   算术运算符
+        self.function_table['+']=operator.add
+        self.function_table['-']=operator.sub
+        self.function_table['*']=operator.mul
+        self.function_table['/']=operator.div
+        self.function_table['^']=operator.pow
+        #逻辑运算符
+        #2.==,&gt;=,&gt;,&amp;lt;=,&amp;lt;,!=   逻辑运算符
+        self.function_table['==']=operator.eq
+        self.function_table['&gt;=']=operator.ge
+        self.function_table['&gt;']=operator.gt
+        self.function_table['&amp;lt;=']=operator.le
+        self.function_table['&amp;lt;']=operator.lt
+        self.function_table['!=']=operator.ne
+        self.function_table['sqrt']=math.sqrt
+        self.function_table['sin']=math.sin
+        self.function_table['cos']=math.cos
+        self.function_table['tan']=math.tan
+        self.function_table['asin']=math.asin
+        self.function_table['acos']=math.acos
+        self.function_table['atan']=math.atan
+        self.function_table['exp']=math.exp
+        self.function_table['pow']=math.pow
+        self.function_table['factorial']=math.factorial
+        self.function_table['fabs']=math.fabs
+        self.function_table['ln']=math.log
+        self.function_table['log10']=math.log10
+
+
+    def fill_symbol_table(self):
+        self.symbol_table['pi']=Number(math.pi)
+        self.symbol_table['e'] =Number(math.e)
+
+    def add_expr(self,e):
+        if e:
+            self.expr_table.append(e)
+
+    def get_function(self,name):
+        if self.function_table.has_key(name):
+            return self.function_table[name]
+        else:
+            return None
+
+    def get_variable(self,name):
+        if self.symbol_table.has_key(name):
+            return self.symbol_table[name]
+        else:
+            return None
+
+    def set_variable(self,name,var):
+        self.symbol_table[name]=var
+
+    def filter_cmd(self,s):
+        s=s.strip()
+        if s in self.cmds:
+            fun=getattr(self,s)
+            fun()
+            return None
+        return s
+
+    def exec_stream(self,in_file):
+        input_file=CmdFilter(self,in_file)
+        self.parser.parse(input_file)
+
+import sys
+def test():
+    env=Env()
+    env.exec_stream(sys.stdin)
+
+if __name__=="__main__":
+    test()
+</code></pre>
+
+<p>接下来，词法分析和语法分析，词法分析没有手写，也没有用flex那样的工具，直接用了一排正则表达式，挨个往下匹配，匹配上了就返回。</p>
+
+<p>严格来说，这个是不太好的，此处的词法分析原理上是不能和flex比的，flex里的多个正则表达式是合并到一个NFA里，再转化成一个DFA的，所以它的规则首先是最长优先，其次是长度相同时写在前面的优先，此处只有写在前面的优先，不太好。</p>
+
+<p>语法分析是递归下降文法分析。一行一行地分析，一行是一个token的list。</p>
+
+<pre><code class="python">#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from math import *
+from operator import *
+import re
+from expr import Var,Number,Expr
+
+""" 把
+a=1+b+c^2
+c=2
+b=c+2
+这样的一行一行，分成
+ID ASSIGN ADD ID ADD EQ POW 2 EOL
+ID ASSIGN 2 EOL
+ID ASSIGN ID ADD 2 EOL
+这样的一行一行token,
+输出是一行一个token list的形式
+
+token分为如下几类:
+1.+,-,*,/,^,=,(,),,   算术运算符
+2.==,&gt;=,&gt;,&lt;=,&lt;,!=   逻辑运算符
+3.[0-9]+\.[0-9]*[Ee][+-]?[0-9]+  [0-9]+ 字面浮点数和整数
+4.[a-zA-Z_]+        变量或函数名称标识符
+5.[ \\t\\n]           忽略，或结束
+
+由于使用正则表达式直接匹配，所以和flex不同的是:
+无法确保当有多个匹配项时，最长优先,因此，只能利用先后顺序解决冲突，
+因而必须把==放在=前面。
+"""
+logic_op_re=re.compile(r'==|&gt;=|&gt;|&lt;=|&lt;|!=')
+number_re  =re.compile(r'[+-]?[0-9]+\.?[0-9]*[Ee]?[+-]?[0-9]?') 
+arith_op_re=re.compile(r'\+|-|\*|/|\^|=|\(|\)|,')
+int_re     =re.compile(r'[0-9]+')
+id_re      =re.compile(r'[a-zA-Z_]+')
+blank_re   =re.compile(r'[\ |\t|\r]+')
+comment_re =re.compile(r'"([^"]*)"')
+other_re   =re.compile(r'.+')
+
+def scanner(line):
+    result=[]
+    while True:
+        line=line.strip()
+        if not line:
+            return result
+
+        m=re.match(logic_op_re,line)
+        if m:
+            result.append(('logic_op',m.group()))
+            line=line[m.end():]
+            continue
+
+        m=re.match(number_re  ,line)
+        if m:
+            result.append(('number',float(m.group())))
+            line=line[m.end():]
+            continue
+
+        m=re.match(arith_op_re,line)
+        if m:
+            result.append(('arith_op',m.group()))
+            line=line[m.end():]
+            continue
+
+        m=re.match(int_re     ,line)
+        if m:
+            result.append(('number',float(m.group())))
+            line=line[m.end():]
+            continue
+
+        m=re.match(id_re      ,line)
+        if m:
+            result.append(('id',m.group()))
+            line=line[m.end():]
+            continue
+
+        m=re.match(comment_re ,line)
+        if m:
+            result.append(('comment',m.group()))
+            line=line[m.end():]
+            continue
+
+        m=re.match(blank_re   ,line)
+        if m:
+            line=line[m.end():]
+            continue
+
+        m=re.match(other_re,line)
+        if m:
+            print "亲，看看你都塞了一堆什么进来呀？\""+m.group()+"\" 人家好伤心的呀！" 
+            line=line[m.end():]
+            return result
+
+class Parser(object):
+    """ 文法分析： """
+    input_file=None
+    env=None
+
+    def __init__(self,env):
+        self.env=env
+
+    def parse(self,input_file):
+        """
+        如入可以是sys.stdin,a file,a string
+        要求实现readline()方法
+        """
+        self.input_file=input_file
+        self.run()
+
+    def run(self):
+        while True:
+            line=self.input_file.readline()
+            if not line:
+                return
+            tokens=scanner(line)
+
+            #把字母名称的函数标示出来
+            r=[]
+            for t in tokens:
+                if t[0]=='id' and self.env.get_function(t[1]):
+                    r.append(('function',t[1]))
+                else:
+                    r.append(t)
+
+            tokens=r
+
+            #把comment提取出来
+            comments=map(lambda x:x[1],
+                         filter(lambda x:x[0]=="comment",tokens))
+            comments=' '.join(comments)
+            tokens=filter(lambda x:x[0]!="comment",tokens)
+
+            #含有=的表达式是约束方程，其它的都是expr
+            c=tokens.count( ('arith_op', '='))
+            if c==0:
+                #没有约束到变量的表达式
+                e=self.parse_expr(tokens)
+                #e.set_desc(comments)
+                self.env.add_expr(e)
+                continue
+
+            if c&gt;1:
+                print "亲，赋值一次就够了，你肿么赋值了"+str(c)+"次涅？"
+                continue
+
+            #c=1
+            if len(tokens)&lt;3 or tokens[0][0]!='id' or \
+               tokens[1]!=('arith_op','='):
+                print "亲，你给我的表达式格式有问题偶～:"+line
+                continue
+
+            var_name=tokens[0][1]
+            var=self.env.get_variable(var_name) 
+            if var is None:
+                var=Var(var_name,comments)
+                self.env.set_variable(var_name,var)
+
+            e=self.parse_expr(tokens[2:])
+            var.set_expr(e)
+
+    def parse_expr(self,tokens):
+        """
+        token分为如下几类:
+        1.+,-,*,/,^,=,(,),,   算术运算符
+        2.==,&gt;=,&gt;,&lt;=,&lt;,!=   逻辑运算符
+        3.[0-9]+\.[0-9]*[Ee][+-]?[0-9]+  [0-9]+ 字面浮点数和整数
+        4.[a-zA-Z_]+        变量或函数名称标识符
+        5.[ \\t\\n]           忽略，或结束
+
+        BNF:
+        expr=expr[==|&gt;=|&gt;|&lt;=|&lt;|!=]expr|expr
+        expr=expr+expr | expr-expr
+        expr=expr*expr | expr/expr
+        expr=expr^expr
+        expr=function(expr[,expr])
+        expr=(expr)
+        expr=&lt;float&gt;|&lt;var&gt;
+        """
+        if len(tokens):
+            expr,rest=self.parse_logic_op(tokens)
+            return expr
+
+    #能处理就处理，不能处理原样返回。
+    def parse_logic_op(self,tokens):
+        left,rest=self.parse_add_sub_op(tokens)
+        if not len(rest):
+            return left,rest
+
+        logic_op_list=["==","&gt;=","&gt;","&lt;=","&lt;","!="]
+
+        if rest[0][1] not in logic_op_list:
+            return left,rest
+
+        op=self.env.get_function(rest[0][1])
+        right,rest=self.parse_add_sub_op(rest[1:])
+        return Expr(op,[left,right]),rest
+
+    def parse_add_sub_op(self,tokens):
+        left,rest=self.parse_mul_div_op(tokens)
+        add_sub_op_list=["+","-"]
+
+        while len(rest) and rest[0][1] in add_sub_op_list:
+            op=self.env.get_function(rest[0][1])
+            right,rest=self.parse_mul_div_op(rest[1:])
+            left=Expr(op,[left,right])
+
+        return left,rest
+
+    def parse_mul_div_op(self,tokens):
+        left,rest=self.parse_pow_op(tokens)
+        mul_div_op_list=["*","/"]
+
+        while len(rest) and rest[0][1] in mul_div_op_list:
+            op=self.env.get_function(rest[0][1])
+            right,rest=self.parse_pow_op(rest[1:])
+            left=Expr(op,[left,right])
+
+        return left,rest
+
+    def parse_pow_op(self,tokens):
+        left,rest=self.parse_function_op(tokens)
+        pow_op_list=["^"]
+
+        while len(rest) and (rest[0][1] in pow_op_list):
+            op=self.env.get_function(rest[0][1])
+            right,rest=self.parse_pow_op(rest[1:])
+            left=Expr(op,[left,right])
+        return left,rest
+
+    def parse_function_op(self,tokens):
+        if tokens[0][0] in ['number','id']:
+            return self.parse_float_var_op(tokens)
+        if tokens[0][1]=='(':
+            return self.parse_parentheses_op(tokens)
+
+        if tokens[0][0]!='function':
+            return None,tokens
+
+        op=self.env.get_function(tokens[0][1])
+        if op and tokens[1][1]=='(':
+                paras=[]
+                tokens=tokens[2:]
+                left,tokens=self.parse_add_sub_op(tokens)
+                paras.append(left)
+                while tokens[0][1]==',':
+                    left,tokens=self.parse_add_sub_op(tokens[1:])
+                    paras.append(left)
+                if tokens[0][1]==')':
+                    tokens=tokens[1:]
+                else:
+                    print "bad syntax. tokens found -&gt;",tokens
+
+                expr=Expr(op,paras)
+                return expr,tokens
+        else:
+            print "error bad syntax -&gt;",tokens
+        return None,tokens
+
+    def parse_parentheses_op(self,tokens):
+        if tokens[0][1]=='(':
+            left,tokens=self.parse_logic_op(tokens[1:])
+            if tokens[0][1]==')':
+                return left,tokens[1:]
+            return left,tokens
+        return None,tokens
+
+    def parse_float_var_op(self,tokens):
+        if tokens[0][0] == 'number':
+            n=Number(tokens[0][1])
+            return n,tokens[1:]
+        if tokens[0][0] == 'id':
+            var=self.env.get_variable(tokens[0][1]) 
+            if not var:
+                var_name=tokens[0][1]
+                var=Var(var_name,'')
+                self.env.set_variable(var_name,var)
+                var=self.env.get_variable(tokens[0][1]) 
+            return var,tokens[1:]
+        return None,tokens
+
+
+import StringIO
+from env import *
+def test():
+    s=""" a=1+(b+c)^2/23.1e-10 "变量a"
+    c=2  "变量c" "c是个好变量"
+    b=c+2 "变量b" "b也是个好变量" "这是为它写的第三条注释"
+    a&gt;c  "检查a是否大于c"
+    a&gt;=c  "检查a是否大于等于c"
+    run
+    dump
+    c=3   "change c again."
+    "注释也可以在前面" c^2&gt;=sin(pow(a,b)+b)
+    run
+    dump
+    """
+    #for l in s.split('\n'):
+    #    scanner(l)
+    print "+"*80
+    print '*'*70
+    print s
+    print '*'*70
+    e=Env()
+    i=StringIO.StringIO(s)
+    e.exec_stream(i)
+    print "+"*80
+
+if __name__=="__main__":
+    test()
+</code></pre>
+
+<p>  最后是个main.py</p>
+
+<pre><code class="python">#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys
+from env import Env
+import StringIO
+
+e=Env()
+e.exec_stream(sys.stdin)
+
+s=""" x=-1"""
+i=StringIO.StringIO(s)
+e.exec_stream(i)
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

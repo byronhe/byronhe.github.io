@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 未分类 | Tech Ideas]]></title>
+  <link href="https://blog.helong.info//blog/categories/wei-fen-lei/atom.xml" rel="self"/>
+  <link href="https://blog.helong.info//"/>
+  <updated>2019-09-18T22:22:08+08:00</updated>
+  <id>https://blog.helong.info//</id>
+  <author>
+    <name><![CDATA[byronhe]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[开始写博客]]></title>
+    <link href="https://blog.helong.info//2013/07/11/%e5%bc%80%e5%a7%8b%e5%86%99%e5%8d%9a%e5%ae%a2/"/>
+    <updated>2013-07-11T00:00:00+08:00</updated>
+    <id>https://blog.helong.info//2013/07/11/%e5%bc%80%e5%a7%8b%e5%86%99%e5%8d%9a%e5%ae%a2</id>
+    <content type="html"><![CDATA[<p>我开始在这写博客了。</p>
+
+<p>这个博客专注在技术方面，C++，Linux，等等，务求原创，务求深度。</p>
+
+<p>可能还会有一些文字。</p>
+
+<p>早于此的，是从cnblogs上迁移过来的文章，基本写于学生时期。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[【旧代码】fortran中的指针实现链表的代码]]></title>
+    <link href="https://blog.helong.info//2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%91fortran%e4%b8%ad%e7%9a%84%e6%8c%87%e9%92%88%e5%ae%9e%e7%8e%b0%e9%93%be%e8%a1%a8%e7%9a%84%e4%bb%a3%e7%a0%81/"/>
+    <updated>2011-11-15T00:00:00+08:00</updated>
+    <id>https://blog.helong.info//2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%91fortran%e4%b8%ad%e7%9a%84%e6%8c%87%e9%92%88%e5%ae%9e%e7%8e%b0%e9%93%be%e8%a1%a8%e7%9a%84%e4%bb%a3%e7%a0%81</id>
+    <content type="html"><![CDATA[<p>我不喜欢fortran，</p>
+
+<p>奇怪的词法规则（竟然不用空格分开token），</p>
+
+<p>io操作竟然是语言的一部分（这种非本质的东西像C那样用库来扩展多好）</p>
+
+<p>。。。</p>
+
+<pre><code class="fortran">program link
+implicit none
+type node
+    character(20) name
+    integer id
+    integer score
+    type(node),pointer ::next
+end type
+
+integer,parameter::num=3
+type(node),pointer ::students
+
+call init_all(students,num)
+call show_all(students)
+print*,"now,we add a student"
+call add_node(students)
+call show_all(students)
+print*,"now,we delete the student"
+call del_node(students)
+call show_all(students)
+
+contains 
+subroutine add_node(pos)
+type(node),pointer ::pos,tmp
+allocate(tmp)
+tmp%name="abc"
+tmp%id=1
+tmp%score=100
+print*,"please input name,id,end score of one students"
+read*,tmp%name,tmp%id,tmp%score
+if(associated(pos%next)) then
+tmp%next=&gt;pos%next
+pos%next=&gt;tmp
+else 
+nullify(tmp%next)
+pos%next=&gt;tmp
+end if
+end subroutine
+
+subroutine del_node(pos)
+type(node),pointer ::pos,next
+next=&gt;pos%next
+if(associated(next%next)) then
+pos%next=&gt;next%next
+deallocate(next)
+else
+nullify(pos%next)
+deallocate(next)
+end if
+end subroutine
+
+subroutine show_all(pos)
+type(node),pointer ::pos,tmp
+integer ::cnt
+cnt=1
+print*,"all students are:"
+tmp=&gt;pos
+do while(associated(tmp))
+print*,cnt,"th ",tmp%name,tmp%id,tmp%score
+tmp=&gt;tmp%next
+cnt=cnt+1
+end do
+end subroutine
+
+subroutine init_all(pos,num)
+type(node),pointer ::pos,tmp,walk
+integer num
+integer i
+
+allocate(tmp)
+nullify(tmp%next)
+call add_node(tmp)
+pos=&gt;tmp%next
+deallocate(tmp)
+walk=&gt;pos
+do i=1,num-1
+call add_node(walk)
+walk=&gt;walk%next
+end do
+end subroutine
+
+end program link
+</code></pre>
+
+<p>&nbsp;</p>
+
+<p>我很少讨厌某种技术，坦诚的说，关于fortran，是有其他因素参合进来了。</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,816 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Translate | Tech Ideas]]></title>
+  <link href="https://blog.helong.info//blog/categories/translate/atom.xml" rel="self"/>
+  <link href="https://blog.helong.info//"/>
+  <updated>2019-09-18T22:22:08+08:00</updated>
+  <id>https://blog.helong.info//</id>
+  <author>
+    <name><![CDATA[byronhe]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[【翻译】密码学一小时必知]]></title>
+    <link href="https://blog.helong.info//blog/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/"/>
+    <updated>2015-04-12T14:05:55+00:00</updated>
+    <id>https://blog.helong.info//blog/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour</id>
+    <content type="html"><![CDATA[<p>本文翻译了Colin Percival 于2010年在bsdcan的演讲ppt</p>
+
+<p>原文标题：Everything you need to know about cryptography in 1 hour</p>
+
+<p>演讲时间：May 13, 2010</p>
+
+<p>原文在 <a href="https://www.bsdcan.org/2010/schedule/attachments/135_crypto1hr.pdf">https://www.bsdcan.org/2010/schedule/attachments/135_crypto1hr.pdf</a></p>
+
+<p>演讲视频在 <a href="https://www.youtube.com/watch?v=jzY3m5Kv7Y8">https://www.youtube.com/watch?v=jzY3m5Kv7Y8</a> ( 请自行翻墙 )</p>
+
+<p>Colin Percival 是密码学方面的专家，FreeBSD项目的安全长官，Tarsnap在线备份服务的创始人，scrypt密钥衍生算法的作者，致力于改进软件中密码学的应用，向程序员传播密码学的正确使用。</p>
+
+<!--more-->
+
+
+<hr />
+
+<p>为什么要 cryptography in 1 hour：</p>
+
+<p>因为有例如下面这些错误的使用案例：</p>
+
+<ol>
+<li><p>Google keyczar(时间通道攻击)</p></li>
+<li><p>SSL( session renegotiation)</p></li>
+<li><p>Amazon AWS 签名方法 (可能碰撞的签名算法)</p></li>
+<li><p>Flicker API 签名(hash length-extension) 错误地使用了错误的工具</p></li>
+<li><p>Intel Hyper Threading (architectual side channel) 不常用的环境</p></li>
+<li><p>WEP,WPA,GSM&hellip;（多种漏洞）</p></li>
+</ol>
+
+
+<p>密码学被攻破通常是由于：</p>
+
+<ol>
+<li><p>愚蠢</p></li>
+<li><p>使用了错误的工具，或者以错误的方式使用它们</p></li>
+<li><p>不常用的环境</p></li>
+</ol>
+
+
+<hr />
+
+<p>经验智慧：不要亲自写密码学代码！</p>
+
+<ol>
+<li>使用SSL做传输</li>
+<li>使用GPG保护静止数据</li>
+</ol>
+
+
+<p>&ldquo;如果你在输入A-E-S到你的代码里，你已经开始犯错&rdquo; &ndash; Tomas Ptacek</p>
+
+<p>现实：如果你无论如何都要写密码学代码，你最好知道你在干什么</p>
+
+<p>现实：大多数应用程序只需要众所周知的标准模式的一个子集，而这是很容易保证正确的</p>
+
+<p>55分钟后，你应该：</p>
+
+<p>知道在99%的情况下应该怎么做</p>
+
+<p>知道一些常见的错误在哪里</p>
+
+<p>知道当你在做一些非标准的事情的时候，你真的需要咨询一个密码学专家</p>
+
+<hr />
+
+<p>密码学做保护，并对抗一些攻击，但不能对抗所有攻击：</p>
+
+<p>贿赂，盗窃，敲诈</p>
+
+<p>监狱刑罚</p>
+
+<p>攻击人通常比攻击数据更贵</p>
+
+<p>攻击人通常比攻击数据更危险</p>
+
+<p>数据被拷打时不会开记者招待会来控诉</p>
+
+<p>密码学的目的是强迫美国政府拷打你</p>
+
+<p>希望他们认为你的信息不是这么重要</p>
+
+<hr />
+
+<p>密码学有3个主要目的：<em>加密 Encryption</em> ，<em>认证 Authentication </em>，<em>识别  Identification</em></p>
+
+<ol>
+<li>加密阻止恶意者读取你的数据</li>
+<li>认证阻止恶意者在不被发现的情况下改动你的数据</li>
+<li>识别阻止恶意者假装你</li>
+</ol>
+
+
+<p>有时认证和识别在一个步骤中进行：“这条消息自从我写下它之后没有被篡改”和“我是Colin”
+可以替换成“这条消息自从Colin写下它之后没有被改过”</p>
+
+<p>在大多数case里，你需要把2个，或者更多的密码学组件合起来使用</p>
+
+<hr />
+
+<p>概念定义</p>
+
+<ol>
+<li>plaintext是我们关心的数据</li>
+<li>ciphertext是恶意者可以得到的数据</li>
+<li>key用于在这两者之间做转换，有时候我们需要多个key</li>
+</ol>
+
+
+<p>对称密码学就是 ，使用相同的key，来把plaintext转换成ciphertext，和把ciphertext转换成
+plaintext</p>
+
+<p>非对称密码学就是，这两个方向的转换使用不同的key</p>
+
+<p>理想的密码学组件并不存在，但是如果一个密码学组件被识别出不理想，一般就认为它是被攻破的</p>
+
+<hr />
+
+<p>hashing</p>
+
+<p>一个理想的hash函数H(x)是一个函数映射，把任意长度的输入映射成n-bit的输出，
+保证：</p>
+
+<p><em>抵抗碰撞</em></p>
+
+<p><em>单向</em></p>
+
+<p>抵抗碰撞意味着需要 2<sup>n/2</sup>的时间来找到2个输入，使得它们的hash相同</p>
+
+<p>单向意味着给定hash后，需要2<sup>n</sup>的时间来找到一个输入，使得它的hash是给定hash</p>
+
+<p><em>没有保证任何其他性质</em></p>
+
+<p>特别是：
+知道H(x)可能允许一个攻击者计算某些y的H(y)</p>
+
+<hr />
+
+<p>实践：</p>
+
+<p>使用 SHA-256</p>
+
+<p>考虑切换到SHA-3，在未来5-10年内（2010年算起）</p>
+
+<p>使用一个hash，如果你可以安全地分布 H(x)，并且想验证不安全地收到的x'实际上等于x</p>
+
+<p>不要使用：MD2 MD4 MD5 SHA-1 RIPEMD</p>
+
+<p>不要把 FreeBSD-8.0-RELEASE-amd64-disc1.iso和CHECKSUM.SHA256放到同一个FTP
+服务器上，还以为自己干了件有用的事情</p>
+
+<p>不要尝试把一个hash函数当成对称签名用</p>
+
+<hr />
+
+<p>对称认证</p>
+
+<p>对称认证是通过提供一个消息认证码（MAC，message authentication code）来进行的。</p>
+
+<p>一个理想的 MAC fk(x)使用一个key，来把任意长度的输入映射到n-bit的输出，确保需要 2<sup>n</sup>
+的时间，一个攻击者才能在得到任意(x, fx(x))对的情况下，生成任意(y,fk(y))对。
+有时MAC被称作随机函数</p>
+
+<p>与hashing不同，知道fk(x)不能使你对另一个key计算出 fk(y)，</p>
+
+<p> Flicker的API使用了hashing来认证API请求，他们实际需要的是 MAC</p>
+
+<hr />
+
+<p>对称认证</p>
+
+<p>实践</p>
+
+<p>使用 HMAC-SHA256</p>
+
+<p>确保同样的输入，HMAC-SHA256不会生成不同的消息</p>
+
+<p>Amazon和Flicker都做错了</p>
+
+<p>不要使用 CBC-MAC</p>
+
+<p>理论上安全，但是把你的块加密算法暴露给了攻击者</p>
+
+<p>不要使用 Poly1305</p>
+
+<p>太新，除非你是Daniel Bernstein(Poly 1305的发明者)，否则你基本不可能做出一个</p>
+
+<p>安全和正确的实现</p>
+
+<p>不要 当验证一个签名的时候，通过timing side channel的形式泄露信息</p>
+
+<hr />
+
+<p>Side channel 攻击</p>
+
+<p>一个side channel 是攻击者除了ciphertext以外可以获取信息的任何方式</p>
+
+<p>密码系统是以它们的数学设计被定义的，但是side channel 是由于密码系统的人工实现导致的。</p>
+
+<p>最常见的side channel是timing &ndash; 你花费多长时间来 加密/解密/签名/验证 一个消息</p>
+
+<p>其他side channel包括：电磁辐射，电力消耗，和微架构特征（例如L1缓存替换，在支持
+HyperThreading的Intel CPU上）</p>
+
+<hr />
+
+<p>Side channel 攻击
+实践</p>
+
+<p>咨询一个密码学专家，如果你计划使恶意者可以物理接触到任何密码设备</p>
+
+<p>咨询一个密码学专家，如果你计划允许恶意者在你允许密码学的物理硬件上运行代码(虚拟化系统)</p>
+
+<p>咨询一个密码学专家，如果你计划发布一个以新方式泄露信息的CPU</p>
+
+<p> intel可能做错了
+不要写其运行时间泄露信息的代码</p>
+
+<hr />
+
+<p>Timing attacks</p>
+
+<p>避免 依赖于key，或者依赖于plaintext的表查找</p>
+
+<p>不要有依赖于key，或者依赖于plaintext的分支(if, for, while , foo?bar:baz 等代码指令)</p>
+
+<p>不要想这种代码：</p>
+
+<pre><code>for(int i=0;i&lt;MACLEN;i++){
+    if(MAC-computed[i] != MAC-received[i])
+        return MAC_IS_BAD ;
+return  MAC_IS_GOOD;
+</code></pre>
+
+<p>应该这样写</p>
+
+<pre><code>for(int i=0;i&lt;MACLEN;i++){
+    x  |= (MAC-computed[i] - MAC-received[i]);
+
+return  x?MAC_IS_BAD:MAC_IS_GOOD;
+</code></pre>
+
+<p>Google Keyczar就做错了</p>
+
+<hr />
+
+<p>块加密</p>
+
+<p>对称加密通常构建在块加密算法的基础之上</p>
+
+<p>一个理想的块加密算法使用一个key来双向地把n-bit的输入x转换成n-bit的输出Ek(x)，这样当
+知道(x,Ek(x))时，对任意的(x',k')!=(x,k)，你没法以大于2^-n的概率猜出(x',Ek'(x'))</p>
+
+<p>有时被称为“随机排列”</p>
+
+<p>通常我们关心的是Ek(x)不透露出 当x!=x'时Ek(x')的信息。</p>
+
+<p>如果一个攻击者可以通过观察一个块加密算法怎么处理不同key，来获取有用信息，该块加密算法
+被认为可被  key相关攻击 （key-related attack）攻破。</p>
+
+<hr />
+
+<p>实践：</p>
+
+<p>使用 AES-256</p>
+
+<p>AES-256有related key攻击漏洞，但是当你把其它事情做对时，这并不是问题</p>
+
+<p>AES-128理论上足够强壮，但是块加密算法很难没有side channel地正确实现 ，</p>
+
+<p>并且key里面的额外bit 在key的一些bit泄露之后是有用的。</p>
+
+<p>不要使用 blowfish</p>
+
+<p>想都不要想使用DES</p>
+
+<p>避免 triple-des(3des)</p>
+
+<p>不要使用块加密算法"raw"，替代地，在一个已经建立的操作模式中使用它(?)。</p>
+
+<hr />
+
+<p>块加密算法操作模式</p>
+
+<p>一个块加密算法操作模式告诉你怎么使用一个块加密算法来保护数据流</p>
+
+<p>在很多case中，plaintext需要被填充到块大小的整数倍，块密码算法操作模式会
+告诉你怎么做到这一点</p>
+
+<p>流行的模式有: ECB ，CBC  , CFB , OFB，CTR，IAPM，CCM，EAX，GCM &hellip;</p>
+
+<p>大多数模式只提供了加密，但也有一些提供了认证</p>
+
+<p>实践：
+使用：CTR模式</p>
+
+<p>不要使用同时提供加密和认证的模式</p>
+
+<p>想都不要想使用ECB</p>
+
+<p>使用一个MAC（例如HMAC-SHA256）来认证你的加密数据</p>
+
+<p>如果你认为你不需要这么做，咨询一个密码学专家，他会告诉你你为什么是错的。</p>
+
+<p>验证你的加密数据的真实性，在你揭秘数据之前。</p>
+
+<hr />
+
+<p>非对称加密</p>
+
+<p>一个非对称加密模式使用一个签名key来把plaintext转换成ciphertext，使用一个认证码来把
+ciphertext转化成plaintext或者“错误的签名”</p>
+
+<p>签名key不能从认证key算出，但是认证key可以从签名key算出</p>
+
+<p>ciphertext通常由 plaintext加一个签名构成</p>
+
+<p>如果一个攻击者接触到了验证key，并且可以说服你签名任意的plaintext，那就可以认为这个
+非对称加密系统被攻破了。</p>
+
+<hr />
+
+<p>非对称认证</p>
+
+<p>使用 RSASSA-PSS（RSA签名，使用Probabilistic Signature Scheme padding）</p>
+
+<p>使用 2048-bit的RSA key，使用65537作为公钥的公共幂，和SHA256</p>
+
+<p>不要使用 PKCS v1.5 padding</p>
+
+<p>想都不要想 使用不带消息padding的RSA(即RAW)</p>
+
+<p>可能避免： DSA</p>
+
+<p>可能避免：椭圆曲线签名模式</p>
+
+<p>想都不要想使用相同的RSA key既做认证，又做加密</p>
+
+<hr />
+
+<p>非对称加密</p>
+
+<p>非对称加密类似于非对称签名，除了方向相反，使用公钥把plaintext转成ciphertext，但是要
+使用私钥把ciphertext转成plaintext</p>
+
+<p>一个</p>
+
+<p>大多数非对称加密模式都限制能加密的消息大小到一个很低的数字以下。</p>
+
+<hr />
+
+<p>非对称加密</p>
+
+<p>使用 RSAES-OAEP（RSA加密，使用Optimal Asymmeric Encryption Padding）</p>
+
+<p>使用2048-bit的RSA key，以65537为幂底数，SHA256和MGF1-SHA256</p>
+
+<p>不要使用 PCKS v1.5 padding</p>
+
+<p>不要使用不带消息padding的RSA</p>
+
+<p>生成一个随机key，用这个key使用对称加密加密你的消息，然后使用非对称加密算法加密你的key</p>
+
+<p>小心避免RSAES-OAEP的timing攻击通道</p>
+
+<hr />
+
+<p>密码</p>
+
+<p>密码通常被直接用于识别，但是也可以被用于加密或者认证。</p>
+
+<p>实践：</p>
+
+<p>尽可能避免密码</p>
+
+<p>使用一个key继承函数，来尽快把密码转成key。</p>
+
+<p>使用PBKDF2，如果你跟随流行趋势</p>
+
+<p>使用scrypt，如果你希望2<sup>8</sup>倍地比严肃的攻击者更安全</p>
+
+<p>想都不要想把用户的密码存储在服务器上。绝对不能，就算它们被加密了也不能。</p>
+
+<hr />
+
+<p>SSL</p>
+
+<p>SSL是一个可怕的系统</p>
+
+<p>SSL的复杂性导致它很难别安全地实现</p>
+
+<p>SSL给了攻击者很多攻击选项</p>
+
+<p>SSL要求你决定你想信任什么CA</p>
+
+<p>你相信中国政府吗？</p>
+
+<p>不幸的是，SSL是唯一可行的选项</p>
+
+<p>实践：</p>
+
+<p>随客户端分发非对称签名key，并且使用这个key开始你的整个密码系统</p>
+
+<p>使用SSL加密你的网站，Email，和其他公开的标准面向Internet的服务器。</p>
+
+<p>认真地想想你信任哪些CA。</p>
+
+<hr />
+
+<p>奇奇怪怪地部分：</p>
+
+<p>咨询一个密码学专家，如果</p>
+
+<p>你的密码学硬件设备，攻击者可以物理接触到。（例如smartcards）</p>
+
+<p>你想使用最少的电力消耗（例如在手机上）</p>
+
+<p>你需要处理尽可能大的数据流量（例如 10Gbps的 IPSec 隧道）</p>
+
+<p>你需要传输尽可能少的bit（例如和一个核潜艇的通信）</p>
+
+<p>你想忽视我在这个talk中提出的任何建议</p>
+
+<hr />
+
+<p>QA</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[【翻译/介绍】jump Consistent hash:零内存消耗，均匀，快速，简洁，来自Google的一致性哈希算法]]></title>
+    <link href="https://blog.helong.info//blog/2015/03/13/jump_consistent_hash/"/>
+    <updated>2015-03-13T10:05:55+00:00</updated>
+    <id>https://blog.helong.info//blog/2015/03/13/jump_consistent_hash</id>
+    <content type="html"><![CDATA[<a name="L......"></a>
+<h2>简介</h2>
+
+<p>jump consistent hash是一种一致性哈希算法, 此算法<strong>零内存消耗</strong>，<strong>均匀分配</strong>，<strong>快速</strong>，并且<strong>只有5行代码</strong>。</p>
+
+<p>此算法适合使用在分shard的分布式存储系统中 。</p>
+
+<p>此算法的作者是 Google 的 John Lamping 和 Eric Veach，论文原文在 <a href="http://arxiv.org/ftp/arxiv/papers/1406/1406.2294.pdf">http://arxiv.org/ftp/arxiv/papers/1406/1406.2294.pdf</a></p>
+
+<p>完整代码：</p>
+
+<pre><code class="cpp JumpConsistentHash">
+    int32_t JumpConsistentHash(uint64_t key, int32_t num_buckets) {
+        int64_t b = -1, j = 0;
+        while (j &lt; num_buckets) {
+            b = j;
+            key = key * 2862933555777941757ULL + 1;
+            j = (b + 1) * (double(1LL &lt;&lt; 31) / double((key &gt;&gt; 33) + 1));
+        }
+        return b;
+    }
+</code></pre>
+
+<p>输入是一个64位的key，和桶的数量（一般对应服务器的数量），输出是一个桶的编号。</p>
+
+<!--more-->
+
+
+<a name="L..............."></a>
+<h2>原理解释：</h2>
+
+<p>下面byron根据论文的推导过程，做个翻译：</p>
+
+<p>jump consistent hash的设计目标是：</p>
+
+<ol>
+<li>平衡性，把对象均匀地分布在所有桶中。</li>
+<li>单调性，当桶的数量变化时，只需要把一些对象从旧桶移动到新桶，不需要做其它移动。</li>
+</ol>
+
+
+<p>jump consistent hash的设计思路是：<strong>计算当bucket数量变化时，有哪些输出需要变化</strong>。</p>
+
+<p>让我们循序渐进地思考：</p>
+
+<ul>
+<li>记 ch(key,num_buckets) 为num_buckets时的hash函数。</li>
+<li>当num_buckets=1时，由于只有1个桶，显而易见，对任意k，有ch(k,1)==0。</li>
+<li>当num_buckets=2时，为了使hash的结果保持均匀，ch(k,2)的结果应该有占比1/2的结果保持为0，有1/2跳变为1。</li>
+<li>由此，一般规律是：num_buckets从n变化到n+1后，ch(k,n+1) 的结果中，应该有占比 n/(n+1)  的结果保持不变，而有 1/(n+1) 跳变为 n+1。</li>
+</ul>
+
+
+<p>因此，我们可以用一个随机数生成器，来决定每次要不要跳变，并且让这个随机数生成器的状态仅仅依赖于key。就得到下面这个初步代码：</p>
+
+<pre><code class="cpp">    int ch(int key, int num_buckets) {
+        random.seed(key) ;
+        int b = 0; // This will track ch(key, j +1) .
+        for (int j = 1; j &lt; num_buckets; j ++) {
+            if (random.next() &lt; 1.0/(j+1) ) b = j ;
+        }  
+        return b;
+    }                                                             
+</code></pre>
+
+<p>显而易见，这个算法是O(n)的。同时我们可以发现，大多数情况下b=j 是不会执行的，而且随着 j 越来越大，这个概率越来越低。
+那么有没有办法根据一个随机数，直接得出下一个跳变的 j ，降低时间复杂度呢？</p>
+
+<p>ok,请把你的大脑切换到概率论模式。</p>
+
+<p>我们可以把 ch(key,bum_buckets) 看做一个随机变量，</p>
+
+<p>上述算法，追踪了桶编号的的跳变过程，我们记上一个跳变结果是b，假设下一个结果以一定概率是 j ，那么从b+1到j-1，这中间的多次增加桶都不能跳变。 对于在区间 (b, j) 内的任意整数 i ，j是下一个结果的概率可以记为:</p>
+
+<p>P( j>=i )  =  P( ch(k,i)==ch(k,b+1) )</p>
+
+<p>其中 ch(k,i)==ch(k,b+1) 意即从b+1到i的过程中，连续多次增加桶的时候都没有跳变，这个概率也就是连续多次不跳变事件概率的乘积，因此：</p>
+
+<p>P(j>=i) = P( ch(k,b+1)==ch(k,b+2)) *  P( ch(k,b+2)==ch(k,b+3)) *  P( ch(k,b+3)==ch(k,b+4)) * &hellip;&hellip; *  P( ch(k,i-1)==ch(k,i))</p>
+
+<p>由于单次不跳变的概率：</p>
+
+<p>P( ch(k,i)==ch(k,i+1) ) = i/(i+1)</p>
+
+<p>所以连续多次不跳变的概率</p>
+
+<p>P(j>=i) = (b+1)/(b+2) * (b+2)/(b+3) * &hellip; * (i-1)/i</p>
+
+<p>前后项分子分母相互抵消，得到：</p>
+
+<p>P(j>=i) = (b+1)/i</p>
+
+<p>意即：j>=i的概率为(b+1)/i</p>
+
+<p>此时，我们取一个在[0,1]区间均匀分布的随机数r，规定 r&lt;(b+1)/i，就有j>=i，
+所以有 i&lt;(b+1)/r，这样就得到了i的上界是 (b+1)/r，由于对任意的i都要有j>=i，所以
+j=floor( (b+1)/r )，这样我们用一个随机数r得到了j。</p>
+
+<p>因此，代码可以改进为：</p>
+
+<pre><code class="cpp">    int ch(int key, int num_buckets) {
+        random. seed(key) ;
+        int b = -1; //  bucket number before the previous jump
+        int j = 0; // bucket number before the current jump
+        while(j&lt;num_buckets){
+            b=j;
+            double r=random.next(); //  0&lt;r&lt;1.0
+            j = floor( (b+1) /r);
+        }
+        return b;
+    }
+</code></pre>
+
+<p>这个算法的时间复杂度，可以假设每次r都取0.5，则可以认为每次 j=2*j，因此时间复杂度为O(log(n))。</p>
+
+<p>此处需要一个均匀的伪随机数生成器，论文中使用了一个64位的线性同余随机数生成器。</p>
+
+<p>需要指出的是：不像割环法，jump consistent hash不需要对key做hash，这是由于jump consistent hash使用内置的伪随机数生成器，来对每一次key做再hash，（byron的理解：所以结果分布的均匀性与输入key的分布无关，由伪随机数生成器的均匀性保证）。</p>
+
+<a name="L..........................."></a>
+<h2>各项指标对比分析：</h2>
+
+<p>consistent hash的概念出自David Karger的论文，经典并且应用广泛的割环法即出自这篇论文：<a href="http://www.ra.ethz.ch/cdstore/www8/data/2181/pdf/pd1.pdf">http://www.ra.ethz.ch/cdstore/www8/data/2181/pdf/pd1.pdf</a></p>
+
+<p>Karger提出2种实现:</p>
+
+<ol>
+<li>&ldquo;version A"，用 std::map&lt;uint64_t, int32_t>表示key的hash 到桶id的映射。</li>
+<li>&ldquo;version B"，用 vector&lt;pair&lt;uint64_t, int32_t> >存储，vector事先排好序，用二分查找。</li>
+</ol>
+
+
+<p>这两种实现的查找时间复杂度也都是O(log(n))</p>
+
+<p>jump consistent hash的论文中，用jump consistent hash和Karger的割环算法做了对比，结果如下：</p>
+
+<a name="L1..key.................."></a>
+<h3>1. key分布的均匀性</h3>
+
+<p>直接从论文中摘录如下表格：</p>
+
+<p><img src="/images/blog/jmp_consistent_hash_distribution.png"></p>
+
+<p>从标准差(Standard Error)这一列可见，jump consistent hash的均匀性要胜过割环法。</p>
+
+<p>并且显而易见，jump consistent hash，当 扩/缩容 时，跳变key数量已经是理论最少值 1/n。</p>
+
+<a name="L2.............."></a>
+<h3>2. 执行耗时</h3>
+
+<p>下面是论文中的执行耗时对比图，其中k=1000。</p>
+
+<p><img src="/images/blog/jmp_consistent_hash_cpu.png"></p>
+
+<a name="L3...................."></a>
+<h3>3. 内存占用对比</h3>
+
+<p>显而易见，请自行脑补</p>
+
+<a name="L4......................."></a>
+<h3>4. 初始化耗时对比</h3>
+
+<p>显而易见，请自行脑补</p>
+
+<a name="L............"></a>
+<h1>相关链接</h1>
+
+<p>在 Hacker News上面的讨论：<a href="https://news.ycombinator.com/item?id=8136408">https://news.ycombinator.com/item?id=8136408</a></p>
+
+<p>这个算法最早在Google的guava库里面开源：<a href="https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java#L392">https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java#L392</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[翻译]轻松7步，导出Y结合子]]></title>
+    <link href="https://blog.helong.info//2012/04/09/%e7%bf%bb%e8%af%91%e8%bd%bb%e6%9d%be7%e6%ad%a5%ef%bc%8c%e5%af%bc%e5%87%bay%e7%bb%93%e5%90%88%e5%ad%90/"/>
+    <updated>2012-04-09T00:00:00+08:00</updated>
+    <id>https://blog.helong.info//2012/04/09/%e7%bf%bb%e8%af%91%e8%bd%bb%e6%9d%be7%e6%ad%a5%ef%bc%8c%e5%af%bc%e5%87%bay%e7%bb%93%e5%90%88%e5%ad%90</id>
+    <content type="html"><![CDATA[<p>本文译自 &#8220;<em>Deriving the Y Combinator in 7 Easy Steps</em>&#8220;，</p>
+
+<p>原文链接：<a href="http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html">http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html</a></p>
+
+<p>在没有原生递归支持的语言中，Y结合子（<a href="http://en.wikipedia.org/wiki/Fixed_point_combinator" target="_blank">Y Combinator</a>）是一种实现递归的方式（事实上，它更常被作为一种锻炼程序思维的方式）。要实现Y结合子，要求这种语言支持匿名函数。</p>
+
+<p>此处，我选择JavaScript来推导Y结合子，从递归阶乘函数的定义开始，一步一步进行变换。</p>
+
+<a name="Step.1"></a>
+<h2>Step 1</h2>
+
+<p>最初的实现，使用JavaScript内建的递归机制。
+<code>javascript
+var fact = function (n) {
+    if (n &amp;lt; 2) return 1;
+    return n * fact(n - 1);
+};
+</code></p>
+
+<p>&nbsp;</p>
+
+<a name="Step.2"></a>
+<h2>Step 2</h2>
+
+<p>获得递归的最简单方法是什么？我们可以定义一个函数，它接受它自身作为参数，并且用这个参数作为参数，调用这个参数。当然，这是一个无限循环，会导致栈溢出。</p>
+
+<pre><code class="javascript">(function (f) {
+    f(f);
+})(function (f) {
+    f(f);
+});
+</code></pre>
+
+<p>我们的阶乘函数套用上面的模板，再做点改动，阶乘函数接受一个我们还不知道的参数，所以我们要的是返回一个接受该参数的函数。然后这个函数可以被用于计算阶乘。同时，这可以让我们的阶乘函数不会无限循环下去。</p>
+
+<pre><code class="javascript">var fact = (function (f) {
+    return function (n) {
+        // 终止条件
+        if (n &amp;lt; 2) return 1;
+
+        //因为f返回一个函数，所以这有一个双重调用。 
+        return n * f(f)(n - 1);
+    };
+})(function (f) {
+    return function (n) {
+        // 终止条件
+        if (n &amp;lt; 2) return 1;
+
+        // 因为f返回一个函数，所以这有一个双重调用。
+        return n * f(f)(n - 1);
+    };
+});
+</code></pre>
+
+<!--more-->
+
+
+<a name="Step.3"></a>
+<h2>Step 3</h2>
+
+<p>此时，我们的代码有一些糟糕的重复，让我们把放进一个名叫recur的辅助函数里。</p>
+
+<pre><code class="javascript">var recur = function (f) {
+    return f(f);
+};
+
+var fact = recur(function (f) {
+    return function (n) {
+        if (n &amp;lt; 2) return 1;
+
+        // 因为f返回一个函数，所以这有一个双重调用。
+        return n * f(f)(n - 1);
+    };
+});
+</code></pre>
+
+<a name="Step.4"></a>
+<h2>Step 4</h2>
+
+<p>上面这个版本的问题是，它有两重调用（指的是f(f)(n-1)）。我们想去除它，让我们的函数跟接近于递归版本。怎么做呢？</p>
+
+<p>我们可以使用一个辅助函数，它接受一个数值参数，进行两重调用。这个trick通过把辅助函数放在可见f的作用域里，所以g可以调用f。</p>
+
+<pre><code class="javascript">var recur = function (f) {
+    return f(f);
+};
+
+var fact = recur(function (f) {
+    var g = function (n) {
+        return f(f)(n);
+    };
+
+    return function (n) {
+        if (n &amp;lt; 2) return 1;
+
+        // 没有双重调用了，函数g接受一个数值参数。
+        return n * g(n - 1);
+    };
+});
+</code></pre>
+
+<a name="Step.5"></a>
+<h2>Step 5</h2>
+
+<p>以上版本工作良好，但是它的定义太杂乱了。我们可以把它再清理为一个辅助函数，把阶乘定义尽可能分离出来。</p>
+
+<pre><code class="javascript">var recur = function (f) {
+    return f(f);
+};
+
+var wrap = function (h) {
+    return recur(function (f) {
+        var g = function (n) {
+            return f(f)(n);
+        };
+
+        return h(g);
+    });
+};
+
+var fact = wrap(function (g) {
+    return function (n) {
+        if (n &amp;lt; 2) return 1;
+        return n * g(n - 1);
+    };
+});
+</code></pre>
+
+<a name="Step.6"></a>
+<h2>Step 6</h2>
+
+<p>g只调用了一次，让我们把g内联进wrap里。</p>
+
+<pre><code class="javascript">var recur = function (f) {
+    return f(f);
+};
+
+var wrap = function (h) {
+    return recur(function (f) {
+        return h(function (n) {
+            return f(f)(n);
+        });
+    });
+};
+
+var fact = wrap(function (g) {
+    return function (n) {
+        if (n &amp;lt; 2) return 1;
+        return n * g(n - 1);
+    };
+});
+</code></pre>
+
+<a name="Step.7"></a>
+<h2>Step 7</h2>
+
+<p>现在，如果我们把recur也内联进wrap里，我们就得到了著名的<strong>Y结合子</strong>！</p>
+
+<pre><code class="javascript">var Y = function (h) {
+    return (function (f) {
+        return f(f);
+    })(function (f) {
+        return h(function (n) {
+            return f(f)(n);
+        });
+    });
+};
+
+var fact = Y(function (g) {
+    return function (n) {
+        if (n &amp;lt; 2) return 1;
+        return n * g(n - 1);
+    };
+});
+</code></pre>
+
+<a name="The.End"></a>
+<h2>The End</h2>
+
+<p>玩的开心！</p>
+]]></content>
+  </entry>
+  
+</feed>
