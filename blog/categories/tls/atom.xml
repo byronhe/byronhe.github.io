@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Tls | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/tls/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-11-25T13:43:11+08:00</updated>
+  <updated>2019-11-25T13:46:04+08:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -34,122 +34,6 @@
 
 
 <p>本文有门槛，读者需要对现代密码学有清晰而系统的理解，建议花精力补足背景知识再读。本文最后的参考文献里有一些很不错的学习资料。</p>
-
-<p><strong>目录 :</strong></p>
-
-<pre><code>
-TLS协议分析 与 现代加密通信协议设计
-一 . TLS协议的设计目标：
-1. 密码学的方法论
-2. TLS的设计目标
-3. TLS的历史
-二. TLS协议的原理
-1. 自顶向下，分层抽象
-3. TLS CipherSuite
-4. 协议分层
-5. record 协议
-1. SecurityParameters
-2. record层分段
-3. record层的密码学保护
-4. record层的密码学保护--MAC
-5. record层的密码学保护--stream cipher
-6. record层的密码学保护-- CBC block cipher
-7. record层的密码学保护-- AEAD cipher
-8. record层的密码学保护-- Key扩展
-5. handshake 协议
-1.handshake的总体流程
-3. handshake 协议外层结构
-4. handshake -- ClientHello，ServerHello，HelloRequest
-4.1 Client Hello
-4.2 Server Hello
-4.3 Hello Extensions
-4.4 Hello Request
-5. handshake -- Server Certificate
-6. handshake -- Server Key Exchange
-7. handshake -- Certificate Request
-8. handshake -- Server Hello Done
-9. handshake -- Client Certificate
-10. handshake -- Client Key Exchange
-(1). RSA 加密的 Premaster Secret 消息
-(2). 客户端 Diffie-Hellman 公钥
-(3). 客户端 EC Diffie-Hellman 公钥
-11. handshake -- Cerificate Verify
-12. handshake -- Finished
-13. handshake -- NewSessionTicket
-6. ChangeCipherSpec 协议
-7. Alert 协议
-8. application data协议
-8. TLS协议的安全分析
-1. 认证和密钥交换 的安全性
-1. 匿名密钥交换
-2. RSA 密钥交换和认证
-3. Diffie-Hellman 密钥交换和认证
-2. 版本回退攻击
-3. 针对握手过程的攻击
-4. 针对 Resuming Sessions 的攻击
-5. 针对应用数据保护的攻击
-6. 显式 IV的安全性
-7. 加密和MAC组合模式的安全性
-8. DOS 攻击下的安全性
-9.Session Ticket 的安全分析
-1. 无效的Session
-2. 窃取 Tickets
-3. 伪造 Tickets
-4. DoS 攻击
-5. 加密 Ticket 的key 的管理
-6. Ticket 的有效期
-7. 其他的 Ticket 格式和分发方法
-8. Identity Privacy, Anonymity, and Unlinkability
-9. TLS扩展:
-10. TLS的配套：PKI体系
-1. X.509 证书
-2.现有PKI体系暴露出的问题
-1. public key pin
-2. HSTS
-11. TLS协议历史上出现过的漏洞，密码学常见陷阱
-1. TLS的漏洞
-2. 密码学常见陷阱
-13. 下一代TLS: TLS 1.3
-1. record层的密码学保护的改动
-2.handshake协议的改动
-3.1-RTT 握手
-4. 有副作用的 0-RTT握手
-5. Resumption 和 PSK
-6. Key Schedule 过程的改动
-三. TLS协议的代码实现
-四. TLS协议的部署与优化
-五. 更多的加密通信协议case：QUIC，iMessage，TextSecure, otr, ios HomeKit，libsodium
-1. QUIC
-2. apple ios iMessage
-3. apple ios HomeKit
-4. TextSecure
-5. otr 协议
-6. libsodium/NaCL
-7. Tox.im
-8. CurveCP
-9. tcpcrypt
-10.noise
-11.tcpcrypt
-12. netflix MSL
-12.Amazon KMS 密钥管理服务 白皮书
-六. TLS协议给我们的启发 -- 现代加密通信协议设计
-七. 附录：密码学基础概念
-1. 块加密算法 block cipher
-2. 流加密算法 stream cipher
-3. Hash函数 hash funtion
-4. 消息验证码函数 message authentication code
-5. 密钥交换 key exchange
-6. 公钥加密 public-key encryption
-7. 数字签名算法 signature algorithm
-8. 密码衍生函数 key derivation function
-9. 随机数生成器 random number generators
-八. 参考文献：
-TLS/SSL 相关RFC及标准
-协议分析文章
-实际部署调优相关
-密码学相关
-相关开源项目
-</code></pre>
 
 <!--more-->
 
