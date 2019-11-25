@@ -99,15 +99,18 @@ https://github.com/yanyiwu/cppjieba 在实际使用 CppJieba 的过程中，我�
 
 <p>在实际使用 CppJieba 的过程中，我们发现 CppJieba 的内存占用比较高。</p>
 
-<p>比如对一个 76W 词 大小 11MB 的词典 ，加载 2份 （2份这是为了支持平滑改动领域词典，专门搞了1个预发布词典）就需要耗费 505MB内存。</p>
+<p>比如对一个 76W 词 大小 11MB 的词典 ，加载 2份 （比如为了支持平滑改动用户词典）就需要耗费 505MB内存。</p>
 
-<p>这对一些多进程的后台服务，浪费大量内存，完全无法接受，因此这里希望消减内存耗费。</p>
+<p>这对一些多进程的后台服务，浪费大量内存，难以接受，因此这里希望削减内存耗费。</p>
 
 <p>经过初步调查，确定改进方法，然后动手改造，<strong>最终把 505MB 缩减到了 4.7MB ，实现了 99% 内存降低</strong>。</p>
 
 <p>此处也有 issue 讨论 <a href="https://github.com/yanyiwu/cppjieba/issues/3">https://github.com/yanyiwu/cppjieba/issues/3</a></p>
 
 <p>代码稍后可能会开源出来。</p>
+
+<!--more-->
+
 
 <a name="L.................."></a>
 <h2>二，实现过程</h2>
