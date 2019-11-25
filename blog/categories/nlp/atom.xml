@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Nlp | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/nlp/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-11-25T12:29:43+08:00</updated>
+  <updated>2019-11-25T12:35:04+08:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[重实现 CppJieba 中文分词算法，把内存消耗降低 100倍]]></title>
-    <link href="https://blog.helong.info//blog/2019/09/18/cppjieba-darts-DAT-memory_optimize/"/>
-    <updated>2019-09-18T22:19:00+00:00</updated>
-    <id>https://blog.helong.info//blog/2019/09/18/cppjieba-darts-DAT-memory_optimize</id>
+    <link href="https://blog.helong.info//blog/2019/11/25/cppjieba-darts-DAT-memory_optimize/"/>
+    <updated>2019-11-25T12:34:00+00:00</updated>
+    <id>https://blog.helong.info//blog/2019/11/25/cppjieba-darts-DAT-memory_optimize</id>
     <content type="html"><![CDATA[<hr />
 
 <a name="L.................."></a>
