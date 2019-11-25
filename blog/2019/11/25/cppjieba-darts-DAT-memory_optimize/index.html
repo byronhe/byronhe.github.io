@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>重实现 CppJieba 中文分词算法，把内存消耗降低 99% - Tech Ideas</title>
+  <title>用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗 - Tech Ideas</title>
   <meta name="author" content="byronhe">
 
   
@@ -73,7 +73,7 @@ https://github.com/yanyiwu/cppjieba 在实际使用 CppJieba 的过程中，我�
   
   <header>
     
-      <h1 class="entry-title">重实现 CppJieba 中文分词算法，把内存消耗降低 99%</h1>
+      <h1 class="entry-title">用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</h1>
     
     
       <p class="meta">
@@ -105,7 +105,9 @@ https://github.com/yanyiwu/cppjieba 在实际使用 CppJieba 的过程中，我�
 
 <p>经过初步调查，确定改进方法，然后动手改造，<strong>最终把 505MB 缩减到了 4.7MB ，实现了 99% 内存降低</strong>。</p>
 
-<p>代码稍后可能会开源出来</p>
+<p>此处也有讨论 <a href="https://github.com/yanyiwu/cppjieba/issues/3">https://github.com/yanyiwu/cppjieba/issues/3</a></p>
+
+<p>代码稍后可能会开源出来。</p>
 
 <a name="L.................."></a>
 <h2>二，实现过程</h2>
@@ -183,8 +185,7 @@ https://github.com/yanyiwu/cppjieba 在实际使用 CppJieba 的过程中，我�
 <p>比如可以在 ios 或者 Android 上做 中文/英文的切词，
 这意味着可能在客户端实现体验相当良好的搜索引擎。</p>
 
-<p>ios 上也有可用于中文的分词器 CFStringTokenizer
-<a href="https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8">https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8</a> ，但貌似不开源。</p>
+<p>ios 上也有可用于中文的分词器 (CFStringTokenizer)[<a href="https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8">https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8</a>] ，但貌似不开源。</p>
 </div>
 
 
@@ -243,7 +244,7 @@ https://github.com/yanyiwu/cppjieba 在实际使用 CppJieba 的过程中，我�
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2019/11/25/cppjieba-darts-DAT-memory_optimize/">重实现 CppJieba 中文分词算法，把内存消耗降低 99%</a>
+        <a href="/blog/2019/11/25/cppjieba-darts-DAT-memory_optimize/">用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</a>
       </li>
     
       <li class="post">

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Server | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/server/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-11-25T12:38:06+08:00</updated>
+  <updated>2019-11-25T12:54:18+08:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[重实现 CppJieba 中文分词算法，把内存消耗降低 99%]]></title>
+    <title type="html"><![CDATA[用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗]]></title>
     <link href="https://blog.helong.info//blog/2019/11/25/cppjieba-darts-DAT-memory_optimize/"/>
     <updated>2019-11-25T12:34:00+00:00</updated>
     <id>https://blog.helong.info//blog/2019/11/25/cppjieba-darts-DAT-memory_optimize</id>
@@ -34,7 +34,9 @@
 
 <p>经过初步调查，确定改进方法，然后动手改造，<strong>最终把 505MB 缩减到了 4.7MB ，实现了 99% 内存降低</strong>。</p>
 
-<p>代码稍后可能会开源出来</p>
+<p>此处也有讨论 <a href="https://github.com/yanyiwu/cppjieba/issues/3">https://github.com/yanyiwu/cppjieba/issues/3</a></p>
+
+<p>代码稍后可能会开源出来。</p>
 
 <a name="L.................."></a>
 <h2>二，实现过程</h2>
@@ -110,8 +112,7 @@ export MALLOC_CONF="prof:true,prof_prefix:mem_prof/mem_profile_je.out,lg_prof_in
 <p>比如可以在 ios 或者 Android 上做 中文/英文的切词，
 这意味着可能在客户端实现体验相当良好的搜索引擎。</p>
 
-<p>ios 上也有可用于中文的分词器 CFStringTokenizer
-<a href="https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8">https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8</a> ，但貌似不开源。</p>
+<p>ios 上也有可用于中文的分词器 (CFStringTokenizer)[<a href="https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8">https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8</a>] ，但貌似不开源。</p>
 ]]></content>
   </entry>
   
