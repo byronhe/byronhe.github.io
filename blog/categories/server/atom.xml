@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Server | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/server/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-11-25T12:35:04+08:00</updated>
+  <updated>2019-11-25T12:38:06+08:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[重实现 CppJieba 中文分词算法，把内存消耗降低 100倍]]></title>
+    <title type="html"><![CDATA[重实现 CppJieba 中文分词算法，把内存消耗降低 99%]]></title>
     <link href="https://blog.helong.info//blog/2019/11/25/cppjieba-darts-DAT-memory_optimize/"/>
     <updated>2019-11-25T12:34:00+00:00</updated>
     <id>https://blog.helong.info//blog/2019/11/25/cppjieba-darts-DAT-memory_optimize</id>
@@ -32,7 +32,7 @@
 
 <p>这对一些多进程的后台服务，浪费大量内存，完全无法接受，因此这里希望消减内存耗费。</p>
 
-<p>经过初步调查，确定改进方法，然后动手改造，<strong>最终把 505MB 缩减到了 4.7MB ，实现了100倍内存降低</strong>。</p>
+<p>经过初步调查，确定改进方法，然后动手改造，<strong>最终把 505MB 缩减到了 4.7MB ，实现了 99% 内存降低</strong>。</p>
 
 <p>代码稍后可能会开源出来</p>
 
