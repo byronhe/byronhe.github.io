@@ -5,13 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>一个使用KuaiPan备份linux服务器的脚本 - Tech Ideas</title>
+  <title>Category: Nlp - Tech Ideas</title>
   <meta name="author" content="byronhe">
 
   
-  <meta name="description" content="近日需要给服务器做备份，在网上找到了一个现成的金山快盘的api：https://github.com/deren/python-kuaipan （感谢！）
-试了一下，遂决定备份到金山快盘上。 备份脚本考虑了以下几个方面的要求：
-1.上传之前一定要加密，对比之后，使用了openssl的aes-256 &hellip;">
+  <meta name="description" content="Category: nlp">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="https://blog.helong.info//2014/02/08/%e4%b8%80%e4%b8%aa%e4%bd%bf%e7%94%a8kuaipan%e5%a4%87%e4%bb%bdlinux%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%9a%84%e8%84%9a%e6%9c%ac/">
+  <link rel="canonical" href="https://blog.helong.info//blog/categories/nlp/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Tech Ideas" type="application/atom+xml">
@@ -70,78 +68,35 @@
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">一个使用KuaiPan备份linux服务器的脚本</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-02-08T00:00:00+08:00'><span class='date'>2014-02-08</span> <span class='time'>12:00 am</span></time>
-        
-      </p>
+    <h1 class="entry-title">Category: Nlp</h1>
     
   </header>
+  
+  <div id="blog-archives" class="category">
 
 
-<div class="entry-content"><p>近日需要给服务器做备份，在网上找到了一个现成的金山快盘的api：<a href="https://github.com/deren/python-kuaipan" target="_blank"><a href="https://github.com/deren/python-kuaipan">https://github.com/deren/python-kuaipan</a></a> （感谢！）<br/>
-试了一下，遂决定备份到金山快盘上。</p>
 
-<p>备份脚本考虑了以下几个方面的要求：<br/>
-1.上传之前一定要加密，对比之后，使用了openssl的aes-256-cbc加密算法<br/>
-2.增量备份，最开始尝试用<a href="http://duplicity.nongnu.org" target="_blank">duplicity</a> ,写了一个duplicity的backend，然后发现，好复杂！猛然发现，linux上的tar就有<a href="http://www.gnu.org/software/tar/manual/html_node/Incremental-Dumps.html#Incremental-Dumps" target="_blank">增量备份功能</a>，于是直接用了tar<br/>
-3.分卷，KuaiPan有文件大小限制，此处用了split把tar文件分卷</p>
+  
+  <h2>2019</h2>
 
-<p>代码放在 <a href="https://github.com/windydays/kuaipan_backup" target="_blank"><a href="https://github.com/windydays/kuaipan_backup">https://github.com/windydays/kuaipan_backup</a></a></p>
+<article>
+  
+<h1><a href="/blog/2019/09/18/cppjieba-darts-DAT-memory_optimize/">重实现 CppJieba 中文分词算法，把内存消耗降低 100倍</a></h1>
+<time datetime="2019-09-18T22:19:00+00:00" pubdate><span class='month'>Sep</span> <span class='day'>18</span> <span class='year'>2019</span></time>
+
+<footer>
+  <span class="categories">posted in <a class='category' href='/blog/categories/nlp/'>nlp</a>, <a class='category' href='/blog/categories/search/'>search</a>, <a class='category' href='/blog/categories/server/'>server</a></span>
+</footer>
+
+
+</article>
+
 </div>
 
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">windydays</span></span>
-
-      
-
-
-
-
-<time class='entry-date' datetime='2014-02-08T00:00:00+08:00'><span class='date'>2014-02-08</span> <span class='time'>12:00 am</span></time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/python/'>python</a>
-  
-</span>
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/2013/11/18/a-http-proxy-script/" title="Previous Post: a http proxy script">&laquo; a http proxy script</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2014/03/24/move-to-octopress/" title="Next Post: 博客迁移到octopress">博客迁移到octopress &raquo;</a>
-      
-    </p>
-  </footer>
 </article>
 
 </div>

@@ -128,6 +128,130 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2019/09/18/cppjieba-darts-DAT-memory_optimize/">重实现 CppJieba 中文分词算法，把内存消耗降低 100倍</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-09-18T22:19:00+00:00'><span class='date'>2019-09-18</span> <span class='time'>10:19 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><hr />
+
+<a name="L.................."></a>
+<h2>一，问题背景</h2>
+
+<p>中文分词应用比较广泛的开源算法，是 <a href="https://github.com/fxsjy/jieba">jieba 结巴分词</a>，结巴分词较高性能的实现是 C++ 版本的 CppJieba :
+<a href="https://github.com/yanyiwu/cppjieba">https://github.com/yanyiwu/cppjieba</a></p>
+
+<p>在实际使用 CppJieba 的过程中，我们发现 CppJieba 的内存占用比较高。</p>
+
+<p>比如对一个 76W 词 大小 11MB 的词典 ，加载 2份 （2份这是为了支持平滑改动领域词典，专门搞了1个预发布词典）就需要耗费 505MB内存。</p>
+
+<p>这对一些多进程的后台服务，浪费大量内存，完全无法接受，因此这里希望消减内存耗费。</p>
+
+<p>经过初步调查，确定改进方法，然后动手改造，<strong>最终把 505MB 缩减到了 4.7MB ，实现了100倍内存降低</strong>。</p>
+
+<p>代码稍后可能会开源出来</p>
+
+<a name="L.................."></a>
+<h2>二，实现过程</h2>
+
+<a name="L....1................."></a>
+<h3>二.1  查内存分布</h3>
+
+<p>第一步先用 jemalloc 的 memory profiler 工具查看内存耗费在哪里，
+1. 改一下 CppJieba  的  test/demo.cpp， 链接 jemalloc，编译成二进制  jieba_test<br/>
+2. 然后设置环境变量</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>export MALLOC_CONF="prof:true,prof_prefix:mem_prof/mem_profile_je.out,lg_prof_interval:20,lg_prof_sample:20"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>3.然后  mkdir mem_prof， 并运行测试程序
+4.jeprof &ndash;pdf ./jieba_test mem_prof/mem_profile_je.out.xxx.heap > mem_profile.pdf</p>
+
+<p>打开 mem_profile.pdf ，就可以看到内存分布了</p>
+
+<a name="L....2............."></a>
+<h3>二.2 优化方案</h3>
+
+<p>显而易见，内存主要耗费在:
+1. Trie.hpp 中的 Trie 树构建
+2. KeywordExtractor.hpp 加载  idf 词典文件。</p>
+
+<p>因此方案:</p>
+
+<a name="L1..Double.Array.Trie.........cppjieba::Trie"></a>
+<h4>1. Double Array Trie 代替  cppjieba::Trie</h4>
+
+<p>引入 Double Array Trie  (简称  DAT ,<a href="https://github.com/s-yata/darts-clone">https://github.com/s-yata/darts-clone</a>) , 代替 Trie.hpp 中的简单内存 Trie，并把 darts 生成的  DAT 保存到文件中，在启动时，如果已经有和词典对应的 DAT ，直接 mmap() attach 上去，即可启动。</p>
+
+<p>经过实测发现，75万词词典，dart-clone 生成的 DAT 文件，大小只有 24MB，而且可以 mmap 挂载，多进程共享。</p>
+
+<a name="L2..KeywordExtractor"></a>
+<h4>2. KeywordExtractor</h4>
+
+<p>KeywordExtractor 是个不常用功能，直接改成支持传入空的 idfPath 和 stopWordPath, 此时不加载数据即可。</p>
+
+<a name="L....3............."></a>
+<h3>二.3 其他问题</h3>
+
+<a name="L1...................................DAT......"></a>
+<h4>1. 支持热更新，保证词典和DAT一致</h4>
+
+<p>这里一个问题是，词典可能热更新，那怎么知道 DAT 文件和当前词典的内容对应？</p>
+
+<p>我的做法是，对 默认词典文件+自定义词典文件，用文件内容算 MD5，写入 DAT 文件头部，这样打开 DAT 文件发现 MD5 不一致，就知道 DAT文件过时了，即可重建 DAT 。</p>
+
+<p>实测发现算 MD5 还是很快的，启动时间都在 1秒 左右。</p>
+
+<a name="L2.............."></a>
+<h4>2. 代码清理</h4>
+
+<p>另外，清理了一下代码，删掉了 Unicode.hpp 中的无用代码。
+清理了 FullSegment.hpp HMMSegment.hpp MixSegment.hpp MPSegment.hpp QuerySegment.hpp 等中的重复代码。</p>
+
+<a name="L3................."></a>
+<h4>3. 不兼容改动</h4>
+
+<ul>
+<li>由于 Double Array Trie 无法支持动态插入词，删除 InsertUserWord() 方法</li>
+<li>FullSegment.hpp 中 maxId 的计算有 bug，做了 fix。</li>
+</ul>
+
+
+<p>整体改造后，代码量比原来减少 100 多行。</p>
+
+<p>上线后效果显著。</p>
+
+<p>当内存降低到 2-3MB 的水平后，这意味着 75W 词这种规模的大词典，可以用在手机环境。</p>
+
+<p>比如可以在 ios 或者 Android 上做 中文/英文的切词，
+这意味着可能在客户端实现体验相当良好的搜索引擎。</p>
+
+<p>ios 上也有可用于中文的分词器 CFStringTokenizer
+<a href="https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8">https://developer.apple.com/documentation/corefoundation/cfstringtokenizer-rf8</a> ，但貌似不开源。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/">TLS协议分析 与 现代加密通信协议设计</a></h1>
     
     
@@ -768,43 +892,6 @@ tls是由各类基础算法，作为原语组合而成。
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/02/08/%e4%b8%80%e4%b8%aa%e4%bd%bf%e7%94%a8kuaipan%e5%a4%87%e4%bb%bdlinux%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%9a%84%e8%84%9a%e6%9c%ac/">一个使用KuaiPan备份linux服务器的脚本</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-02-08T00:00:00+08:00'><span class='date'>2014-02-08</span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>近日需要给服务器做备份，在网上找到了一个现成的金山快盘的api：<a href="https://github.com/deren/python-kuaipan" target="_blank"><a href="https://github.com/deren/python-kuaipan">https://github.com/deren/python-kuaipan</a></a> （感谢！）<br/>
-试了一下，遂决定备份到金山快盘上。</p>
-
-<p>备份脚本考虑了以下几个方面的要求：<br/>
-1.上传之前一定要加密，对比之后，使用了openssl的aes-256-cbc加密算法<br/>
-2.增量备份，最开始尝试用<a href="http://duplicity.nongnu.org" target="_blank">duplicity</a> ,写了一个duplicity的backend，然后发现，好复杂！猛然发现，linux上的tar就有<a href="http://www.gnu.org/software/tar/manual/html_node/Incremental-Dumps.html#Incremental-Dumps" target="_blank">增量备份功能</a>，于是直接用了tar<br/>
-3.分卷，KuaiPan有文件大小限制，此处用了split把tar文件分卷</p>
-
-<p>代码放在 <a href="https://github.com/windydays/kuaipan_backup" target="_blank"><a href="https://github.com/windydays/kuaipan_backup">https://github.com/windydays/kuaipan_backup</a></a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -824,6 +911,10 @@ tls是由各类基础算法，作为原语组合而成。
       </li>
     
       <li class="post">
+        <a href="/blog/2019/09/18/cppjieba-darts-DAT-memory_optimize/">重实现 CppJieba 中文分词算法，把内存消耗降低 100倍</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/">TLS协议分析 与 现代加密通信协议设计</a>
       </li>
     
@@ -833,10 +924,6 @@ tls是由各类基础算法，作为原语组合而成。
     
       <li class="post">
         <a href="/blog/2015/05/08/https-config-optimize-in-nginx/">Nginx下配置高性能，高安全性的https TLS服务</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/">【翻译】密码学一小时必知</a>
       </li>
     
   </ul>

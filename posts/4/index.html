@@ -9,7 +9,35 @@
   <meta name="author" content="byronhe">
 
   
-  <meta name="description" content="                                                  作者：windydays      2010/8/17   LAMP环境的一般入侵，大致经过sql注入，上传webshell，本地提权至root，安装rootkit等步骤。采用如下的配置， &hellip;">
+  <meta name="description" content="1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+#!/bin/bash
+#Author:windydays
+#Date : 2010/8/29
+#用于监控apache，如果退出就自动重启apache， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +97,90 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/08/29/%e4%b8%80%e4%b8%aa%e7%94%a8inotify%e7%9b%91%e6%8e%a7apache%e7%9a%84%e8%84%9a%e6%9c%ac/">一个用inotify监控apache的脚本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2010-08-29T00:00:00+08:00'><span class='date'>2010-08-29</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="c">#Author:windydays</span>
+</span><span class='line'><span class="c">#Date : 2010/8/29</span>
+</span><span class='line'><span class="c">#用于监控apache，如果退出就自动重启apache，原理是在如果apache退出，则apache的pid文件会被close，或触发attrib事件，</span>
+</span><span class='line'><span class="c">#只要用inotify监控这个事件，然后重启apache，再重新监控pid文件即可。</span>
+</span><span class='line'><span class="c">#使用方法：用root权限运行即可。</span>
+</span><span class='line'><span class="c">#停止方法：sudo pkill inotifywait.</span>
+</span><span class='line'><span class="nv">pid_file</span><span class="o">=</span>/var/run/apache2.pid
+</span><span class='line'><span class="nv">mon_log</span><span class="o">=</span>/var/log/apache2/mon-apache.sh.log
+</span><span class='line'><span class="k">if</span> ! <span class="o">[</span> -f <span class="nv">$pid_file</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>        <span class="nb">echo</span> <span class="s1">&#39;pid file does NOT exist! maybe it is somewhere else or</span>
+</span><span class='line'><span class="s1">        service is</span>
+</span><span class='line'><span class="s1">        down now.&#39;</span> &gt;&gt;<span class="nv">$mon_log</span><span class="p">;</span>
+</span><span class='line'>        <span class="nb">exit </span><span class="m">1</span> <span class="p">;</span>
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'><span class="c">#如果apache没有出问题，会阻塞在下面这里.</span>
+</span><span class='line'>inotifywait -q -e close <span class="nv">$pid_file</span> &gt;&gt;<span class="nv">$mon_log</span><span class="p">;</span>
+</span><span class='line'><span class="nv">exit_code</span><span class="o">=</span><span class="nv">$?</span><span class="p">;</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;At $(date)&quot;</span> &gt;&gt;<span class="nv">$mon_log</span><span class="p">;</span>
+</span><span class='line'><span class="c">#如果#?不等于0说明inotifywait不正常退出。</span>
+</span><span class='line'><span class="k">if</span>  <span class="o">[</span> <span class="nv">$exit_code</span> <span class="o">=</span> <span class="m">0</span> <span class="o">]</span><span class="p">;</span><span class="k">then</span>
+</span><span class='line'>        /etc/init.d/apache2 restart
+</span><span class='line'>        sleep 8<span class="p">;</span>
+</span><span class='line'>        <span class="nb">exec</span> <span class="nv">$0</span><span class="p">;</span>
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>领会意思即可，这个东西没有实用价值，有一些超时问题无法解决。</p>
+
+<p>实际上还是那种每隔两分钟，就发个HTTP请求，检测apache是否还活着的方式比较稳定可靠，例如monit。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -166,6 +278,10 @@ sudo vi /etc/apache2/mod-available/mod_chroot.conf</pre>
       </li>
     
       <li class="post">
+        <a href="/blog/2019/09/18/cppjieba-darts-DAT-memory_optimize/">重实现 CppJieba 中文分词算法，把内存消耗降低 100倍</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/">TLS协议分析 与 现代加密通信协议设计</a>
       </li>
     
@@ -175,10 +291,6 @@ sudo vi /etc/apache2/mod-available/mod_chroot.conf</pre>
     
       <li class="post">
         <a href="/blog/2015/05/08/https-config-optimize-in-nginx/">Nginx下配置高性能，高安全性的https TLS服务</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/">【翻译】密码学一小时必知</a>
       </li>
     
   </ul>
