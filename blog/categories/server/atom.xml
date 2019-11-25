@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Server | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/server/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-11-25T13:46:04+08:00</updated>
+  <updated>2019-11-25T13:49:41+08:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -47,14 +47,16 @@
 <a name="L....1................."></a>
 <h3>二.1  查内存分布</h3>
 
-<p>第一步先用 jemalloc 的 memory profiler 工具查看内存耗费在哪里，
-1. 改一下 CppJieba  的  test/demo.cpp， 链接 jemalloc，编译成二进制  jieba_test<br/>
-2. 然后设置环境变量
-<code>
-export MALLOC_CONF="prof:true,prof_prefix:mem_prof/mem_profile_je.out,lg_prof_interval:20,lg_prof_sample:20"
-</code>
-3.然后  mkdir mem_prof， 并运行测试程序
-4.jeprof &ndash;pdf ./jieba_test mem_prof/mem_profile_je.out.xxx.heap > mem_profile.pdf</p>
+<p>第一步先用 jemalloc 的 memory profiler 工具查看内存耗费在哪里，</p>
+
+<ol>
+<li>改一下 CppJieba  的  test/demo.cpp， 链接 jemalloc，编译成二进制  jieba_test</li>
+<li>然后设置环境变量
+ <code>export MALLOC_CONF="prof:true,prof_prefix:mem_prof/mem_profile_je.out,lg_prof_interval:20,lg_prof_sample:20"</code></li>
+<li>然后  mkdir mem_prof， 并运行测试程序</li>
+<li>jeprof &ndash;pdf ./jieba_test mem_prof/mem_profile_je.out.xxx.heap > mem_profile.pdf</li>
+</ol>
+
 
 <p>打开 mem_profile.pdf ，就可以看到内存分布了</p>
 

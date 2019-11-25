@@ -118,16 +118,16 @@ https://github.com/yanyiwu/cppjieba 在实际使用 CppJieba 的过程中，我�
 <a name="L....1................."></a>
 <h3>二.1  查内存分布</h3>
 
-<p>第一步先用 jemalloc 的 memory profiler 工具查看内存耗费在哪里，
-1. 改一下 CppJieba  的  test/demo.cpp， 链接 jemalloc，编译成二进制  jieba_test<br/>
-2. 然后设置环境变量</p>
+<p>第一步先用 jemalloc 的 memory profiler 工具查看内存耗费在哪里，</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>export MALLOC_CONF="prof:true,prof_prefix:mem_prof/mem_profile_je.out,lg_prof_interval:20,lg_prof_sample:20"</span></code></pre></td></tr></table></div></figure>
+<ol>
+<li>改一下 CppJieba  的  test/demo.cpp， 链接 jemalloc，编译成二进制  jieba_test</li>
+<li>然后设置环境变量
+ <code>export MALLOC_CONF="prof:true,prof_prefix:mem_prof/mem_profile_je.out,lg_prof_interval:20,lg_prof_sample:20"</code></li>
+<li>然后  mkdir mem_prof， 并运行测试程序</li>
+<li>jeprof &ndash;pdf ./jieba_test mem_prof/mem_profile_je.out.xxx.heap > mem_profile.pdf</li>
+</ol>
 
-
-<p>3.然后  mkdir mem_prof， 并运行测试程序
-4.jeprof &ndash;pdf ./jieba_test mem_prof/mem_profile_je.out.xxx.heap > mem_profile.pdf</p>
 
 <p>打开 mem_profile.pdf ，就可以看到内存分布了</p>
 
