@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Algorithm Design | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/algorithm-design/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-11-25T13:49:41+08:00</updated>
+  <updated>2019-12-07T14:31:06+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[圆形坠落模拟算法设计]]></title>
     <link href="https://blog.helong.info//2012/07/25/%e5%9c%86%e5%bd%a2%e5%9d%a0%e8%90%bd%e6%a8%a1%e6%8b%9f%e7%ae%97%e6%b3%95%e8%ae%be%e8%ae%a1/"/>
-    <updated>2012-07-25T00:00:00+08:00</updated>
+    <updated>2012-07-25T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2012/07/25/%e5%9c%86%e5%bd%a2%e5%9d%a0%e8%90%bd%e6%a8%a1%e6%8b%9f%e7%ae%97%e6%b3%95%e8%ae%be%e8%ae%a1</id>
     <content type="html"><![CDATA[<p>目标：实现一个算法，模拟在一个封闭二维区域，圆形小球朝给定方向坠落的过程，实现二维区域的紧密填充。</p>
 
@@ -92,7 +92,7 @@ bool most_advance(Point* p,double direc_x,double direc_y,Mesh *mesh,double &amp;
   <entry>
     <title type="html"><![CDATA[递增子序列数目计算的算法]]></title>
     <link href="https://blog.helong.info//2011/10/17/%e9%80%92%e5%a2%9e%e5%ad%90%e5%ba%8f%e5%88%97%e6%95%b0%e7%9b%ae%e8%ae%a1%e7%ae%97%e7%9a%84%e7%ae%97%e6%b3%95/"/>
-    <updated>2011-10-17T00:00:00+08:00</updated>
+    <updated>2011-10-17T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2011/10/17/%e9%80%92%e5%a2%9e%e5%ad%90%e5%ba%8f%e5%88%97%e6%95%b0%e7%9b%ae%e8%ae%a1%e7%ae%97%e7%9a%84%e7%ae%97%e6%b3%95</id>
     <content type="html"><![CDATA[<p>这是前几天笔试时，考场上想出来的算法，但是算了两次都不一样，最后只好蒙了一个选项，悲催！</p>
 
@@ -124,7 +124,7 @@ bool most_advance(Point* p,double direc_x,double direc_y,Mesh *mesh,double &amp;
   <entry>
     <title type="html"><![CDATA[找出平面上的特殊无向图中的所有三角形的算法]]></title>
     <link href="https://blog.helong.info//2011/08/22/%e6%89%be%e5%87%ba%e5%b9%b3%e9%9d%a2%e4%b8%8a%e7%9a%84%e7%89%b9%e6%ae%8a%e6%97%a0%e5%90%91%e5%9b%be%e4%b8%ad%e7%9a%84%e6%89%80%e6%9c%89%e4%b8%89%e8%a7%92%e5%bd%a2%e7%9a%84%e7%ae%97%e6%b3%95/"/>
-    <updated>2011-08-22T00:00:00+08:00</updated>
+    <updated>2011-08-22T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2011/08/22/%e6%89%be%e5%87%ba%e5%b9%b3%e9%9d%a2%e4%b8%8a%e7%9a%84%e7%89%b9%e6%ae%8a%e6%97%a0%e5%90%91%e5%9b%be%e4%b8%ad%e7%9a%84%e6%89%80%e6%9c%89%e4%b8%89%e8%a7%92%e5%bd%a2%e7%9a%84%e7%ae%97%e6%b3%95</id>
     <content type="html"><![CDATA[<p>  问题提出背景：在非结构化三角形网格生成过程中，若采用前沿推进法，在推进过程中是不好构造三角形的（而且也没有要），最好在把所有的边都连好以后再找出所有三角形，于是提出了问题：在由三角形构成的平面无向图中如何找出所有三角形？</p>
 

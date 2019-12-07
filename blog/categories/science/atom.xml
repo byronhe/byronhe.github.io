@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Science | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/science/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-11-25T13:49:41+08:00</updated>
+  <updated>2019-12-07T14:31:06+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[【旧代码】2010年用matlab做的几张理想流场的图]]></title>
     <link href="https://blog.helong.info//2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%912010%e5%b9%b4%e7%94%a8matlab%e5%81%9a%e7%9a%84%e5%87%a0%e5%bc%a0%e7%90%86%e6%83%b3%e6%b5%81%e5%9c%ba%e7%9a%84%e5%9b%be/"/>
-    <updated>2011-11-15T00:00:00+08:00</updated>
+    <updated>2011-11-15T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%912010%e5%b9%b4%e7%94%a8matlab%e5%81%9a%e7%9a%84%e5%87%a0%e5%bc%a0%e7%90%86%e6%83%b3%e6%b5%81%e5%9c%ba%e7%9a%84%e5%9b%be</id>
     <content type="html"><![CDATA[<p>就不贴matlab代码了，图比较大。</p>
 
@@ -48,7 +48,7 @@
   <entry>
     <title type="html"><![CDATA[【旧代码】传热过程数值模拟（《传热学》实验指导书第四部分第一题，第一，第二类边界条件）]]></title>
     <link href="https://blog.helong.info//2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%91%e4%bc%a0%e7%83%ad%e8%bf%87%e7%a8%8b%e6%95%b0%e5%80%bc%e6%a8%a1%e6%8b%9f%ef%bc%88%e3%80%8a%e4%bc%a0%e7%83%ad%e5%ad%a6%e3%80%8b%e5%ae%9e%e9%aa%8c%e6%8c%87/"/>
-    <updated>2011-11-15T00:00:00+08:00</updated>
+    <updated>2011-11-15T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%91%e4%bc%a0%e7%83%ad%e8%bf%87%e7%a8%8b%e6%95%b0%e5%80%bc%e6%a8%a1%e6%8b%9f%ef%bc%88%e3%80%8a%e4%bc%a0%e7%83%ad%e5%ad%a6%e3%80%8b%e5%ae%9e%e9%aa%8c%e6%8c%87</id>
     <content type="html"><![CDATA[<p>2010年十月写的旧代码。</p>
 

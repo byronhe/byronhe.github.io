@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Scheme | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/scheme/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-11-25T13:49:41+08:00</updated>
+  <updated>2019-12-07T14:31:06+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[一个基于约束传播的，玩具级微型计算语言的设计和简单实现]]></title>
     <link href="https://blog.helong.info//2012/04/09/%e4%b8%80%e4%b8%aa%e5%9f%ba%e4%ba%8e%e7%ba%a6%e6%9d%9f%e4%bc%a0%e6%92%ad%e7%9a%84%ef%bc%8c%e7%8e%a9%e5%85%b7%e7%ba%a7%e5%be%ae%e5%9e%8b%e8%ae%a1%e7%ae%97%e8%af%ad%e8%a8%80%e7%9a%84%e8%ae%be%e8%ae%a1/"/>
-    <updated>2012-04-09T00:00:00+08:00</updated>
+    <updated>2012-04-09T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2012/04/09/%e4%b8%80%e4%b8%aa%e5%9f%ba%e4%ba%8e%e7%ba%a6%e6%9d%9f%e4%bc%a0%e6%92%ad%e7%9a%84%ef%bc%8c%e7%8e%a9%e5%85%b7%e7%ba%a7%e5%be%ae%e5%9e%8b%e8%ae%a1%e7%ae%97%e8%af%ad%e8%a8%80%e7%9a%84%e8%ae%be%e8%ae%a1</id>
     <content type="html"><![CDATA[<p>这个程序就是做来玩和练习的，代码是玩具级别的，用的python，基本可以正常工作了。</p>
 
@@ -632,7 +632,7 @@ e.exec_stream(i)
   <entry>
     <title type="html"><![CDATA[sicp练习2.42 [解8皇后问题的Scheme语言实现]]]></title>
     <link href="https://blog.helong.info//2011/12/22/sicp%e7%bb%83%e4%b9%a02-42-%e8%a7%a38%e7%9a%87%e5%90%8e%e9%97%ae%e9%a2%98%e7%9a%84scheme%e8%af%ad%e8%a8%80%e5%ae%9e%e7%8e%b0/"/>
-    <updated>2011-12-22T00:00:00+08:00</updated>
+    <updated>2011-12-22T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2011/12/22/sicp%e7%bb%83%e4%b9%a02-42-%e8%a7%a38%e7%9a%87%e5%90%8e%e9%97%ae%e9%a2%98%e7%9a%84scheme%e8%af%ad%e8%a8%80%e5%ae%9e%e7%8e%b0</id>
     <content type="html"><![CDATA[<p>代码框架来自sicp 练习2.42。算是作业吧。</p>
 
@@ -714,7 +714,7 @@ e.exec_stream(i)
   <entry>
     <title type="html"><![CDATA[符号求导，scheme实现]]></title>
     <link href="https://blog.helong.info//2011/12/22/%e7%ac%a6%e5%8f%b7%e6%b1%82%e5%af%bc%ef%bc%8cscheme%e5%ae%9e%e7%8e%b0/"/>
-    <updated>2011-12-22T00:00:00+08:00</updated>
+    <updated>2011-12-22T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2011/12/22/%e7%ac%a6%e5%8f%b7%e6%b1%82%e5%af%bc%ef%bc%8cscheme%e5%ae%9e%e7%8e%b0</id>
     <content type="html"><![CDATA[<p>sicp练习2.57</p>
 
@@ -831,7 +831,7 @@ e.exec_stream(i)
   <entry>
     <title type="html"><![CDATA[Church计数]]></title>
     <link href="https://blog.helong.info//2011/11/20/church%e8%ae%a1%e6%95%b0/"/>
-    <updated>2011-11-20T00:00:00+08:00</updated>
+    <updated>2011-11-20T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2011/11/20/church%e8%ae%a1%e6%95%b0</id>
     <content type="html"><![CDATA[<p>my code：</p>
 

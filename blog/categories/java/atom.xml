@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/java/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-11-25T13:49:41+08:00</updated>
+  <updated>2019-12-07T14:31:06+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[jdbc使用DataSource连接mysql,postgresql,oracle的代码]]></title>
     <link href="https://blog.helong.info//2011/11/15/jdbc%e4%bd%bf%e7%94%a8datasource%e8%bf%9e%e6%8e%a5mysqlpostgresqloracle%e7%9a%84%e4%bb%a3%e7%a0%81/"/>
-    <updated>2011-11-15T00:00:00+08:00</updated>
+    <updated>2011-11-15T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2011/11/15/jdbc%e4%bd%bf%e7%94%a8datasource%e8%bf%9e%e6%8e%a5mysqlpostgresqloracle%e7%9a%84%e4%bb%a3%e7%a0%81</id>
     <content type="html"><![CDATA[<pre><code class="java">import java.sql.Connection;
 import java.sql.ResultSet;
@@ -105,7 +105,7 @@ public class DBConnection {
   <entry>
     <title type="html"><![CDATA[Java多线程网页下载代码]]></title>
     <link href="https://blog.helong.info//2011/11/15/java%e5%a4%9a%e7%ba%bf%e7%a8%8b%e7%bd%91%e9%a1%b5%e4%b8%8b%e8%bd%bd%e4%bb%a3%e7%a0%81/"/>
-    <updated>2011-11-15T00:00:00+08:00</updated>
+    <updated>2011-11-15T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2011/11/15/java%e5%a4%9a%e7%ba%bf%e7%a8%8b%e7%bd%91%e9%a1%b5%e4%b8%8b%e8%bd%bd%e4%bb%a3%e7%a0%81</id>
     <content type="html"><![CDATA[<p>小项目，练手的。</p>
 

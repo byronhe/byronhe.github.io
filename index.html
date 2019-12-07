@@ -9,8 +9,7 @@
   <meta name="author" content="byronhe">
 
   
-  <meta name="description" content="一，问题背景 中文分词应用比较广泛的开源算法，是 jieba 结巴分词，结巴分词较高性能的实现是 C++ 版本的 CppJieba :
-https://github.com/yanyiwu/cppjieba 在实际使用 CppJieba 的过程中，我们发现 CppJieba 的内存占用比较高。 &hellip;">
+  <meta name="description" content="一，问题背景 随着深度学习的广泛应用，在搜索引擎/推荐系统/机器视觉等业务系统中，越来越多的深度学习模型部署到线上服务。 机器学习模型在离线训练时，一般要将输入的数据做特征工程预处理，再输入模型在 TensorFlow PyTorch 等框架上做训练。 1.常见的特征工程逻辑 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +69,77 @@ https://github.com/yanyiwu/cppjieba 在实际使用 CppJieba 的过程中，我�
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/">Python 自动翻译成 C++ ，彻底保证离线在线特征一致</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-11-29T13:54:00+00:00'><span class='date'>2019-11-29</span> <span class='time'>1:54 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><hr />
+
+<a name="L.................."></a>
+<h1>一，问题背景</h1>
+
+<p>随着深度学习的广泛应用，在搜索引擎/推荐系统/机器视觉等业务系统中，越来越多的深度学习模型部署到线上服务。</p>
+
+<p>机器学习模型在离线训练时，一般要将输入的数据做特征工程预处理，再输入模型在 TensorFlow PyTorch 等框架上做训练。</p>
+
+<a name="L1............................"></a>
+<h3>1.常见的特征工程逻辑</h3>
+
+<p>常见的特征工程逻辑有：
+1. 分箱/分桶 离散化
+1. log/exp 对数/幂等 math numpy 常见数学运算
+1. 特征缩放/归一化/截断
+1. 交叉特征生成
+1. 分词匹配程度计算
+1. 字符串分隔匹配判断tong
+1. 缺省值填充等
+1. 数据平滑
+1. onehot 编码，hash 编码等</p>
+
+<p>这些特征工程代码，当然一般使用深度学习最主要的语言 <strong>python</strong> 实现。</p>
+
+<a name="L.................."></a>
+<h1>二，业务痛点</h1>
+
+<p>离线训练完成，模型上线部署后，同样要<strong>用 C++ 重新实现</strong> 这些 python 的特征工程逻辑代码。</p>
+
+<p>我们发现，<strong>“用 C++ 重新实现”</strong> 这个步骤，给实际业务带来了大量的问题：</p>
+
+<ol>
+<li>繁琐，费时费力，极容易出现 python 和 C++ 代码<strong>不一致</strong></li>
+<li><strong>不一致</strong>会直接影响模型在线上的效果，导致大盘业务指标不如预期，产生各种 bad case</li>
+<li><strong>不一致</strong>难以发现，无法测试，无法监控，经常要靠用户投诉反馈，甚至大盘数据异常才能发现</li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/">继续阅读/Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -543,53 +613,6 @@ tls是由各类基础算法，作为原语组合而成。
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/03/24/move-to-octopress/">博客迁移到octopress</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-03-24T00:00:00+08:00'><span class='date'>2014-03-24</span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>wordpress的编辑器混淆了 结构 和 表现
-而markdown，类似latex，结构和表现分离，更符合我的偏好。</p>
-
-<p>在vim里面写博客，更能激起人的写作欲望，浏览器里面，容易转移注意力。</p>
-
-<p>octopress的博客还可以用git做版本管理，备份。</p>
-
-<p>octopress内置了代码格式化，着色。</p>
-
-<p>这些都比wordpress更适合做技术博客。</p>
-
-<p>从wordpress导出数据使用了  <a href="https://github.com/benbalter/wordpress-to-jekyll-exporter">https://github.com/benbalter/wordpress-to-jekyll-exporter</a></p>
-
-<p>评论使用了 <a href="https://disqus.com">https://disqus.com</a> ，只需要申请一个账号，然后填到_config.yml里面，就行了</p>
-
-<p>google analytics也是，只需要申请，然后把ID填入_config.yml就ok了。</p>
-
-<p>octopress并不适合放在 xxx.com/blog/ 这样的目录下面，一些js脚本不支持目录，
-最好放在独立域名下面。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -605,6 +628,10 @@ tls是由各类基础算法，作为原语组合而成。
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/">Python 自动翻译成 C++ ，彻底保证离线在线特征一致</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2019/11/25/cppjieba-darts-DAT-memory_optimize/">用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</a>
       </li>
     
@@ -618,10 +645,6 @@ tls是由各类基础算法，作为原语组合而成。
     
       <li class="post">
         <a href="/blog/2015/06/05/modern-crypto/">现代密码学实践指南[2015年]</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/05/08/https-config-optimize-in-nginx/">Nginx下配置高性能，高安全性的https TLS服务</a>
       </li>
     
   </ul>

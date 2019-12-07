@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Cpp | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/cpp/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-11-25T13:49:41+08:00</updated>
+  <updated>2019-12-07T14:31:06+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Visual Studio静态，动态链接库开发工具简单使用]]></title>
     <link href="https://blog.helong.info//2011/11/13/visual-studio%e9%9d%99%e6%80%81%ef%bc%8c%e5%8a%a8%e6%80%81%e9%93%be%e6%8e%a5%e5%ba%93%e5%bc%80%e5%8f%91%e5%b7%a5%e5%85%b7%e7%ae%80%e5%8d%95%e4%bd%bf%e7%94%a8/"/>
-    <updated>2011-11-13T00:00:00+08:00</updated>
+    <updated>2011-11-13T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2011/11/13/visual-studio%e9%9d%99%e6%80%81%ef%bc%8c%e5%8a%a8%e6%80%81%e9%93%be%e6%8e%a5%e5%ba%93%e5%bc%80%e5%8f%91%e5%b7%a5%e5%85%b7%e7%ae%80%e5%8d%95%e4%bd%bf%e7%94%a8</id>
     <content type="html"><![CDATA[<p>这是2011年8月份做过的一点实验，查了MSDN等等很多资料，基本搞明白了。这里我不会使用visual studio的图形界面工具，作为专业人士，还是搞懂自己的工具是怎么运转的，这样比较好。</p>
 
@@ -500,7 +500,7 @@ int main(){
   <entry>
     <title type="html"><![CDATA[Codeblocks配合gfortran作为fortran开发环境的配置方法]]></title>
     <link href="https://blog.helong.info//2011/05/12/codeblocks%e9%85%8d%e5%90%88gfortran%e4%bd%9c%e4%b8%bafortran%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83%e7%9a%84%e9%85%8d%e7%bd%ae%e6%96%b9%e6%b3%95/"/>
-    <updated>2011-05-12T00:00:00+08:00</updated>
+    <updated>2011-05-12T00:00:00+00:00</updated>
     <id>https://blog.helong.info//2011/05/12/codeblocks%e9%85%8d%e5%90%88gfortran%e4%bd%9c%e4%b8%bafortran%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83%e7%9a%84%e9%85%8d%e7%bd%ae%e6%96%b9%e6%b3%95</id>
     <content type="html"><![CDATA[<p>&nbsp;</p>
 
