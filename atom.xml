@@ -4,7 +4,7 @@
   <title><![CDATA[Tech Ideas]]></title>
   <link href="https://blog.helong.info//atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-12-07T14:31:06+00:00</updated>
+  <updated>2019-12-07T14:42:52+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -30,16 +30,20 @@
 <a name="L1............................"></a>
 <h3>1.常见的特征工程逻辑</h3>
 
-<p>常见的特征工程逻辑有：
-1. 分箱/分桶 离散化
-1. log/exp 对数/幂等 math numpy 常见数学运算
-1. 特征缩放/归一化/截断
-1. 交叉特征生成
-1. 分词匹配程度计算
-1. 字符串分隔匹配判断tong
-1. 缺省值填充等
-1. 数据平滑
-1. onehot 编码，hash 编码等</p>
+<p>常见的特征工程逻辑有：</p>
+
+<ol>
+<li>分箱/分桶 离散化</li>
+<li>log/exp 对数/幂等 math numpy 常见数学运算</li>
+<li>特征缩放/归一化/截断</li>
+<li>交叉特征生成</li>
+<li>分词匹配程度计算</li>
+<li>字符串分隔匹配判断tong</li>
+<li>缺省值填充等</li>
+<li>数据平滑</li>
+<li>onehot 编码，hash 编码等</li>
+</ol>
+
 
 <p>这些特征工程代码，当然一般使用深度学习最主要的语言 <strong>python</strong> 实现。</p>
 
@@ -76,11 +80,15 @@
 
 <blockquote><p>“模型线上线下一致性问题对于模型效果非常重要，我们使用特征日志来实时记录特征，保证特征的一致性。这样离线处理的时候会把实时的用户反馈，和特征日志做一个结合生成训练样本，然后更新到模型训练平台上，平台更新之后在推送到线上，这样整个排序形成了一个闭环。”</p></blockquote>
 
-<p>总结起来，有几种思路：
-1. 在线特征存储起来给离线用
-1. 在线 C++ 代码编译成 so 导出给离线用
-1. 根据一份配置生成离线和在线代码
-1. 提取公共代码，加强代码复用，等软件工程手段，减少不一致</p>
+<p>总结起来，有几种思路：</p>
+
+<ol>
+<li>在线特征存储起来给离线用</li>
+<li>在线 C++ 代码编译成 so 导出给离线用</li>
+<li>根据一份配置生成离线和在线代码</li>
+<li>提取公共代码，加强代码复用，等软件工程手段，减少不一致</li>
+</ol>
+
 
 <a name="L2...................."></a>
 <h3>2. 自动翻译方案</h3>
@@ -88,11 +96,15 @@
 <a name="L.1........................"></a>
 <h4>(1) .已有方案的缺点</h4>
 
-<p>但这些思路都有各种缺点：
-1. 所有在线请求的所有特征，这个存储量数据量很大
-1. 算法改代码需要等待后台开发，降低了算法同学的工作效率
-1. 特征处理代码的复杂度转移到配置文件中，不一定能充分表达，而且配置格式增加学习成本
-1. 就这边真实离线特征处理代码来看，大部分代码都无法抽取出公共代码做复用。</p>
+<p>但这些思路都有各种缺点：</p>
+
+<ol>
+<li>所有在线请求的所有特征，这个存储量数据量很大</li>
+<li>算法改代码需要等待后台开发，降低了算法同学的工作效率</li>
+<li>特征处理代码的复杂度转移到配置文件中，不一定能充分表达，而且配置格式增加学习成本</li>
+<li>就这边真实离线特征处理代码来看，大部分代码都无法抽取出公共代码做复用。</li>
+</ol>
+
 
 <a name="L.2............"></a>
 <h4>(2). 翻译器</h4>
@@ -358,19 +370,27 @@
 <a name="L.2........."></a>
 <h3>(2). 功能</h3>
 
-<p>pythran 并不支持完整的python， 只支持 python 语言特性的一个子集:
-- polymorphic functions 多态函数(翻译成 C++ 的泛型模板函数)
-- lambda
-- list comprehension  列表推导式
-- map, reduce 等函数
-- dictionary, set, list 等数据结构
-- exceptions 异常
-- file handling 文件处理
-- 部分 numpy</p>
+<p>pythran 并不支持完整的python， 只支持 python 语言特性的一个子集:</p>
 
-<p>不支持的功能：
-- classes 类
-- polymorphic variables 可变类型变量</p>
+<ul>
+<li>polymorphic functions 多态函数(翻译成 C++ 的泛型模板函数)</li>
+<li>lambda</li>
+<li>list comprehension  列表推导式</li>
+<li>map, reduce 等函数</li>
+<li>dictionary, set, list 等数据结构</li>
+<li>exceptions 异常</li>
+<li>file handling 文件处理</li>
+<li>部分 numpy</li>
+</ul>
+
+
+<p>不支持的功能：</p>
+
+<ul>
+<li>classes 类</li>
+<li>polymorphic variables 可变类型变量</li>
+</ul>
+
 
 <a name="L.3................................."></a>
 <h3>(3). 支持的数据类型和函数</h3>
@@ -432,9 +452,14 @@
 </ol>
 
 
-<p>目前看起来 ，pythran 还欠缺的：
-1. 字符串处理能力欠缺，缺少 str.encode()/str.decode() 对 utf8 的支持
-1. 缺少正则表达式 regex 支持</p>
+<p>目前看起来 ，pythran 还欠缺的：</p>
+
+<ol>
+<li>字符串处理能力欠缺，缺少 str.encode()/str.decode() 对 utf8 的支持</li>
+<li>缺少正则表达式 regex 支持</li>
+<li>缺少 json 支持</li>
+</ol>
+
 
 <p>看文档要自己加也不麻烦，看业务需要可以加。</p>
 
