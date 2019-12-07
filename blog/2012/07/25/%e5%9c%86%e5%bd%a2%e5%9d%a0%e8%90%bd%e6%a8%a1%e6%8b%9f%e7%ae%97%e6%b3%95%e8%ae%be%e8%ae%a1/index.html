@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>圆形坠落模拟算法设计 - Tech Ideas</title>
+  <meta name="author" content="byronhe">
+
+  
+  <meta name="description" content="目标：实现一个算法，模拟在一个封闭二维区域，圆形小球朝给定方向坠落的过程，实现二维区域的紧密填充。 像下面这样： 难点，及其简单解决： 1.如何把粒子移动尽可能远？ 图中的粒子i，能往下移动多远？一般情况,碰撞？边界？ 一个简单解法： 注意如下事实：判断两个粒子是否重叠，判断粒子是否和边 界线重叠 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://blog.helong.info//blog/2012/07/25/%25e5%259c%2586%25e5%25bd%25a2%25e5%259d%25a0%25e8%2590%25bd%25e6%25a8%25a1%25e6%258b%259f%25e7%25ae%2597%25e6%25b3%2595%25e8%25ae%25be%25e8%25ae%25a1/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Tech Ideas" type="application/atom+xml">
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-49290834-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Tech Ideas</a></h1>
+  
+    <h2>C++,Linux,Algorithm,Crypto,Lisp,etc</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.helong.info/">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">圆形坠落模拟算法设计</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2012-07-25T00:00:00+00:00'><span class='date'>2012-07-25</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>目标：实现一个算法，模拟在一个封闭二维区域，圆形小球朝给定方向坠落的过程，实现二维区域的紧密填充。</p>
+
+<p>像下面这样：</p>
+
+<p><img src="/images/blog/2012072600504753.png"></p>
+
+<p>难点，及其简单解决：</p>
+
+<p>1.如何把粒子移动尽可能远？</p>
+
+<p><img src="/images/blog/2012072601011361.png"></p>
+
+<p>图中的粒子i，能往下移动多远？一般情况,碰撞？边界？</p>
+
+<p>一个简单解法：</p>
+
+<!--more-->
+
+
+<p>注意如下事实：判断两个粒子是否重叠，判断粒子是否和边 界线重叠，都是十分容易的。</p>
+
+<p>据此定义函数 f &reg; 如下</p>
+
+<p><img src="/images/blog/2012072601024742.png"></p>
+
+<p>考虑把粒子往前推的过程，最开始 f &reg; = 1，当推进到一个临界值后，f &reg; = 0,</p>
+
+<p>因此，f &reg; 的函数图像是：</p>
+
+<p><img src="/images/blog/2012072601032995.png"></p>
+
+<p>代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="c1">//找出一个点，在一个方向上最远可以前进多远，限于一步之内，该点可以不属于这个mesh，如果不能前进，返回false</span>
+</span><span class='line'><span class="kt">bool</span> <span class="nf">most_advance</span><span class="p">(</span><span class="n">Point</span><span class="o">*</span> <span class="n">p</span><span class="p">,</span><span class="kt">double</span> <span class="n">direc_x</span><span class="p">,</span><span class="kt">double</span> <span class="n">direc_y</span><span class="p">,</span><span class="n">Mesh</span> <span class="o">*</span><span class="n">mesh</span><span class="p">,</span><span class="kt">double</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">,</span><span class="kt">double</span> <span class="o">&amp;</span><span class="n">y</span><span class="p">,</span><span class="kt">double</span> <span class="o">&amp;</span><span class="n">best</span><span class="p">){</span>
+</span><span class='line'>        <span class="c1">//二分法求根。</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">can_move</span><span class="p">))</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">low_radio</span><span class="o">=</span><span class="mf">0.0</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">high_radio</span><span class="o">=</span><span class="mf">1.0</span><span class="p">;</span><span class="c1">//mesh-&gt;x_num + mesh-&gt;y_num;</span>
+</span><span class='line'>        <span class="n">best</span><span class="o">=</span><span class="n">low_radio</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">bool</span> <span class="n">at_least_one_success</span><span class="o">=</span><span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">mid</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">step</span><span class="o">=</span><span class="n">mesh</span><span class="o">-&gt;</span><span class="n">get_step</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">Point</span> <span class="n">new_point</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">while</span><span class="p">(</span><span class="n">fabs</span><span class="p">(</span><span class="n">low_radio</span><span class="o">-</span><span class="n">high_radio</span><span class="p">)</span><span class="o">&gt;</span><span class="mf">0.000001</span><span class="p">){</span>
+</span><span class='line'>                <span class="n">mid</span><span class="o">=</span><span class="p">(</span><span class="n">low_radio</span><span class="o">+</span><span class="n">high_radio</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">new_point</span><span class="p">.</span><span class="n">x</span><span class="o">=</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">x</span> <span class="o">+</span> <span class="n">direc_x</span> <span class="o">*</span> <span class="n">step</span> <span class="o">*</span> <span class="n">mid</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">new_point</span><span class="p">.</span><span class="n">y</span><span class="o">=</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">y</span> <span class="o">+</span> <span class="n">direc_y</span> <span class="o">*</span> <span class="n">step</span> <span class="o">*</span> <span class="n">mid</span><span class="p">;</span>
+</span><span class='line'>                <span class="kt">bool</span> <span class="n">result</span><span class="o">=</span><span class="n">mesh</span><span class="o">-&gt;</span><span class="n">can_move_point</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">new_point</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="p">){</span>
+</span><span class='line'>                        <span class="n">low_radio</span><span class="o">=</span><span class="n">mid</span><span class="p">;</span>
+</span><span class='line'>                        <span class="n">best</span><span class="o">=</span><span class="n">max</span><span class="p">(</span><span class="n">best</span><span class="p">,</span><span class="n">mid</span><span class="p">);</span>
+</span><span class='line'>                        <span class="n">at_least_one_success</span><span class="o">=</span><span class="nb">true</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>                        <span class="n">high_radio</span><span class="o">=</span><span class="n">mid</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="c1">//cout&lt;&lt;&quot;mid=&quot;&lt;&lt;mid&lt;&lt;&quot; best=&quot;&lt;&lt;best&lt;&lt;&quot; result=&quot;&lt;&lt;result&lt;&lt;endl;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">at_least_one_success</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">x</span><span class="o">=</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">x</span> <span class="o">+</span> <span class="n">direc_x</span> <span class="o">*</span> <span class="n">step</span> <span class="o">*</span> <span class="n">best</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">y</span><span class="o">=</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">y</span> <span class="o">+</span> <span class="n">direc_y</span> <span class="o">*</span> <span class="n">step</span> <span class="o">*</span> <span class="n">best</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">windydays</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2012-07-25T00:00:00+00:00'><span class='date'>2012-07-25</span> <span class='time'>12:00 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/algorithm-design/'>algorithm design</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/04/09/%25e7%25bf%25bb%25e8%25af%2591%25e8%25bd%25bb%25e6%259d%25be7%25e6%25ad%25a5%25ef%25bc%258c%25e5%25af%25bc%25e5%2587%25bay%25e7%25bb%2593%25e5%2590%2588%25e5%25ad%2590/" title="Previous Post: [翻译]轻松7步，导出Y结合子">&laquo; [翻译]轻松7步，导出Y结合子</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/07/11/%25e5%25bc%2580%25e5%25a7%258b%25e5%2586%2599%25e5%258d%259a%25e5%25ae%25a2/" title="Next Post: 开始写博客">开始写博客 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/">Python 自动翻译成 C++ ，彻底保证离线在线特征一致</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/11/25/cppjieba-darts-DAT-memory_optimize/">用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/09/18/newwords_discovery/">GB 规模语料上的高性能新词发现算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/">TLS协议分析 与 现代加密通信协议设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/05/modern-crypto/">现代密码学实践指南[2015年]</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/byronhe">@byronhe</a> on GitHub
+  
+  <script type="text/javascript">
+
+    //$(document).ready(function(){
+    document.addEventListener("DOMContentLoaded", function(event) { 
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'byronhe',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script async src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - byronhe -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+    <script src="/javascripts/modernizr-2.0.js"></script>
+  <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
+  <script src="//apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script async >!window.jQuery && document.write(unescape('%3Cscript async  src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script async  src="/javascripts/octopress.js" type="text/javascript"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-49290834-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'byronheblog';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+<script src="//s95.cnzz.com/z_stat.php?id=1256308650&web_id=1256308650" language="JavaScript"></script>
+
+<script src="/javascripts/jquery.tableofcontents.min.js" type="text/javascript"></script>
+<script src="/javascripts/toc-generator.js" type="text/javascript"></script>
+
+
+
+
+</body>
+</html>

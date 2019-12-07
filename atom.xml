@@ -4,7 +4,7 @@
   <title><![CDATA[Tech Ideas]]></title>
   <link href="https://blog.helong.info//atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-12-07T14:42:52+00:00</updated>
+  <updated>2019-12-07T15:08:08+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -6504,9 +6504,9 @@ Firefox下打开gmail，点击地址栏左侧锁图标</p>
   
   <entry>
     <title type="html"><![CDATA[一个使用KuaiPan备份linux服务器的脚本]]></title>
-    <link href="https://blog.helong.info//2014/02/08/%e4%b8%80%e4%b8%aa%e4%bd%bf%e7%94%a8kuaipan%e5%a4%87%e4%bb%bdlinux%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%9a%84%e8%84%9a%e6%9c%ac/"/>
+    <link href="https://blog.helong.info//blog/2014/02/08/%25e4%25b8%2580%25e4%25b8%25aa%25e4%25bd%25bf%25e7%2594%25a8kuaipan%25e5%25a4%2587%25e4%25bb%25bdlinux%25e6%259c%258d%25e5%258a%25a1%25e5%2599%25a8%25e7%259a%2584%25e8%2584%259a%25e6%259c%25ac/"/>
     <updated>2014-02-08T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2014/02/08/%e4%b8%80%e4%b8%aa%e4%bd%bf%e7%94%a8kuaipan%e5%a4%87%e4%bb%bdlinux%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%9a%84%e8%84%9a%e6%9c%ac</id>
+    <id>https://blog.helong.info//blog/2014/02/08/%e4%b8%80%e4%b8%aa%e4%bd%bf%e7%94%a8kuaipan%e5%a4%87%e4%bb%bdlinux%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%9a%84%e8%84%9a%e6%9c%ac</id>
     <content type="html"><![CDATA[<p>近日需要给服务器做备份，在网上找到了一个现成的金山快盘的api：<a href="https://github.com/deren/python-kuaipan" target="_blank"><a href="https://github.com/deren/python-kuaipan">https://github.com/deren/python-kuaipan</a></a> （感谢！）<br/>
 试了一下，遂决定备份到金山快盘上。</p>
 
@@ -6521,9 +6521,9 @@ Firefox下打开gmail，点击地址栏左侧锁图标</p>
   
   <entry>
     <title type="html"><![CDATA[A Http Proxy Script]]></title>
-    <link href="https://blog.helong.info//2013/11/18/a-http-proxy-script/"/>
+    <link href="https://blog.helong.info//blog/2013/11/18/a-http-proxy-script/"/>
     <updated>2013-11-18T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2013/11/18/a-http-proxy-script</id>
+    <id>https://blog.helong.info//blog/2013/11/18/a-http-proxy-script</id>
     <content type="html"><![CDATA[<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -6643,9 +6643,9 @@ Firefox下打开gmail，点击地址栏左侧锁图标</p>
   
   <entry>
     <title type="html"><![CDATA[Libpcap试玩]]></title>
-    <link href="https://blog.helong.info//2013/08/04/libpcap%e8%af%95%e7%8e%a9/"/>
+    <link href="https://blog.helong.info//blog/2013/08/04/libpcap%25e8%25af%2595%25e7%258e%25a9/"/>
     <updated>2013-08-04T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2013/08/04/libpcap%e8%af%95%e7%8e%a9</id>
+    <id>https://blog.helong.info//blog/2013/08/04/libpcap%e8%af%95%e7%8e%a9</id>
     <content type="html"><![CDATA[<p>libpcap驱动了tcpdump,和wireshark这类抓包工具.提供了高度灵活的包过滤语言. 据wikipedia,高性能的包过滤最早是在bsd上作为一个问题被解决,被称为bpf,在内核实现了一个解释器,进行包匹配,用户态提供一个字符设备, linux作为后来者,支持与bsd基本相同的packet filter,称为lpf,不同的是,linux是通过在一个raw socket来支持包过滤的,通过setsockopt来SO_ATTACH_FILTER,挂载过滤器. strace 可知,libpcap实际上进行了如下syscall:</p>
 
 <pre>socket(PF_PACKET, SOCK_RAW, 768) = 59 
@@ -6876,9 +6876,9 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, "\1\0\0\0\0\0\0\0\250\327Vc\375\177
   
   <entry>
     <title type="html"><![CDATA[开始写博客]]></title>
-    <link href="https://blog.helong.info//2013/07/11/%e5%bc%80%e5%a7%8b%e5%86%99%e5%8d%9a%e5%ae%a2/"/>
+    <link href="https://blog.helong.info//blog/2013/07/11/%25e5%25bc%2580%25e5%25a7%258b%25e5%2586%2599%25e5%258d%259a%25e5%25ae%25a2/"/>
     <updated>2013-07-11T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2013/07/11/%e5%bc%80%e5%a7%8b%e5%86%99%e5%8d%9a%e5%ae%a2</id>
+    <id>https://blog.helong.info//blog/2013/07/11/%e5%bc%80%e5%a7%8b%e5%86%99%e5%8d%9a%e5%ae%a2</id>
     <content type="html"><![CDATA[<p>我开始在这写博客了。</p>
 
 <p>这个博客专注在技术方面，C++，Linux，等等，务求原创，务求深度。</p>
@@ -6891,9 +6891,9 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, "\1\0\0\0\0\0\0\0\250\327Vc\375\177
   
   <entry>
     <title type="html"><![CDATA[圆形坠落模拟算法设计]]></title>
-    <link href="https://blog.helong.info//2012/07/25/%e5%9c%86%e5%bd%a2%e5%9d%a0%e8%90%bd%e6%a8%a1%e6%8b%9f%e7%ae%97%e6%b3%95%e8%ae%be%e8%ae%a1/"/>
+    <link href="https://blog.helong.info//blog/2012/07/25/%25e5%259c%2586%25e5%25bd%25a2%25e5%259d%25a0%25e8%2590%25bd%25e6%25a8%25a1%25e6%258b%259f%25e7%25ae%2597%25e6%25b3%2595%25e8%25ae%25be%25e8%25ae%25a1/"/>
     <updated>2012-07-25T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2012/07/25/%e5%9c%86%e5%bd%a2%e5%9d%a0%e8%90%bd%e6%a8%a1%e6%8b%9f%e7%ae%97%e6%b3%95%e8%ae%be%e8%ae%a1</id>
+    <id>https://blog.helong.info//blog/2012/07/25/%e5%9c%86%e5%bd%a2%e5%9d%a0%e8%90%bd%e6%a8%a1%e6%8b%9f%e7%ae%97%e6%b3%95%e8%ae%be%e8%ae%a1</id>
     <content type="html"><![CDATA[<p>目标：实现一个算法，模拟在一个封闭二维区域，圆形小球朝给定方向坠落的过程，实现二维区域的紧密填充。</p>
 
 <p>像下面这样：</p>
@@ -7002,9 +7002,9 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, "\1\0\0\0\0\0\0\0\250\327Vc\375\177
   
   <entry>
     <title type="html"><![CDATA[[翻译]轻松7步，导出Y结合子]]></title>
-    <link href="https://blog.helong.info//2012/04/09/%e7%bf%bb%e8%af%91%e8%bd%bb%e6%9d%be7%e6%ad%a5%ef%bc%8c%e5%af%bc%e5%87%bay%e7%bb%93%e5%90%88%e5%ad%90/"/>
+    <link href="https://blog.helong.info//blog/2012/04/09/%25e7%25bf%25bb%25e8%25af%2591%25e8%25bd%25bb%25e6%259d%25be7%25e6%25ad%25a5%25ef%25bc%258c%25e5%25af%25bc%25e5%2587%25bay%25e7%25bb%2593%25e5%2590%2588%25e5%25ad%2590/"/>
     <updated>2012-04-09T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2012/04/09/%e7%bf%bb%e8%af%91%e8%bd%bb%e6%9d%be7%e6%ad%a5%ef%bc%8c%e5%af%bc%e5%87%bay%e7%bb%93%e5%90%88%e5%ad%90</id>
+    <id>https://blog.helong.info//blog/2012/04/09/%e7%bf%bb%e8%af%91%e8%bd%bb%e6%9d%be7%e6%ad%a5%ef%bc%8c%e5%af%bc%e5%87%bay%e7%bb%93%e5%90%88%e5%ad%90</id>
     <content type="html"><![CDATA[<p>本文译自 &#8220;<em>Deriving the Y Combinator in 7 Easy Steps</em>&#8220;，</p>
 
 <p>原文链接：<a href="http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html">http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html</a></p>
@@ -7308,9 +7308,9 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, "\1\0\0\0\0\0\0\0\250\327Vc\375\177
   
   <entry>
     <title type="html"><![CDATA[一个基于约束传播的，玩具级微型计算语言的设计和简单实现]]></title>
-    <link href="https://blog.helong.info//2012/04/09/%e4%b8%80%e4%b8%aa%e5%9f%ba%e4%ba%8e%e7%ba%a6%e6%9d%9f%e4%bc%a0%e6%92%ad%e7%9a%84%ef%bc%8c%e7%8e%a9%e5%85%b7%e7%ba%a7%e5%be%ae%e5%9e%8b%e8%ae%a1%e7%ae%97%e8%af%ad%e8%a8%80%e7%9a%84%e8%ae%be%e8%ae%a1/"/>
+    <link href="https://blog.helong.info//blog/2012/04/09/%25e4%25b8%2580%25e4%25b8%25aa%25e5%259f%25ba%25e4%25ba%258e%25e7%25ba%25a6%25e6%259d%259f%25e4%25bc%25a0%25e6%2592%25ad%25e7%259a%2584%25ef%25bc%258c%25e7%258e%25a9%25e5%2585%25b7%25e7%25ba%25a7%25e5%25be%25ae%25e5%259e%258b%25e8%25ae%25a1%25e7%25ae%2597%25e8%25af%25ad%25e8%25a8%2580%25e7%259a%2584%25e8%25ae%25be%25e8%25ae%25a1/"/>
     <updated>2012-04-09T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2012/04/09/%e4%b8%80%e4%b8%aa%e5%9f%ba%e4%ba%8e%e7%ba%a6%e6%9d%9f%e4%bc%a0%e6%92%ad%e7%9a%84%ef%bc%8c%e7%8e%a9%e5%85%b7%e7%ba%a7%e5%be%ae%e5%9e%8b%e8%ae%a1%e7%ae%97%e8%af%ad%e8%a8%80%e7%9a%84%e8%ae%be%e8%ae%a1</id>
+    <id>https://blog.helong.info//blog/2012/04/09/%e4%b8%80%e4%b8%aa%e5%9f%ba%e4%ba%8e%e7%ba%a6%e6%9d%9f%e4%bc%a0%e6%92%ad%e7%9a%84%ef%bc%8c%e7%8e%a9%e5%85%b7%e7%ba%a7%e5%be%ae%e5%9e%8b%e8%ae%a1%e7%ae%97%e8%af%ad%e8%a8%80%e7%9a%84%e8%ae%be%e8%ae%a1</id>
     <content type="html"><![CDATA[<p>这个程序就是做来玩和练习的，代码是玩具级别的，用的python，基本可以正常工作了。</p>
 
 <p>先介绍应用背景：</p>
@@ -8478,9 +8478,9 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, "\1\0\0\0\0\0\0\0\250\327Vc\375\177
   
   <entry>
     <title type="html"><![CDATA[sicp练习2.42 [解8皇后问题的Scheme语言实现]]]></title>
-    <link href="https://blog.helong.info//2011/12/22/sicp%e7%bb%83%e4%b9%a02-42-%e8%a7%a38%e7%9a%87%e5%90%8e%e9%97%ae%e9%a2%98%e7%9a%84scheme%e8%af%ad%e8%a8%80%e5%ae%9e%e7%8e%b0/"/>
+    <link href="https://blog.helong.info//blog/2011/12/22/sicp%25e7%25bb%2583%25e4%25b9%25a02-42-%25e8%25a7%25a38%25e7%259a%2587%25e5%2590%258e%25e9%2597%25ae%25e9%25a2%2598%25e7%259a%2584scheme%25e8%25af%25ad%25e8%25a8%2580%25e5%25ae%259e%25e7%258e%25b0/"/>
     <updated>2011-12-22T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2011/12/22/sicp%e7%bb%83%e4%b9%a02-42-%e8%a7%a38%e7%9a%87%e5%90%8e%e9%97%ae%e9%a2%98%e7%9a%84scheme%e8%af%ad%e8%a8%80%e5%ae%9e%e7%8e%b0</id>
+    <id>https://blog.helong.info//blog/2011/12/22/sicp%e7%bb%83%e4%b9%a02-42-%e8%a7%a38%e7%9a%87%e5%90%8e%e9%97%ae%e9%a2%98%e7%9a%84scheme%e8%af%ad%e8%a8%80%e5%ae%9e%e7%8e%b0</id>
     <content type="html"><![CDATA[<p>代码框架来自sicp 练习2.42。算是作业吧。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -8632,9 +8632,9 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, "\1\0\0\0\0\0\0\0\250\327Vc\375\177
   
   <entry>
     <title type="html"><![CDATA[符号求导，scheme实现]]></title>
-    <link href="https://blog.helong.info//2011/12/22/%e7%ac%a6%e5%8f%b7%e6%b1%82%e5%af%bc%ef%bc%8cscheme%e5%ae%9e%e7%8e%b0/"/>
+    <link href="https://blog.helong.info//blog/2011/12/22/%25e7%25ac%25a6%25e5%258f%25b7%25e6%25b1%2582%25e5%25af%25bc%25ef%25bc%258cscheme%25e5%25ae%259e%25e7%258e%25b0/"/>
     <updated>2011-12-22T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2011/12/22/%e7%ac%a6%e5%8f%b7%e6%b1%82%e5%af%bc%ef%bc%8cscheme%e5%ae%9e%e7%8e%b0</id>
+    <id>https://blog.helong.info//blog/2011/12/22/%e7%ac%a6%e5%8f%b7%e6%b1%82%e5%af%bc%ef%bc%8cscheme%e5%ae%9e%e7%8e%b0</id>
     <content type="html"><![CDATA[<p>sicp练习2.57</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>

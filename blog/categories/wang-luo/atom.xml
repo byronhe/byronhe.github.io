@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 网络 | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/wang-luo/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-12-07T14:42:52+00:00</updated>
+  <updated>2019-12-07T15:08:08+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[A Http Proxy Script]]></title>
-    <link href="https://blog.helong.info//2013/11/18/a-http-proxy-script/"/>
+    <link href="https://blog.helong.info//blog/2013/11/18/a-http-proxy-script/"/>
     <updated>2013-11-18T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2013/11/18/a-http-proxy-script</id>
+    <id>https://blog.helong.info//blog/2013/11/18/a-http-proxy-script</id>
     <content type="html"><![CDATA[<pre><code class="python">#!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 
@@ -80,9 +80,9 @@ while True:
   
   <entry>
     <title type="html"><![CDATA[Libpcap试玩]]></title>
-    <link href="https://blog.helong.info//2013/08/04/libpcap%e8%af%95%e7%8e%a9/"/>
+    <link href="https://blog.helong.info//blog/2013/08/04/libpcap%25e8%25af%2595%25e7%258e%25a9/"/>
     <updated>2013-08-04T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2013/08/04/libpcap%e8%af%95%e7%8e%a9</id>
+    <id>https://blog.helong.info//blog/2013/08/04/libpcap%e8%af%95%e7%8e%a9</id>
     <content type="html"><![CDATA[<p>libpcap驱动了tcpdump,和wireshark这类抓包工具.提供了高度灵活的包过滤语言. 据wikipedia,高性能的包过滤最早是在bsd上作为一个问题被解决,被称为bpf,在内核实现了一个解释器,进行包匹配,用户态提供一个字符设备, linux作为后来者,支持与bsd基本相同的packet filter,称为lpf,不同的是,linux是通过在一个raw socket来支持包过滤的,通过setsockopt来SO_ATTACH_FILTER,挂载过滤器. strace 可知,libpcap实际上进行了如下syscall:</p>
 
 <pre>socket(PF_PACKET, SOCK_RAW, 768) = 59 

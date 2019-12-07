@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Translate | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/translate/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-12-07T14:42:52+00:00</updated>
+  <updated>2019-12-07T15:08:08+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -627,9 +627,9 @@ j=floor( (b+1)/r )，这样我们用一个随机数r得到了j。</p>
   
   <entry>
     <title type="html"><![CDATA[[翻译]轻松7步，导出Y结合子]]></title>
-    <link href="https://blog.helong.info//2012/04/09/%e7%bf%bb%e8%af%91%e8%bd%bb%e6%9d%be7%e6%ad%a5%ef%bc%8c%e5%af%bc%e5%87%bay%e7%bb%93%e5%90%88%e5%ad%90/"/>
+    <link href="https://blog.helong.info//blog/2012/04/09/%25e7%25bf%25bb%25e8%25af%2591%25e8%25bd%25bb%25e6%259d%25be7%25e6%25ad%25a5%25ef%25bc%258c%25e5%25af%25bc%25e5%2587%25bay%25e7%25bb%2593%25e5%2590%2588%25e5%25ad%2590/"/>
     <updated>2012-04-09T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2012/04/09/%e7%bf%bb%e8%af%91%e8%bd%bb%e6%9d%be7%e6%ad%a5%ef%bc%8c%e5%af%bc%e5%87%bay%e7%bb%93%e5%90%88%e5%ad%90</id>
+    <id>https://blog.helong.info//blog/2012/04/09/%e7%bf%bb%e8%af%91%e8%bd%bb%e6%9d%be7%e6%ad%a5%ef%bc%8c%e5%af%bc%e5%87%bay%e7%bb%93%e5%90%88%e5%ad%90</id>
     <content type="html"><![CDATA[<p>本文译自 &#8220;<em>Deriving the Y Combinator in 7 Easy Steps</em>&#8220;，</p>
 
 <p>原文链接：<a href="http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html">http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html</a></p>

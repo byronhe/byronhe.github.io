@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/java/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-12-07T14:42:52+00:00</updated>
+  <updated>2019-12-07T15:08:08+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[jdbc使用DataSource连接mysql,postgresql,oracle的代码]]></title>
-    <link href="https://blog.helong.info//2011/11/15/jdbc%e4%bd%bf%e7%94%a8datasource%e8%bf%9e%e6%8e%a5mysqlpostgresqloracle%e7%9a%84%e4%bb%a3%e7%a0%81/"/>
+    <link href="https://blog.helong.info//blog/2011/11/15/jdbc%25e4%25bd%25bf%25e7%2594%25a8datasource%25e8%25bf%259e%25e6%258e%25a5mysqlpostgresqloracle%25e7%259a%2584%25e4%25bb%25a3%25e7%25a0%2581/"/>
     <updated>2011-11-15T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2011/11/15/jdbc%e4%bd%bf%e7%94%a8datasource%e8%bf%9e%e6%8e%a5mysqlpostgresqloracle%e7%9a%84%e4%bb%a3%e7%a0%81</id>
+    <id>https://blog.helong.info//blog/2011/11/15/jdbc%e4%bd%bf%e7%94%a8datasource%e8%bf%9e%e6%8e%a5mysqlpostgresqloracle%e7%9a%84%e4%bb%a3%e7%a0%81</id>
     <content type="html"><![CDATA[<pre><code class="java">import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -104,9 +104,9 @@ public class DBConnection {
   
   <entry>
     <title type="html"><![CDATA[Java多线程网页下载代码]]></title>
-    <link href="https://blog.helong.info//2011/11/15/java%e5%a4%9a%e7%ba%bf%e7%a8%8b%e7%bd%91%e9%a1%b5%e4%b8%8b%e8%bd%bd%e4%bb%a3%e7%a0%81/"/>
+    <link href="https://blog.helong.info//blog/2011/11/15/java%25e5%25a4%259a%25e7%25ba%25bf%25e7%25a8%258b%25e7%25bd%2591%25e9%25a1%25b5%25e4%25b8%258b%25e8%25bd%25bd%25e4%25bb%25a3%25e7%25a0%2581/"/>
     <updated>2011-11-15T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//2011/11/15/java%e5%a4%9a%e7%ba%bf%e7%a8%8b%e7%bd%91%e9%a1%b5%e4%b8%8b%e8%bd%bd%e4%bb%a3%e7%a0%81</id>
+    <id>https://blog.helong.info//blog/2011/11/15/java%e5%a4%9a%e7%ba%bf%e7%a8%8b%e7%bd%91%e9%a1%b5%e4%b8%8b%e8%bd%bd%e4%bb%a3%e7%a0%81</id>
     <content type="html"><![CDATA[<p>小项目，练手的。</p>
 
 <p>1.使用了java.util.concurrent包里的线程池，可以飙升到满带宽，在100M带宽上，可以达到10MB/s。</p>

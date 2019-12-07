@@ -1,0 +1,432 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>A Http Proxy Script - Tech Ideas</title>
+  <meta name="author" content="byronhe">
+
+  
+  <meta name="description" content="1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://blog.helong.info//blog/2013/11/18/a-http-proxy-script/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Tech Ideas" type="application/atom+xml">
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-49290834-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Tech Ideas</a></h1>
+  
+    <h2>C++,Linux,Algorithm,Crypto,Lisp,etc</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.helong.info/">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">A Http Proxy Script</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-11-18T00:00:00+00:00'><span class='date'>2013-11-18</span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/local/bin/python</span>
+</span><span class='line'><span class="c"># -*- coding: utf-8 -*-</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">base64</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">select</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">socket</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">httplib</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">os</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="c">#base64.encodestring(&quot;das\120xsdada\s&quot;)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">usage</span> <span class="p">():</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&quot;connect_to_http_proxy </span><span class="si">%s</span><span class="s">&quot;</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&quot;usage: connect_to_http_proxy &amp;lt;desthost&amp;gt; &amp;lt;destport&amp;gt;&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">usage</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">print</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span>
+</span><span class='line'>    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">proxy_host</span><span class="o">=</span><span class="s">&quot;web-proxy-domain.com&quot;</span>
+</span><span class='line'><span class="n">proxy_port</span><span class="o">=</span><span class="s">&quot;8080&quot;</span>
+</span><span class='line'><span class="n">dest_host</span><span class="o">=</span><span class="s">&quot;&quot;</span>
+</span><span class='line'><span class="n">dest_port</span><span class="o">=</span><span class="s">&quot;&quot;</span>
+</span><span class='line'><span class="n">dest_host</span><span class="p">,</span> <span class="n">dest_port</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">sock</span><span class="o">=</span><span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span><span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+</span><span class='line'><span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">proxy_host</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">proxy_port</span><span class="p">)))</span>
+</span><span class='line'><span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_TCP</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">TCP_NODELAY</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">req</span><span class="o">=</span><span class="s">&quot;CONNECT &quot;</span><span class="o">+</span><span class="n">dest_host</span><span class="o">+</span><span class="s">&quot;:&quot;</span><span class="o">+</span><span class="n">dest_port</span> <span class="o">+</span> <span class="s">&quot; HTTP/1.0</span><span class="se">\r\n\r\n</span><span class="s">&quot;</span>
+</span><span class='line'><span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+</span><span class='line'><span class="n">resp</span><span class="o">=</span><span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;200&quot;</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">print</span> <span class="n">req</span><span class="p">,</span><span class="n">resp</span>
+</span><span class='line'>    <span class="nb">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ep</span><span class="o">=</span><span class="n">select</span><span class="o">.</span><span class="n">epoll</span><span class="p">()</span>
+</span><span class='line'><span class="n">ep</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span><span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span><span class="p">)</span>
+</span><span class='line'><span class="n">ep</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span><span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span><span class="p">)</span>
+</span><span class='line'><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">events</span><span class="o">=</span><span class="n">ep</span><span class="o">.</span><span class="n">poll</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">fd</span><span class="p">,</span><span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">event</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLERR</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">event</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span> <span class="ow">and</span> <span class="n">fd</span><span class="o">==</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">():</span>
+</span><span class='line'>            <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span><span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">event</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span> <span class="ow">and</span> <span class="n">fd</span><span class="o">==</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">fileno</span><span class="p">():</span>
+</span><span class='line'>            <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#conn=httplib.HTTPConnection(proxy_host+&quot;:&quot;+proxy_port)</span>
+</span><span class='line'><span class="c">#conn.request(&quot;CONNECT&quot;,dest_host+&quot;:&quot;+dest_port)</span>
+</span><span class='line'><span class="c">#res=conn.getresponse()</span>
+</span><span class='line'><span class="c">#print res.read()</span>
+</span><span class='line'><span class="c">#if res.status != 200:</span>
+</span><span class='line'><span class="c">#    print res.status,res.reason</span>
+</span><span class='line'><span class="c">#    sys.exit()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">windydays</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2013-11-18T00:00:00+00:00'><span class='date'>2013-11-18</span> <span class='time'>12:00 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/python/'>python</a>, <a class='category' href='/blog/categories/wang-luo/'>网络</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/08/04/libpcap%25e8%25af%2595%25e7%258e%25a9/" title="Previous Post: libpcap试玩">&laquo; libpcap试玩</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/02/08/%25e4%25b8%2580%25e4%25b8%25aa%25e4%25bd%25bf%25e7%2594%25a8kuaipan%25e5%25a4%2587%25e4%25bb%25bdlinux%25e6%259c%258d%25e5%258a%25a1%25e5%2599%25a8%25e7%259a%2584%25e8%2584%259a%25e6%259c%25ac/" title="Next Post: 一个使用KuaiPan备份linux服务器的脚本">一个使用KuaiPan备份linux服务器的脚本 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/">Python 自动翻译成 C++ ，彻底保证离线在线特征一致</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/11/25/cppjieba-darts-DAT-memory_optimize/">用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/09/18/newwords_discovery/">GB 规模语料上的高性能新词发现算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/">TLS协议分析 与 现代加密通信协议设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/05/modern-crypto/">现代密码学实践指南[2015年]</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/byronhe">@byronhe</a> on GitHub
+  
+  <script type="text/javascript">
+
+    //$(document).ready(function(){
+    document.addEventListener("DOMContentLoaded", function(event) { 
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'byronhe',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script async src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - byronhe -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+    <script src="/javascripts/modernizr-2.0.js"></script>
+  <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
+  <script src="//apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script async >!window.jQuery && document.write(unescape('%3Cscript async  src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script async  src="/javascripts/octopress.js" type="text/javascript"></script>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-49290834-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'byronheblog';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+<script src="//s95.cnzz.com/z_stat.php?id=1256308650&web_id=1256308650" language="JavaScript"></script>
+
+<script src="/javascripts/jquery.tableofcontents.min.js" type="text/javascript"></script>
+<script src="/javascripts/toc-generator.js" type="text/javascript"></script>
+
+
+
+
+</body>
+</html>
