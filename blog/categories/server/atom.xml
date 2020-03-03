@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Server | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/server/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2020-03-03T07:20:39+00:00</updated>
+  <updated>2020-03-03T07:28:43+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -63,6 +63,9 @@ abstract namespace unix socket 。</p>
 </ol>
 
 
+<!--more-->
+
+
 <p>在 lsof 的结果里面看起来，就是有一些 类似 @test_abstract_ns 这样的 文件项</p>
 
 <p>代码中使用也很简单，  abstract namespace  unix socket 在 bind 之前，sockaddr_un.sun_path[0] 设成 0x0 即可。</p>
@@ -70,7 +73,7 @@ abstract namespace unix socket 。</p>
 <a name="L............"></a>
 <h2>三，代码</h2>
 
-<p>于是写了一个 SysSem 工具类（ 一个 system 范围的 semaphore ），
+<p>于是我用 abstract unix socket 实现了一个 SysSem 工具类（ 一个 system 范围的 semaphore ），
 用来：</p>
 
 <ol>
