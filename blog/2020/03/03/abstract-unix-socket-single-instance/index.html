@@ -167,7 +167,7 @@ abstract namespace unix socket 。</p>
 </ol>
 
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -267,108 +267,106 @@ abstract namespace unix socket 。</p>
 <span class='line-number'>98</span>
 <span class='line-number'>99</span>
 <span class='line-number'>100</span>
-<span class='line-number'>101</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>#include &lt;sys/socket.h&gt;
-</span><span class='line'>#include &lt;sys/un.h&gt;
-</span><span class='line'>#include &lt;unistd.h&gt;
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;sys/socket.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;sys/un.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
 </span><span class='line'>
-</span><span class='line'>#include &lt;algorithm&gt;
-</span><span class='line'>#include &lt;string&gt;
+</span><span class='line'><span class="cp">#include &lt;algorithm&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
 </span><span class='line'>
-</span><span class='line'>//
-</span><span class='line'>// a semaphore with system scope.
-</span><span class='line'>//
-</span><span class='line'>// 1. no race conditions between Post() / GetValue() , better than flock().
-</span><span class='line'>// 2. when a running process be killed, automatically release all.
-</span><span class='line'>// 3. no file on disk, no accidently delete .
-</span><span class='line'>// 4. no tcp/udp socket, no confliction, no port consumption.
-</span><span class='line'>//
-</span><span class='line'>class SysSem {
-</span><span class='line'>public:
-</span><span class='line'>    SysSem() : _fd(-1) { memset(&_addr, 0, sizeof(_addr)); }
-</span><span class='line'>    ~SysSem();
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// a semaphore with system scope.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// 1. no race conditions between Post() / GetValue() , better than flock().</span>
+</span><span class='line'><span class="c1">// 2. when a running process be killed, automatically release all.</span>
+</span><span class='line'><span class="c1">// 3. no file on disk, no accidently delete .</span>
+</span><span class='line'><span class="c1">// 4. no tcp/udp socket, no confliction, no port consumption.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">SysSem</span> <span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">SysSem</span><span class="p">()</span> <span class="o">:</span> <span class="n">_fd</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">_addr</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">_addr</span><span class="p">));</span> <span class="p">}</span>
+</span><span class='line'>    <span class="o">~</span><span class="n">SysSem</span><span class="p">();</span>
 </span><span class='line'>
-</span><span class='line'>    void Init(std::string id);
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">Init</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">id</span><span class="p">);</span>
 </span><span class='line'>
-</span><span class='line'>    bool Post();
-</span><span class='line'>    bool GetValue();
+</span><span class='line'>    <span class="kt">bool</span> <span class="nf">Post</span><span class="p">();</span>
+</span><span class='line'>    <span class="kt">bool</span> <span class="nf">GetValue</span><span class="p">();</span>
 </span><span class='line'>
-</span><span class='line'>    const char* GetID() const;
+</span><span class='line'>    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">GetID</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'>private:
-</span><span class='line'>    struct sockaddr_un _addr;
-</span><span class='line'>    int _fd;
-</span><span class='line'>};
+</span><span class='line'><span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">sockaddr_un</span> <span class="n">_addr</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">_fd</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
 </span><span class='line'>
-</span><span class='line'>void SysSem::Init(std::string id) {
-</span><span class='line'>    _addr.sun_family = AF_UNIX;
-</span><span class='line'>    const size_t len = std::min(id.size(), sizeof(_addr.sun_path) - 2);  // 2 = start null and end null byte
-</span><span class='line'>    // abstract namespace socket address , _addr.sun_path[0] is a null byte ('\0')
-</span><span class='line'>    memcpy(_addr.sun_path + 1, id.c_str(), len);
-</span><span class='line'>    // memcpy(_addr.sun_path + 0, id.c_str(), len);
-</span><span class='line'>}
+</span><span class='line'><span class="kt">void</span> <span class="n">SysSem</span><span class="o">::</span><span class="n">Init</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">_addr</span><span class="p">.</span><span class="n">sun_family</span> <span class="o">=</span> <span class="n">AF_UNIX</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">const</span> <span class="kt">size_t</span> <span class="n">len</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">id</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">_addr</span><span class="p">.</span><span class="n">sun_path</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">);</span>  <span class="c1">// 2 = start null and end null byte</span>
+</span><span class='line'>    <span class="c1">// abstract namespace socket address , _addr.sun_path[0] is a null byte (&#39;\0&#39;)</span>
+</span><span class='line'>    <span class="n">memcpy</span><span class="p">(</span><span class="n">_addr</span><span class="p">.</span><span class="n">sun_path</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">id</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">len</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// memcpy(_addr.sun_path + 0, id.c_str(), len);</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>const char* SysSem::GetID() const { return &_addr.sun_path[1]; }
+</span><span class='line'><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">SysSem</span><span class="o">::</span><span class="n">GetID</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="o">&amp;</span><span class="n">_addr</span><span class="p">.</span><span class="n">sun_path</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>SysSem::~SysSem() {
-</span><span class='line'>    if (_fd &gt;= 0) {
-</span><span class='line'>        ::close(_fd);
-</span><span class='line'>        _fd = -1;
-</span><span class='line'>    }
-</span><span class='line'>}
+</span><span class='line'><span class="n">SysSem</span><span class="o">::~</span><span class="n">SysSem</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_fd</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="o">::</span><span class="n">close</span><span class="p">(</span><span class="n">_fd</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">_fd</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>bool SysSem::Post() {
-</span><span class='line'>    _fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
-</span><span class='line'>    if (_fd &lt; 0) {
-</span><span class='line'>        return false;
-</span><span class='line'>    }
+</span><span class='line'><span class="kt">bool</span> <span class="n">SysSem</span><span class="o">::</span><span class="n">Post</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">_fd</span> <span class="o">=</span> <span class="o">::</span><span class="n">socket</span><span class="p">(</span><span class="n">AF_UNIX</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>    if ((0 != ::bind(_fd, (struct sockaddr*)&_addr, sizeof(_addr))) || (0 != listen(_fd, 65536))) {
-</span><span class='line'>        return false;
-</span><span class='line'>    }
-</span><span class='line'>    return true;
-</span><span class='line'>}
+</span><span class='line'>    <span class="k">if</span> <span class="p">((</span><span class="mi">0</span> <span class="o">!=</span> <span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="n">_fd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">_addr</span><span class="p">)))</span> <span class="o">||</span> <span class="p">(</span><span class="mi">0</span> <span class="o">!=</span> <span class="n">listen</span><span class="p">(</span><span class="n">_fd</span><span class="p">,</span> <span class="mi">65536</span><span class="p">)))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>bool SysSem::GetValue() {
-</span><span class='line'>    const int clientFD = ::socket(AF_UNIX, SOCK_STREAM, 0);
-</span><span class='line'>    if (clientFD &lt; 0) {
-</span><span class='line'>        return false;
-</span><span class='line'>    }
-</span><span class='line'>    const bool ret = (0 == ::connect(clientFD, (struct sockaddr*)&_addr, sizeof(_addr)));
-</span><span class='line'>    ::close(clientFD);
-</span><span class='line'>    return ret;
-</span><span class='line'>}
+</span><span class='line'><span class="kt">bool</span> <span class="n">SysSem</span><span class="o">::</span><span class="n">GetValue</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">const</span> <span class="kt">int</span> <span class="n">clientFD</span> <span class="o">=</span> <span class="o">::</span><span class="n">socket</span><span class="p">(</span><span class="n">AF_UNIX</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">clientFD</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">const</span> <span class="kt">bool</span> <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="n">clientFD</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">_addr</span><span class="p">)));</span>
+</span><span class='line'>    <span class="o">::</span><span class="n">close</span><span class="p">(</span><span class="n">clientFD</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>#include &lt;assert.h&gt;
-</span><span class='line'>#include &lt;stdio.h&gt;
+</span><span class='line'><span class="cp">#include &lt;assert.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
 </span><span class='line'>
-</span><span class='line'>int main(int argc, char** argv) {
-</span><span class='line'>    if (argc != 3) {
-</span><span class='line'>        fprintf(stderr, "usage: %s abstract-path post/get\n", argv[0]);
-</span><span class='line'>        exit(1);
-</span><span class='line'>    }
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;usage: %s abstract-path post/get</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span><span class='line'>        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>    SysSem inst;
-</span><span class='line'>    inst.Init(argv[1]);
+</span><span class='line'>    <span class="n">SysSem</span> <span class="n">inst</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">inst</span><span class="p">.</span><span class="n">Init</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
 </span><span class='line'>
-</span><span class='line'>    if (0 == strcasecmp(argv[2], "post")) {
-</span><span class='line'>        assert(inst.Post());
-</span><span class='line'>        SysSem check;
-</span><span class='line'>        check.Init(argv[1]);
-</span><span class='line'>        assert(check.GetValue());
-</span><span class='line'>        printf("ok, i am the only one under %s. running ...\n", inst.GetID());
-</span><span class='line'>        pause();
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="n">strcasecmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">&quot;post&quot;</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">assert</span><span class="p">(</span><span class="n">inst</span><span class="p">.</span><span class="n">Post</span><span class="p">());</span>
+</span><span class='line'>        <span class="n">SysSem</span> <span class="n">check</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">check</span><span class="p">.</span><span class="n">Init</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>        <span class="n">assert</span><span class="p">(</span><span class="n">check</span><span class="p">.</span><span class="n">GetValue</span><span class="p">());</span>
+</span><span class='line'>        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;ok, i am the only one under %s. running ...</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">inst</span><span class="p">.</span><span class="n">GetID</span><span class="p">());</span>
+</span><span class='line'>        <span class="n">pause</span><span class="p">();</span>
 </span><span class='line'>
-</span><span class='line'>    } else if (0 == strcasecmp(argv[2], "get")) {
-</span><span class='line'>        assert(inst.GetValue());
-</span><span class='line'>        printf("a process is running under %s. \n", inst.GetID());
-</span><span class='line'>    } else {
-</span><span class='line'>        printf("unknown cmd \n");
-</span><span class='line'>    }
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="n">strcasecmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">&quot;get&quot;</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">assert</span><span class="p">(</span><span class="n">inst</span><span class="p">.</span><span class="n">GetValue</span><span class="p">());</span>
+</span><span class='line'>        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;a process is running under %s. </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">inst</span><span class="p">.</span><span class="n">GetID</span><span class="p">());</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;unknown cmd </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>    return 0;
-</span><span class='line'>}
-</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 </div>

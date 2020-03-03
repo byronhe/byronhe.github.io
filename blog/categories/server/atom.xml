@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Server | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/server/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2020-03-03T07:30:13+00:00</updated>
+  <updated>2020-03-03T07:32:19+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -97,7 +97,7 @@ abstract namespace unix socket 。</p>
 </ol>
 
 
-<pre><code>#include &lt;sys/socket.h&gt;
+<pre><code class="cpp">#include &lt;sys/socket.h&gt;
 #include &lt;sys/un.h&gt;
 #include &lt;unistd.h&gt;
 
