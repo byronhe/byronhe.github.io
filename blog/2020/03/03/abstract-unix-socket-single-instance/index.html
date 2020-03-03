@@ -103,9 +103,13 @@
 
 <p>比较常规的做法，是对一个文件加文件锁 flock，比如对 pid 文件 flock( LOCK_EX|LOCK_NB )</p>
 
-<p>但是这种方法有些弊端：
-1. 如果文件被 mv 或者 rm，是会被绕过的。
-2. 如果磁盘故障比如磁盘满，目录没有写权限，也会有问题。</p>
+<p>但是这种方法有些弊端：</p>
+
+<ol>
+<li>如果文件被 mv 或者 rm，是会被绕过的。</li>
+<li>如果磁盘故障比如磁盘满，目录没有写权限，会失败。</li>
+</ol>
+
 
 <a name="L......abstract.namespace.unix.socket"></a>
 <h2>二，abstract namespace unix socket</h2>
