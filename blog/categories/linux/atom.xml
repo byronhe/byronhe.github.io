@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Linux | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/linux/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-12-07T15:08:08+00:00</updated>
+  <updated>2020-03-03T07:20:39+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -12,6 +12,187 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[用 Abstract Unix Socket 实现进程单实例运行]]></title>
+    <link href="https://blog.helong.info//blog/2020/03/03/abstract-unix-socket-single-instance/"/>
+    <updated>2020-03-03T11:06:00+00:00</updated>
+    <id>https://blog.helong.info//blog/2020/03/03/abstract-unix-socket-single-instance</id>
+    <content type="html"><![CDATA[<a name="L.................."></a>
+<h2>一，问题背景</h2>
+
+<p>很多时候，我们需要<strong>确保进程只有一个实例运行</strong>。</p>
+
+<p>有几种方法：</p>
+
+<p><a href="http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux">http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux</a></p>
+
+<p><a href="http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c">http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c</a></p>
+
+<p><a href="https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src">https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src</a></p>
+
+<p>比较常规的做法，是对一个文件加文件锁 flock，比如对 pid 文件 flock( LOCK_EX|LOCK_NB )</p>
+
+<p>但是这种方法有些弊端：
+1. 如果文件被 mv 或者 rm，是会被绕过的。
+2. 如果磁盘故障比如磁盘满，目录没有写权限，也会有问题。</p>
+
+<a name="L......abstract.namespace.unix.socket"></a>
+<h2>二，abstract namespace unix socket</h2>
+
+<p><a href="http://linux.die.net/man/7/unix">http://linux.die.net/man/7/unix</a></p>
+
+<p>unix socket 有3种：</p>
+
+<ol>
+<li>基于文件的</li>
+<li>socketpair 创建的，匿名的</li>
+<li>abstract namespace 的，Linux特有</li>
+</ol>
+
+
+<p>Linux 下， AF_UNIX socket 支持一种特殊的
+abstract namespace unix socket 。</p>
+
+<p>相比 普通的基于文件系统的 unix socket，abstract namespace unix socket ：</p>
+
+<ol>
+<li>没有磁盘文件</li>
+<li>进程挂了以后自动删除，无残留文件</li>
+<li>无需担心与 文件系统上的文件冲突，不需要关心文件系统上的绝对路径是否存在的问题</li>
+</ol>
+
+
+<p>在 lsof 的结果里面看起来，就是有一些 类似 @test_abstract_ns 这样的 文件项</p>
+
+<p>代码中使用也很简单，  abstract namespace  unix socket 在 bind 之前，sockaddr_un.sun_path[0] 设成 0x0 即可。</p>
+
+<a name="L............"></a>
+<h2>三，代码</h2>
+
+<p>于是写了一个 SysSem 工具类（ 一个 system 范围的 semaphore ），
+用来：</p>
+
+<ol>
+<li>让一个程序只启动一个实例。</li>
+<li>让 x 进程等待 y 进程执行完 yyy 操作后，才能执行 xxx 操作。</li>
+</ol>
+
+
+<p>特点：</p>
+
+<ol>
+<li>多进程/线程 并发安全。</li>
+<li>当持有的进程被 kill ，OS自动释放，无残留。</li>
+<li>没有磁盘文件，没有文件意外被删的各种情况。</li>
+<li>不占用 tcp/udp 端口。</li>
+<li>简单，不到 60行代码。</li>
+</ol>
+
+
+<pre><code>#include &lt;sys/socket.h&gt;
+#include &lt;sys/un.h&gt;
+#include &lt;unistd.h&gt;
+
+#include &lt;algorithm&gt;
+#include &lt;string&gt;
+
+//
+// a semaphore with system scope.
+//
+// 1. no race conditions between Post() / GetValue() , better than flock().
+// 2. when a running process be killed, automatically release all.
+// 3. no file on disk, no accidently delete .
+// 4. no tcp/udp socket, no confliction, no port consumption.
+//
+class SysSem {
+public:
+    SysSem() : _fd(-1) { memset(&amp;_addr, 0, sizeof(_addr)); }
+    ~SysSem();
+
+    void Init(std::string id);
+
+    bool Post();
+    bool GetValue();
+
+    const char* GetID() const;
+
+private:
+    struct sockaddr_un _addr;
+    int _fd;
+};
+
+void SysSem::Init(std::string id) {
+    _addr.sun_family = AF_UNIX;
+    const size_t len = std::min(id.size(), sizeof(_addr.sun_path) - 2);  // 2 = start null and end null byte
+    // abstract namespace socket address , _addr.sun_path[0] is a null byte ('\0')
+    memcpy(_addr.sun_path + 1, id.c_str(), len);
+    // memcpy(_addr.sun_path + 0, id.c_str(), len);
+}
+
+const char* SysSem::GetID() const { return &amp;_addr.sun_path[1]; }
+
+SysSem::~SysSem() {
+    if (_fd &gt;= 0) {
+        ::close(_fd);
+        _fd = -1;
+    }
+}
+
+bool SysSem::Post() {
+    _fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
+    if (_fd &lt; 0) {
+        return false;
+    }
+
+    if ((0 != ::bind(_fd, (struct sockaddr*)&amp;_addr, sizeof(_addr))) || (0 != listen(_fd, 65536))) {
+        return false;
+    }
+    return true;
+}
+
+bool SysSem::GetValue() {
+    const int clientFD = ::socket(AF_UNIX, SOCK_STREAM, 0);
+    if (clientFD &lt; 0) {
+        return false;
+    }
+    const bool ret = (0 == ::connect(clientFD, (struct sockaddr*)&amp;_addr, sizeof(_addr)));
+    ::close(clientFD);
+    return ret;
+}
+
+#include &lt;assert.h&gt;
+#include &lt;stdio.h&gt;
+
+int main(int argc, char** argv) {
+    if (argc != 3) {
+        fprintf(stderr, "usage: %s abstract-path post/get\n", argv[0]);
+        exit(1);
+    }
+
+    SysSem inst;
+    inst.Init(argv[1]);
+
+    if (0 == strcasecmp(argv[2], "post")) {
+        assert(inst.Post());
+        SysSem check;
+        check.Init(argv[1]);
+        assert(check.GetValue());
+        printf("ok, i am the only one under %s. running ...\n", inst.GetID());
+        pause();
+
+    } else if (0 == strcasecmp(argv[2], "get")) {
+        assert(inst.GetValue());
+        printf("a process is running under %s. \n", inst.GetID());
+    } else {
+        printf("unknown cmd \n");
+    }
+
+    return 0;
+}
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[博客迁移到octopress]]></title>
@@ -248,29 +429,6 @@ private:
     bpf_u_int32 maskp;
     char errbuf[PCAP_ERRBUF_SIZE];
 };
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[【旧代码】mysql备份的shell脚本]]></title>
-    <link href="https://blog.helong.info//blog/2011/11/15/%25e3%2580%2590%25e6%2597%25a7%25e4%25bb%25a3%25e7%25a0%2581%25e3%2580%2591mysql%25e5%25a4%2587%25e4%25bb%25bd%25e7%259a%2584shell%25e8%2584%259a%25e6%259c%25ac/"/>
-    <updated>2011-11-15T00:00:00+00:00</updated>
-    <id>https://blog.helong.info//blog/2011/11/15/%e3%80%90%e6%97%a7%e4%bb%a3%e7%a0%81%e3%80%91mysql%e5%a4%87%e4%bb%bd%e7%9a%84shell%e8%84%9a%e6%9c%ac</id>
-    <content type="html"><![CDATA[<pre><code class="sh">#!/bin/sh
-bk_to="/var/mysql-backup-`date +%Y-%m-%d-%k-%M-%S |tr -d ' '`"
-user_name="root"
-user_pw="dev"
-
-sql="
-flush tables with read lock;
-system cp -pR /var/lib/mysql $bk_to; 
-unlock tables;
-"
-mysql -u $user_name -p$user_pw -e "$sql"
-echo $sql 
-tar cjf $bk_to.bz2 $bk_to
-rm -rf $bk_to
 </code></pre>
 ]]></content>
   </entry>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Server | Tech Ideas]]></title>
   <link href="https://blog.helong.info//blog/categories/server/atom.xml" rel="self"/>
   <link href="https://blog.helong.info//"/>
-  <updated>2019-12-07T15:08:08+00:00</updated>
+  <updated>2020-03-03T07:20:39+00:00</updated>
   <id>https://blog.helong.info//</id>
   <author>
     <name><![CDATA[byronhe]]></name>
@@ -12,6 +12,187 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[用 Abstract Unix Socket 实现进程单实例运行]]></title>
+    <link href="https://blog.helong.info//blog/2020/03/03/abstract-unix-socket-single-instance/"/>
+    <updated>2020-03-03T11:06:00+00:00</updated>
+    <id>https://blog.helong.info//blog/2020/03/03/abstract-unix-socket-single-instance</id>
+    <content type="html"><![CDATA[<a name="L.................."></a>
+<h2>一，问题背景</h2>
+
+<p>很多时候，我们需要<strong>确保进程只有一个实例运行</strong>。</p>
+
+<p>有几种方法：</p>
+
+<p><a href="http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux">http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux</a></p>
+
+<p><a href="http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c">http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c</a></p>
+
+<p><a href="https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src">https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src</a></p>
+
+<p>比较常规的做法，是对一个文件加文件锁 flock，比如对 pid 文件 flock( LOCK_EX|LOCK_NB )</p>
+
+<p>但是这种方法有些弊端：
+1. 如果文件被 mv 或者 rm，是会被绕过的。
+2. 如果磁盘故障比如磁盘满，目录没有写权限，也会有问题。</p>
+
+<a name="L......abstract.namespace.unix.socket"></a>
+<h2>二，abstract namespace unix socket</h2>
+
+<p><a href="http://linux.die.net/man/7/unix">http://linux.die.net/man/7/unix</a></p>
+
+<p>unix socket 有3种：</p>
+
+<ol>
+<li>基于文件的</li>
+<li>socketpair 创建的，匿名的</li>
+<li>abstract namespace 的，Linux特有</li>
+</ol>
+
+
+<p>Linux 下， AF_UNIX socket 支持一种特殊的
+abstract namespace unix socket 。</p>
+
+<p>相比 普通的基于文件系统的 unix socket，abstract namespace unix socket ：</p>
+
+<ol>
+<li>没有磁盘文件</li>
+<li>进程挂了以后自动删除，无残留文件</li>
+<li>无需担心与 文件系统上的文件冲突，不需要关心文件系统上的绝对路径是否存在的问题</li>
+</ol>
+
+
+<p>在 lsof 的结果里面看起来，就是有一些 类似 @test_abstract_ns 这样的 文件项</p>
+
+<p>代码中使用也很简单，  abstract namespace  unix socket 在 bind 之前，sockaddr_un.sun_path[0] 设成 0x0 即可。</p>
+
+<a name="L............"></a>
+<h2>三，代码</h2>
+
+<p>于是写了一个 SysSem 工具类（ 一个 system 范围的 semaphore ），
+用来：</p>
+
+<ol>
+<li>让一个程序只启动一个实例。</li>
+<li>让 x 进程等待 y 进程执行完 yyy 操作后，才能执行 xxx 操作。</li>
+</ol>
+
+
+<p>特点：</p>
+
+<ol>
+<li>多进程/线程 并发安全。</li>
+<li>当持有的进程被 kill ，OS自动释放，无残留。</li>
+<li>没有磁盘文件，没有文件意外被删的各种情况。</li>
+<li>不占用 tcp/udp 端口。</li>
+<li>简单，不到 60行代码。</li>
+</ol>
+
+
+<pre><code>#include &lt;sys/socket.h&gt;
+#include &lt;sys/un.h&gt;
+#include &lt;unistd.h&gt;
+
+#include &lt;algorithm&gt;
+#include &lt;string&gt;
+
+//
+// a semaphore with system scope.
+//
+// 1. no race conditions between Post() / GetValue() , better than flock().
+// 2. when a running process be killed, automatically release all.
+// 3. no file on disk, no accidently delete .
+// 4. no tcp/udp socket, no confliction, no port consumption.
+//
+class SysSem {
+public:
+    SysSem() : _fd(-1) { memset(&amp;_addr, 0, sizeof(_addr)); }
+    ~SysSem();
+
+    void Init(std::string id);
+
+    bool Post();
+    bool GetValue();
+
+    const char* GetID() const;
+
+private:
+    struct sockaddr_un _addr;
+    int _fd;
+};
+
+void SysSem::Init(std::string id) {
+    _addr.sun_family = AF_UNIX;
+    const size_t len = std::min(id.size(), sizeof(_addr.sun_path) - 2);  // 2 = start null and end null byte
+    // abstract namespace socket address , _addr.sun_path[0] is a null byte ('\0')
+    memcpy(_addr.sun_path + 1, id.c_str(), len);
+    // memcpy(_addr.sun_path + 0, id.c_str(), len);
+}
+
+const char* SysSem::GetID() const { return &amp;_addr.sun_path[1]; }
+
+SysSem::~SysSem() {
+    if (_fd &gt;= 0) {
+        ::close(_fd);
+        _fd = -1;
+    }
+}
+
+bool SysSem::Post() {
+    _fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
+    if (_fd &lt; 0) {
+        return false;
+    }
+
+    if ((0 != ::bind(_fd, (struct sockaddr*)&amp;_addr, sizeof(_addr))) || (0 != listen(_fd, 65536))) {
+        return false;
+    }
+    return true;
+}
+
+bool SysSem::GetValue() {
+    const int clientFD = ::socket(AF_UNIX, SOCK_STREAM, 0);
+    if (clientFD &lt; 0) {
+        return false;
+    }
+    const bool ret = (0 == ::connect(clientFD, (struct sockaddr*)&amp;_addr, sizeof(_addr)));
+    ::close(clientFD);
+    return ret;
+}
+
+#include &lt;assert.h&gt;
+#include &lt;stdio.h&gt;
+
+int main(int argc, char** argv) {
+    if (argc != 3) {
+        fprintf(stderr, "usage: %s abstract-path post/get\n", argv[0]);
+        exit(1);
+    }
+
+    SysSem inst;
+    inst.Init(argv[1]);
+
+    if (0 == strcasecmp(argv[2], "post")) {
+        assert(inst.Post());
+        SysSem check;
+        check.Init(argv[1]);
+        assert(check.GetValue());
+        printf("ok, i am the only one under %s. running ...\n", inst.GetID());
+        pause();
+
+    } else if (0 == strcasecmp(argv[2], "get")) {
+        assert(inst.GetValue());
+        printf("a process is running under %s. \n", inst.GetID());
+    } else {
+        printf("unknown cmd \n");
+    }
+
+    return 0;
+}
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Python 自动翻译成 C++ ，彻底保证离线在线特征一致]]></title>
@@ -1030,174 +1211,6 @@ Ed25519是一个数字签名算法，</p>
 当一个算法的运行时间和输入数据有关的时候，可以根据运行时间这一信息，破解出密钥等。
 典型的，比如要验证一个对称签名，如果你用了C库里面的memcmp()，那你就会被timing attack方式攻击。
 因此，涉及到密码学数据的memcmp，必须要用运行时间和输入无关的函数，比如OpenSSL库里面的<code>CRYPTO_memcmp()</code></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Nginx下配置高性能，高安全性的https TLS服务]]></title>
-    <link href="https://blog.helong.info//blog/2015/05/08/https-config-optimize-in-nginx/"/>
-    <updated>2015-05-08T20:32:55+00:00</updated>
-    <id>https://blog.helong.info//blog/2015/05/08/https-config-optimize-in-nginx</id>
-    <content type="html"><![CDATA[<p>下文以nginx为例，介绍如何部署一个高性能，高安全性的https服务器。</p>
-
-<p>并附送一个优化出来的openssl编译脚本，可以编译出一个高性能，高安全性的openssl库，您可以直接复制粘贴使用。</p>
-
-<p>此处直接给出实践指导，后续再写文章解释tls协议的这些原理细节。</p>
-
-<p>nginx下https配置的优化点，主要有:</p>
-
-<ol>
-<li>session ticket</li>
-<li>session id cache</li>
-<li>ocsp stapling</li>
-<li>http KeepAlive</li>
-<li>ECDHE等ciphersuite优化</li>
-<li>openssl 编译优化</li>
-</ol>
-
-
-<a name="L.......nginx.https........."></a>
-<h3>一， nginx https的配置</h3>
-
-<p>先贴一下nginx配置，如下。</p>
-
-<p>是根据<a href="https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx">mozilla的权威文档</a>
-,和<a href="https://mozilla.github.io/server-side-tls/ssl-config-generator/">生成工具</a>(选择 nginx，intermediate ) 生成的配置为基础，加入session ticket等配置的结果</p>
-
-<!--more-->
-
-
-<pre><code class="c tls_nginx.conf">server {
-    listen 443 ssl;
-
-    # certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
-    ssl_certificate /path/to/signed_cert_plus_intermediates;
-    ssl_certificate_key /path/to/private_key;
-    ssl_session_timeout 1d;
-    ssl_session_cache shared:SSL:50m;
-
-    ssl_session_ticket_key /etc/nginx/conf.d/tls_session_ticket.key;
-    ssl_session_tickets on;
-
-    keepalive_timeout 75s;
-
-    # Diffie-Hellman parameter for DHE ciphersuites, recommended 2048 bits
-    ssl_dhparam /path/to/dhparam.pem;
-
-    # intermediate configuration. tweak to your needs.
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-    ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA';
-    ssl_prefer_server_ciphers on;
-
-    # HSTS (ngx_http_headers_module is required) (15768000 seconds = 6 months)
-    add_header Strict-Transport-Security max-age=15768000;
-
-    # OCSP Stapling ---
-    # fetch OCSP records from URL in ssl_certificate and cache them
-    ssl_stapling on;
-    ssl_stapling_verify on;
-
-    ## verify chain of trust of OCSP response using Root CA and Intermediate certs
-    ssl_trusted_certificate /path/to/signed_cert_plus_intermediates;
-
-    resolver 114.114.114.114;
-
-    ....
-}
-</code></pre>
-
-<a name="L..............................."></a>
-<h3>二， 其中的几个配置项</h3>
-
-<a name="L1...path.to.signed_cert_plus_intermediates"></a>
-<h5>1. /path/to/signed_cert_plus_intermediates</h5>
-
-<p>是你的证书链，就是ca签署之后发给你的文件，是一串这样的内容</p>
-
-<pre><code>-----BEGIN CERTIFICATE-----
-...
------END CERTIFICATE-----
------BEGIN CERTIFICATE-----
-...
------END CERTIFICATE-----
-...
------BEGIN CERTIFICATE-----
-...
------END CERTIFICATE-----
-</code></pre>
-
-<a name="L2...path.to.private_key"></a>
-<h5>2. /path/to/private_key</h5>
-
-<p>是你的私钥，一定要保密，最好chown+chmod限制只有http server可以读取！内容大致是：
-<code>
------BEGIN RSA PRIVATE KEY-----
-...
------END RSA PRIVATE KEY-----
-</code></p>
-
-<a name="L3...path.to.dhparam.pem"></a>
-<h5>3. /path/to/dhparam.pem</h5>
-
-<p>是dhe密钥协商的参数，生成方法：</p>
-
-<pre><code>     openssl  dhparam -out dhparam.pem 2048
-</code></pre>
-
-<a name="L4...etc.nginx.conf.d.tls_session_ticket.key"></a>
-<h5>4. /etc/nginx/conf.d/tls_session_ticket.key</h5>
-
-<p>是用来加解密session ticket的密码文件，这个文件的安全等级应该和私钥一样，最好chmod+chown限制只有http server能读取。 生成方法:</p>
-
-<pre><code>     openssl rand 48 &gt; tls_session_ticket.key
-</code></pre>
-
-<p>最好定期（比如2天一次）轮换，配置文件里把新的key文件放在最前面，旧的在下面，如下</p>
-
-<pre><code>    ssl_session_ticket_key current.key;
-    ssl_session_ticket_key previous.key;
-</code></pre>
-
-<a name="L5..ssl_trusted_certificate..path.to.signed_cert_plus_intermediates"></a>
-<h5>5. ssl_trusted_certificate /path/to/signed_cert_plus_intermediates</h5>
-
-<p>ssl_trusted_certificate，是用来验证ocsp响应的各个ca证书+中级证书，和信任的ca根证书列表。当用来验证ocsp响应的时候，应该配置为你的ca根证书+和中级ca证书的列表，此处可以简单和ssl_certificate使用同一个证书列表文件。<br/>
-其中当需要使用tls的客户端认证的时候（大多数https server都用不到客户端认证），需要指定信任的ca根证书列表文件, 这个文件在centos里面是/etc/ssl/certs/ca-bundle.trust.crt 这个文件。</p>
-
-<p>配置完成之后，使用ssllabs的这个在线检查工具<a href="https://www.ssllabs.com/ssltest/analyze.html">https://www.ssllabs.com/ssltest/analyze.html</a> 做检查，里面提出的警告，都需要改正。</p>
-
-<a name="L........openssl............"></a>
-<h3>三，  openssl编译优化</h3>
-
-<p>主流的https server，都是依赖openssl来提供tls协议，openssl本身代码复杂，概念繁多，最近对这方面做了研究，下面是一个深入分析过后的最优化编译配置，可以编译出一个高性能，高安全性的openssl版本，您可以直接复制粘贴使用。</p>
-
-<p>openssl请使用最新的1.0.2a版本，这个版本有intel针对ecdh p256曲线的优化，编译脚本见本文末尾。</p>
-
-<p>编译好之后，需要让nginx使用我们编译的这个openssl库，在centos下，可以用LD_LIBRARY_PATH的办法：</p>
-
-<pre><code>sudo vim /usr/lib/systemd/system/nginx.service
-</code></pre>
-
-<p>在其中添加一行Environment，如下：</p>
-
-<pre><code>[Service]
-...
-Environment=LD_LIBRARY_PATH=/usr/local/bin/openssl-1.0.2a_64_build/lib/
-ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx.conf
-...
-</code></pre>
-
-<p>其中的路径，请自行修改。</p>
-
-<p>还需要创建软连接，解决so库版本号的问题，如下</p>
-
-<pre><code>ln -s libcrypto.so.1.0.0 libcrypto.so.10
-ln -s libssl.so.1.0.0 libssl.so.10
-</code></pre>
-
-<p>脚本中包含了一个cloudflare的patch，增加chacha20_poly1305 cipher，使用了这个patch之后，可以使用<a href="https://github.com/cloudflare/sslconfig/blob/master/conf">cloudflare的ciphers配置</a></p>
-
-<p><a href="https://github.com/byronhe/modern-crypto-toolbox/blob/master/build_openssl.sh">https://github.com/byronhe/modern-crypto-toolbox/blob/master/build_openssl.sh</a></p>
 ]]></content>
   </entry>
   

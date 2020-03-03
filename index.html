@@ -9,7 +9,7 @@
   <meta name="author" content="byronhe">
 
   
-  <meta name="description" content="一，问题背景 随着深度学习的广泛应用，在搜索引擎/推荐系统/机器视觉等业务系统中，越来越多的深度学习模型部署到线上服务。 机器学习模型在离线训练时，一般要将输入的数据做特征工程预处理，再输入模型在 TensorFlow PyTorch 等框架上做训练。 1.常见的特征工程逻辑 &hellip;">
+  <meta name="description" content="一，问题背景 很多时候，我们需要确保进程只有一个实例运行。 有几种方法： http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux http://stackoverflow. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +69,310 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2020/03/03/abstract-unix-socket-single-instance/">用 Abstract Unix Socket 实现进程单实例运行</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2020-03-03T11:06:00+00:00'><span class='date'>2020-03-03</span> <span class='time'>11:06 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><a name="L.................."></a>
+<h2>一，问题背景</h2>
+
+<p>很多时候，我们需要<strong>确保进程只有一个实例运行</strong>。</p>
+
+<p>有几种方法：</p>
+
+<p><a href="http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux">http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux</a></p>
+
+<p><a href="http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c">http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c</a></p>
+
+<p><a href="https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src">https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src</a></p>
+
+<p>比较常规的做法，是对一个文件加文件锁 flock，比如对 pid 文件 flock( LOCK_EX|LOCK_NB )</p>
+
+<p>但是这种方法有些弊端：
+1. 如果文件被 mv 或者 rm，是会被绕过的。
+2. 如果磁盘故障比如磁盘满，目录没有写权限，也会有问题。</p>
+
+<a name="L......abstract.namespace.unix.socket"></a>
+<h2>二，abstract namespace unix socket</h2>
+
+<p><a href="http://linux.die.net/man/7/unix">http://linux.die.net/man/7/unix</a></p>
+
+<p>unix socket 有3种：</p>
+
+<ol>
+<li>基于文件的</li>
+<li>socketpair 创建的，匿名的</li>
+<li>abstract namespace 的，Linux特有</li>
+</ol>
+
+
+<p>Linux 下， AF_UNIX socket 支持一种特殊的
+abstract namespace unix socket 。</p>
+
+<p>相比 普通的基于文件系统的 unix socket，abstract namespace unix socket ：</p>
+
+<ol>
+<li>没有磁盘文件</li>
+<li>进程挂了以后自动删除，无残留文件</li>
+<li>无需担心与 文件系统上的文件冲突，不需要关心文件系统上的绝对路径是否存在的问题</li>
+</ol>
+
+
+<p>在 lsof 的结果里面看起来，就是有一些 类似 @test_abstract_ns 这样的 文件项</p>
+
+<p>代码中使用也很简单，  abstract namespace  unix socket 在 bind 之前，sockaddr_un.sun_path[0] 设成 0x0 即可。</p>
+
+<a name="L............"></a>
+<h2>三，代码</h2>
+
+<p>于是写了一个 SysSem 工具类（ 一个 system 范围的 semaphore ），
+用来：</p>
+
+<ol>
+<li>让一个程序只启动一个实例。</li>
+<li>让 x 进程等待 y 进程执行完 yyy 操作后，才能执行 xxx 操作。</li>
+</ol>
+
+
+<p>特点：</p>
+
+<ol>
+<li>多进程/线程 并发安全。</li>
+<li>当持有的进程被 kill ，OS自动释放，无残留。</li>
+<li>没有磁盘文件，没有文件意外被删的各种情况。</li>
+<li>不占用 tcp/udp 端口。</li>
+<li>简单，不到 60行代码。</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#include &lt;sys/socket.h&gt;
+</span><span class='line'>#include &lt;sys/un.h&gt;
+</span><span class='line'>#include &lt;unistd.h&gt;
+</span><span class='line'>
+</span><span class='line'>#include &lt;algorithm&gt;
+</span><span class='line'>#include &lt;string&gt;
+</span><span class='line'>
+</span><span class='line'>//
+</span><span class='line'>// a semaphore with system scope.
+</span><span class='line'>//
+</span><span class='line'>// 1. no race conditions between Post() / GetValue() , better than flock().
+</span><span class='line'>// 2. when a running process be killed, automatically release all.
+</span><span class='line'>// 3. no file on disk, no accidently delete .
+</span><span class='line'>// 4. no tcp/udp socket, no confliction, no port consumption.
+</span><span class='line'>//
+</span><span class='line'>class SysSem {
+</span><span class='line'>public:
+</span><span class='line'>    SysSem() : _fd(-1) { memset(&_addr, 0, sizeof(_addr)); }
+</span><span class='line'>    ~SysSem();
+</span><span class='line'>
+</span><span class='line'>    void Init(std::string id);
+</span><span class='line'>
+</span><span class='line'>    bool Post();
+</span><span class='line'>    bool GetValue();
+</span><span class='line'>
+</span><span class='line'>    const char* GetID() const;
+</span><span class='line'>
+</span><span class='line'>private:
+</span><span class='line'>    struct sockaddr_un _addr;
+</span><span class='line'>    int _fd;
+</span><span class='line'>};
+</span><span class='line'>
+</span><span class='line'>void SysSem::Init(std::string id) {
+</span><span class='line'>    _addr.sun_family = AF_UNIX;
+</span><span class='line'>    const size_t len = std::min(id.size(), sizeof(_addr.sun_path) - 2);  // 2 = start null and end null byte
+</span><span class='line'>    // abstract namespace socket address , _addr.sun_path[0] is a null byte ('\0')
+</span><span class='line'>    memcpy(_addr.sun_path + 1, id.c_str(), len);
+</span><span class='line'>    // memcpy(_addr.sun_path + 0, id.c_str(), len);
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>const char* SysSem::GetID() const { return &_addr.sun_path[1]; }
+</span><span class='line'>
+</span><span class='line'>SysSem::~SysSem() {
+</span><span class='line'>    if (_fd &gt;= 0) {
+</span><span class='line'>        ::close(_fd);
+</span><span class='line'>        _fd = -1;
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>bool SysSem::Post() {
+</span><span class='line'>    _fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
+</span><span class='line'>    if (_fd &lt; 0) {
+</span><span class='line'>        return false;
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    if ((0 != ::bind(_fd, (struct sockaddr*)&_addr, sizeof(_addr))) || (0 != listen(_fd, 65536))) {
+</span><span class='line'>        return false;
+</span><span class='line'>    }
+</span><span class='line'>    return true;
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>bool SysSem::GetValue() {
+</span><span class='line'>    const int clientFD = ::socket(AF_UNIX, SOCK_STREAM, 0);
+</span><span class='line'>    if (clientFD &lt; 0) {
+</span><span class='line'>        return false;
+</span><span class='line'>    }
+</span><span class='line'>    const bool ret = (0 == ::connect(clientFD, (struct sockaddr*)&_addr, sizeof(_addr)));
+</span><span class='line'>    ::close(clientFD);
+</span><span class='line'>    return ret;
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>#include &lt;assert.h&gt;
+</span><span class='line'>#include &lt;stdio.h&gt;
+</span><span class='line'>
+</span><span class='line'>int main(int argc, char** argv) {
+</span><span class='line'>    if (argc != 3) {
+</span><span class='line'>        fprintf(stderr, "usage: %s abstract-path post/get\n", argv[0]);
+</span><span class='line'>        exit(1);
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    SysSem inst;
+</span><span class='line'>    inst.Init(argv[1]);
+</span><span class='line'>
+</span><span class='line'>    if (0 == strcasecmp(argv[2], "post")) {
+</span><span class='line'>        assert(inst.Post());
+</span><span class='line'>        SysSem check;
+</span><span class='line'>        check.Init(argv[1]);
+</span><span class='line'>        assert(check.GetValue());
+</span><span class='line'>        printf("ok, i am the only one under %s. running ...\n", inst.GetID());
+</span><span class='line'>        pause();
+</span><span class='line'>
+</span><span class='line'>    } else if (0 == strcasecmp(argv[2], "get")) {
+</span><span class='line'>        assert(inst.GetValue());
+</span><span class='line'>        printf("a process is running under %s. \n", inst.GetID());
+</span><span class='line'>    } else {
+</span><span class='line'>        printf("unknown cmd \n");
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    return 0;
+</span><span class='line'>}
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -577,46 +881,6 @@ tls是由各类基础算法，作为原语组合而成。
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/03/27/mock-c-plus-plus-function-for-unit-test/">Mock C++ Function for Unit Test</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-03-27T10:05:55+00:00'><span class='date'>2014-03-27</span> <span class='time'>10:05 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在单元测试中，我们需要提供业务逻辑的mock版本，
-当业务逻辑实现为C++的virtual function时，这是很容易的，我们只需要写一个子类，
-实现virtual function就行了，Google 的 gmock就针对这种情况设计。</p>
-
-<p>可是，如果遗留代码中有一般C函数，非virtual的类成员函数，模板函数，inline函数，如何提供mock版本呢？</p>
-
-<p>下面的代码用一点trick实现了上述函数的运行时mock。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/03/27/mock-c-plus-plus-function-for-unit-test/">继续阅读/Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -632,6 +896,10 @@ tls是由各类基础算法，作为原语组合而成。
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2020/03/03/abstract-unix-socket-single-instance/">用 Abstract Unix Socket 实现进程单实例运行</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/">Python 自动翻译成 C++ ，彻底保证离线在线特征一致</a>
       </li>
     
@@ -645,10 +913,6 @@ tls是由各类基础算法，作为原语组合而成。
     
       <li class="post">
         <a href="/blog/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/">TLS协议分析 与 现代加密通信协议设计</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/06/05/modern-crypto/">现代密码学实践指南[2015年]</a>
       </li>
     
   </ul>
@@ -695,7 +959,7 @@ tls是由各类基础算法，作为原语组合而成。
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2019 - byronhe -
+  Copyright &copy; 2020 - byronhe -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
