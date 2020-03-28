@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>文字 on Tech Ideas</title>
+    <link>https://blog.helong.info/categories/%E6%96%87%E5%AD%97/</link>
+    <description>Recent content in 文字 on Tech Ideas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 11 Jul 2013 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://blog.helong.info/categories/%E6%96%87%E5%AD%97/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>开始写博客</title>
+      <link>https://blog.helong.info/post/2013/07/11/begin-blog/</link>
+      <pubDate>Thu, 11 Jul 2013 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2013/07/11/begin-blog/</guid>
+      <description>我开始在这写博客了。 这个博客专注在技术方面，C++，Linux，等等，务求原创，务求深度。 可能还会有一些文字。 早于此的，是从cnblogs上</description>
+    </item>
+    
+  </channel>
+</rss>

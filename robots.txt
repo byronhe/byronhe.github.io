@@ -1,4 +1,2 @@
 User-agent: *
-Disallow: 
-
-Sitemap: https://blog.helong.info//sitemap.xml 
+Sitemap: https://blog.helong.info/sitemap.xml

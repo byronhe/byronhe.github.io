@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>search on Tech Ideas</title>
+    <link>https://blog.helong.info/categories/search/</link>
+    <description>Recent content in search on Tech Ideas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 29 Nov 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://blog.helong.info/categories/search/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Python 自动翻译成 C&#43;&#43; ，彻底保证离线在线特征一致</title>
+      <link>https://blog.helong.info/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</link>
+      <pubDate>Fri, 29 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</guid>
+      <description>&lt;h1 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h1&gt;
+&lt;p&gt;随着深度学习的广泛应用，在搜索引擎/推荐系统/机器视觉等业务系统中，越来越多的深度学习模型部署到线上服务。&lt;/p&gt;
+&lt;p&gt;机器学习模型在离线训练时，一般要将输入的数据做特征工程预处理，再输入模型在 TensorFlow PyTorch 等框架上做训练。&lt;/p&gt;
+&lt;h3 id=&#34;1常见的特征工程逻辑&#34;&gt;1.常见的特征工程逻辑&lt;/h3&gt;
+&lt;p&gt;常见的特征工程逻辑有：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;分箱/分桶 离散化&lt;/li&gt;
+&lt;li&gt;log/exp 对数/幂等 math numpy 常见数学运算&lt;/li&gt;
+&lt;li&gt;特征缩放/归一化/截断&lt;/li&gt;
+&lt;li&gt;交叉特征生成&lt;/li&gt;
+&lt;li&gt;分词匹配程度计算&lt;/li&gt;
+&lt;li&gt;字符串分隔匹配判断tong&lt;/li&gt;
+&lt;li&gt;缺省值填充等&lt;/li&gt;
+&lt;li&gt;数据平滑&lt;/li&gt;
+&lt;li&gt;onehot 编码，hash 编码等&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这些特征工程代码，当然一般使用深度学习最主要的语言 &lt;strong&gt;python&lt;/strong&gt; 实现。&lt;/p&gt;
+&lt;h1 id=&#34;二业务痛点&#34;&gt;二，业务痛点&lt;/h1&gt;
+&lt;p&gt;离线训练完成，模型上线部署后，同样要&lt;strong&gt;用 C++ 重新实现&lt;/strong&gt; 这些 python 的特征工程逻辑代码。&lt;/p&gt;
+&lt;p&gt;我们发现，&lt;strong&gt;“用 C++ 重新实现”&lt;/strong&gt; 这个步骤，给实际业务带来了大量的问题：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;繁琐，费时费力，极容易出现 python 和 C++ 代码&lt;strong&gt;不一致&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;不一致&lt;/strong&gt;会直接影响模型在线上的效果，导致大盘业务指标不如预期，产生各种 bad case&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;不一致&lt;/strong&gt;难以发现，无法测试，无法监控，经常要靠用户投诉反馈，甚至大盘数据异常才能发现&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
+    
+    <item>
+      <title>用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</title>
+      <link>https://blog.helong.info/post/2019/11/25/cppjieba-darts-dat-memory_optimize/</link>
+      <pubDate>Mon, 25 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2019/11/25/cppjieba-darts-dat-memory_optimize/</guid>
+      <description>&lt;h2 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h2&gt;
+&lt;p&gt;中文分词应用比较广泛的开源算法，是 &lt;a href=&#34;https://github.com/fxsjy/jieba&#34;&gt;jieba 结巴分词&lt;/a&gt;，结巴分词较高性能的实现是 C++ 版本的 CppJieba :
+&lt;a href=&#34;https://github.com/yanyiwu/cppjieba&#34;&gt;https://github.com/yanyiwu/cppjieba&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;在实际使用 CppJieba 的过程中，我们发现 CppJieba 的内存占用比较高。&lt;/p&gt;
+&lt;p&gt;比如对一个 76W 词 大小 11MB 的词典 ，加载 2份 （比如为了支持平滑改动用户词典）就需要耗费 505MB内存。&lt;/p&gt;
+&lt;p&gt;这对一些多进程的后台服务，浪费大量内存，难以接受，因此这里希望削减内存耗费。&lt;/p&gt;
+&lt;p&gt;经过初步调查，确定改进方法，然后动手改造，&lt;strong&gt;最终把 505MB 缩减到了 4.7MB ，实现了 99% 内存降低&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;此处也有 issue 讨论 &lt;a href=&#34;https://github.com/yanyiwu/cppjieba/issues/3&#34;&gt;https://github.com/yanyiwu/cppjieba/issues/3&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;代码稍后可能会开源出来。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>GB 规模语料上的高性能新词发现算法</title>
+      <link>https://blog.helong.info/post/2019/09/18/newwords_discovery/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2019/09/18/newwords_discovery/</guid>
+      <description>分词是中文搜索的重要环节，目前分词算法已经比较成熟，分词错误的主要是由于未登录词。 因此发现业务领域语料库中的新词，减少未登录词，对改善搜索引</description>
+    </item>
+    
+  </channel>
+</rss>

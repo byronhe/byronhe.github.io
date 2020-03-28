@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>用 abstract unix socket 实现进程单实例运行 - Tech Ideas</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="byronhe" /><meta name="description" content="一，问题背景 很多时候，我们需要确保进程只有一个实例运行。
+有几种方法：
+http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux
+http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c
+https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src
+比较常规的做法，是对一个文件加文件锁 flock，比如对 pid 文件 flock( LOCK_EX|LOCK_NB )
+但是这种方法有些弊端：
+ 如果文件被 mv 或者 rm，是会被绕过的。 如果磁盘故障比如磁盘满，目录没有写权限，会失败。  二，abstract namespace unix socket http://linux.die.net/man/7/unix
+unix socket 有3种：
+ 基于文件的 socketpair 创建的，匿名的 abstract namespace 的，Linux特有  Linux 下， AF_UNIX socket 支持一种特殊的 abstract namespace unix socket 。
+相比 普通的基于文件系统的 unix socket，abstract namespace unix socket ：
+ 没有磁盘文件 进程挂了以后自动删除，无残留文件 无需担心与 文件系统上的文件冲突，不需要关心文件系统上的绝对路径是否存在的问题 " /><meta name="keywords" content="abstract unix socket ,  单实例,  进程,  linux,  server" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
+
+
+<link rel="canonical" href="https://blog.helong.info/post/2020/03/03/abstract-unix-socket-single-instance/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="用 abstract unix socket 实现进程单实例运行" />
+<meta property="og:description" content="一，问题背景
+很多时候，我们需要确保进程只有一个实例运行。
+有几种方法：
+http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux
+http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c
+https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src
+比较常规的做法，是对一个文件加文件锁 flock，比如对 pid 文件 flock( LOCK_EX|LOCK_NB )
+但是这种方法有些弊端：
+
+如果文件被 mv 或者 rm，是会被绕过的。
+如果磁盘故障比如磁盘满，目录没有写权限，会失败。
+
+二，abstract namespace unix socket
+http://linux.die.net/man/7/unix
+unix socket 有3种：
+
+基于文件的
+socketpair 创建的，匿名的
+abstract namespace 的，Linux特有
+
+Linux 下， AF_UNIX socket 支持一种特殊的
+abstract namespace unix socket 。
+相比 普通的基于文件系统的 unix socket，abstract namespace unix socket ：
+
+没有磁盘文件
+进程挂了以后自动删除，无残留文件
+无需担心与 文件系统上的文件冲突，不需要关心文件系统上的绝对路径是否存在的问题
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.helong.info/post/2020/03/03/abstract-unix-socket-single-instance/" />
+<meta property="article:published_time" content="2020-03-03T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-03-03T00:00:00+00:00" />
+<meta itemprop="name" content="用 abstract unix socket 实现进程单实例运行">
+<meta itemprop="description" content="一，问题背景
+很多时候，我们需要确保进程只有一个实例运行。
+有几种方法：
+http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux
+http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c
+https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src
+比较常规的做法，是对一个文件加文件锁 flock，比如对 pid 文件 flock( LOCK_EX|LOCK_NB )
+但是这种方法有些弊端：
+
+如果文件被 mv 或者 rm，是会被绕过的。
+如果磁盘故障比如磁盘满，目录没有写权限，会失败。
+
+二，abstract namespace unix socket
+http://linux.die.net/man/7/unix
+unix socket 有3种：
+
+基于文件的
+socketpair 创建的，匿名的
+abstract namespace 的，Linux特有
+
+Linux 下， AF_UNIX socket 支持一种特殊的
+abstract namespace unix socket 。
+相比 普通的基于文件系统的 unix socket，abstract namespace unix socket ：
+
+没有磁盘文件
+进程挂了以后自动删除，无残留文件
+无需担心与 文件系统上的文件冲突，不需要关心文件系统上的绝对路径是否存在的问题
+">
+<meta itemprop="datePublished" content="2020-03-03T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-03-03T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="898">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="用 abstract unix socket 实现进程单实例运行"/>
+<meta name="twitter:description" content="一，问题背景
+很多时候，我们需要确保进程只有一个实例运行。
+有几种方法：
+http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux
+http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c
+https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src
+比较常规的做法，是对一个文件加文件锁 flock，比如对 pid 文件 flock( LOCK_EX|LOCK_NB )
+但是这种方法有些弊端：
+
+如果文件被 mv 或者 rm，是会被绕过的。
+如果磁盘故障比如磁盘满，目录没有写权限，会失败。
+
+二，abstract namespace unix socket
+http://linux.die.net/man/7/unix
+unix socket 有3种：
+
+基于文件的
+socketpair 创建的，匿名的
+abstract namespace 的，Linux特有
+
+Linux 下， AF_UNIX socket 支持一种特殊的
+abstract namespace unix socket 。
+相比 普通的基于文件系统的 unix socket，abstract namespace unix socket ：
+
+没有磁盘文件
+进程挂了以后自动删除，无残留文件
+无需担心与 文件系统上的文件冲突，不需要关心文件系统上的绝对路径是否存在的问题
+"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Tech Ideas</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Tech Ideas</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">用 abstract unix socket 实现进程单实例运行</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-03-03 </span>
+        <div class="post-category">
+            <a href="/categories/linux/"> linux </a>
+            <a href="/categories/server/"> server </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#一问题背景">一，问题背景</a></li>
+        <li><a href="#二abstract-namespace-unix-socket">二，abstract namespace unix socket</a></li>
+        <li><a href="#三代码">三，代码</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="一问题背景">一，问题背景</h2>
+<p>很多时候，我们需要<strong>确保进程只有一个实例运行</strong>。</p>
+<p>有几种方法：</p>
+<p><a href="http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux">http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux</a></p>
+<p><a href="http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c">http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c</a></p>
+<p><a href="https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src">https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src</a></p>
+<p>比较常规的做法，是对一个文件加文件锁 flock，比如对 pid 文件 flock( LOCK_EX|LOCK_NB )</p>
+<p>但是这种方法有些弊端：</p>
+<ol>
+<li>如果文件被 mv 或者 rm，是会被绕过的。</li>
+<li>如果磁盘故障比如磁盘满，目录没有写权限，会失败。</li>
+</ol>
+<h2 id="二abstract-namespace-unix-socket">二，abstract namespace unix socket</h2>
+<p><a href="http://linux.die.net/man/7/unix">http://linux.die.net/man/7/unix</a></p>
+<p>unix socket 有3种：</p>
+<ol>
+<li>基于文件的</li>
+<li>socketpair 创建的，匿名的</li>
+<li>abstract namespace 的，Linux特有</li>
+</ol>
+<p>Linux 下， AF_UNIX socket 支持一种特殊的
+abstract namespace unix socket 。</p>
+<p>相比 普通的基于文件系统的 unix socket，abstract namespace unix socket ：</p>
+<ol>
+<li>没有磁盘文件</li>
+<li>进程挂了以后自动删除，无残留文件</li>
+<li>无需担心与 文件系统上的文件冲突，不需要关心文件系统上的绝对路径是否存在的问题</li>
+</ol>
+<p>在 lsof 的结果里面看起来，就是有一些 类似 @test_abstract_ns 这样的 文件项</p>
+<p>代码中使用也很简单，  abstract namespace  unix socket 在 bind 之前，sockaddr_un.sun_path[0] 设成 0x0 即可。</p>
+<h2 id="三代码">三，代码</h2>
+<p>于是我用 abstract unix socket 实现了一个 SysSem 工具类（ 一个 system 范围的 semaphore ），
+用来：</p>
+<ol>
+<li>让一个程序只启动一个实例。</li>
+<li>让 x 进程等待 y 进程执行完 yyy 操作后，才能执行 xxx 操作。</li>
+</ol>
+<p>特点：</p>
+<ol>
+<li>多进程/线程 并发安全。</li>
+<li>当持有的进程被 kill ，OS自动释放，无残留。</li>
+<li>没有磁盘文件，没有文件意外被删的各种情况。</li>
+<li>不占用 tcp/udp 端口。</li>
+<li>简单，不到 60行代码。</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/un.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;algorithm&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="c1">//
+</span><span class="c1">// a semaphore with system scope.
+</span><span class="c1">//
+</span><span class="c1">// 1. no race conditions between Post() / GetValue() , better than flock().
+</span><span class="c1">// 2. when a running process be killed, automatically release all.
+</span><span class="c1">// 3. no file on disk, no accidently delete .
+</span><span class="c1">// 4. no tcp/udp socket, no confliction, no port consumption.
+</span><span class="c1">//
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">SysSem</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">SysSem</span><span class="p">()</span> <span class="o">:</span> <span class="n">_fd</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">_addr</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">_addr</span><span class="p">));</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">SysSem</span><span class="p">();</span>
+
+    <span class="kt">void</span> <span class="nf">Init</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">id</span><span class="p">);</span>
+
+    <span class="kt">bool</span> <span class="nf">Post</span><span class="p">();</span>
+    <span class="kt">bool</span> <span class="nf">GetValue</span><span class="p">();</span>
+
+    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="nf">GetID</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="k">struct</span> <span class="nc">sockaddr_un</span> <span class="n">_addr</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">_fd</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">void</span> <span class="n">SysSem</span><span class="o">::</span><span class="n">Init</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">_addr</span><span class="p">.</span><span class="n">sun_family</span> <span class="o">=</span> <span class="n">AF_UNIX</span><span class="p">;</span>
+    <span class="k">const</span> <span class="n">size_t</span> <span class="n">len</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">id</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">_addr</span><span class="p">.</span><span class="n">sun_path</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">);</span>  <span class="c1">// 2 = start null and end null byte
+</span><span class="c1"></span>    <span class="c1">// abstract namespace socket address , _addr.sun_path[0] is a null byte (&#39;\0&#39;)
+</span><span class="c1"></span>    <span class="n">memcpy</span><span class="p">(</span><span class="n">_addr</span><span class="p">.</span><span class="n">sun_path</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">id</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">len</span><span class="p">);</span>
+    <span class="c1">// memcpy(_addr.sun_path + 0, id.c_str(), len);
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">SysSem</span><span class="o">::</span><span class="n">GetID</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="o">&amp;</span><span class="n">_addr</span><span class="p">.</span><span class="n">sun_path</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="p">}</span>
+
+<span class="n">SysSem</span><span class="o">::~</span><span class="n">SysSem</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_fd</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="o">::</span><span class="n">close</span><span class="p">(</span><span class="n">_fd</span><span class="p">);</span>
+        <span class="n">_fd</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="n">SysSem</span><span class="o">::</span><span class="n">Post</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">_fd</span> <span class="o">=</span> <span class="o">::</span><span class="n">socket</span><span class="p">(</span><span class="n">AF_UNIX</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">((</span><span class="mi">0</span> <span class="o">!=</span> <span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="n">_fd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">_addr</span><span class="p">)))</span> <span class="o">||</span> <span class="p">(</span><span class="mi">0</span> <span class="o">!=</span> <span class="n">listen</span><span class="p">(</span><span class="n">_fd</span><span class="p">,</span> <span class="mi">65536</span><span class="p">)))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="n">SysSem</span><span class="o">::</span><span class="n">GetValue</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">clientFD</span> <span class="o">=</span> <span class="o">::</span><span class="n">socket</span><span class="p">(</span><span class="n">AF_UNIX</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">clientFD</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">const</span> <span class="kt">bool</span> <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="n">clientFD</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">_addr</span><span class="p">)));</span>
+    <span class="o">::</span><span class="n">close</span><span class="p">(</span><span class="n">clientFD</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;assert.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;usage: %s abstract-path post/get</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">SysSem</span> <span class="n">inst</span><span class="p">;</span>
+    <span class="n">inst</span><span class="p">.</span><span class="n">Init</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="n">strcasecmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">&#34;post&#34;</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">assert</span><span class="p">(</span><span class="n">inst</span><span class="p">.</span><span class="n">Post</span><span class="p">());</span>
+        <span class="n">SysSem</span> <span class="n">check</span><span class="p">;</span>
+        <span class="n">check</span><span class="p">.</span><span class="n">Init</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+        <span class="n">assert</span><span class="p">(</span><span class="n">check</span><span class="p">.</span><span class="n">GetValue</span><span class="p">());</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;ok, i am the only one under %s. running ...</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">inst</span><span class="p">.</span><span class="n">GetID</span><span class="p">());</span>
+        <span class="n">pause</span><span class="p">();</span>
+
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="n">strcasecmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">&#34;get&#34;</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">assert</span><span class="p">(</span><span class="n">inst</span><span class="p">.</span><span class="n">GetValue</span><span class="p">());</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;a process is running under %s. </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">inst</span><span class="p">.</span><span class="n">GetID</span><span class="p">());</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;unknown cmd </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/">
+            <span class="next-text nav-default">Python 自动翻译成 C&#43;&#43; ，彻底保证离线在线特征一致</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'byronheblog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
+  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2010 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">byronhe</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-49290834-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

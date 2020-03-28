@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>apache的安全增强配置(使用mod_chroot,mod_security) - Tech Ideas</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="byronhe" /><meta name="description" content="LAMP环境的一般入侵，大致经过sql注入，上传webshell，本地提权至root，安装rootkit等步骤。 采用如下的配置，mod_ch" /><meta name="keywords" content="C&#43;&#43;, Linux, Crypto, Algorithm, Lisp, etc" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
+
+
+<link rel="canonical" href="https://blog.helong.info/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="apache的安全增强配置(使用mod_chroot,mod_security)" />
+<meta property="og:description" content="LAMP环境的一般入侵，大致经过sql注入，上传webshell，本地提权至root，安装rootkit等步骤。 采用如下的配置，mod_ch" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.helong.info/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/" />
+<meta property="article:published_time" content="2010-08-17T00:00:00+00:00" />
+<meta property="article:modified_time" content="2010-08-17T00:00:00+00:00" />
+<meta itemprop="name" content="apache的安全增强配置(使用mod_chroot,mod_security)">
+<meta itemprop="description" content="LAMP环境的一般入侵，大致经过sql注入，上传webshell，本地提权至root，安装rootkit等步骤。 采用如下的配置，mod_ch">
+<meta itemprop="datePublished" content="2010-08-17T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2010-08-17T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1475">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="apache的安全增强配置(使用mod_chroot,mod_security)"/>
+<meta name="twitter:description" content="LAMP环境的一般入侵，大致经过sql注入，上传webshell，本地提权至root，安装rootkit等步骤。 采用如下的配置，mod_ch"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Tech Ideas</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Tech Ideas</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">apache的安全增强配置(使用mod_chroot,mod_security)</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2010-08-17 </span>
+        <div class="post-category">
+            <a href="/categories/linux/"> linux </a>
+            <a href="/categories/server/"> server </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>LAMP环境的一般入侵，大致经过sql注入，上传webshell，本地提权至root，安装rootkit等步骤。</p>
+<p>采用如下的配置，mod_chroot和单独分区挂载可以让本地提权变得极为困难，而mod-security可以封堵一般的sql注入等应用层攻击。</p>
+<p>以下内容是在ubuntu10.04上实践以后总结出来的,直接上命令，就不做过多解释了，水平有限，错误在所难免，欢迎指正。</p>
+<p>首先确保apache,php,mysql已经正常工作,出现问题的话，查看 /var/log/apache2, /var/log/syslog, /var/log/mysql/error.log 尤其是apparmor导致的权限错误，不易发现。</p>
+<p>  </p>
+<p>1.mod_chroot的安装，配置</p>
+<p>目标是chroot到/var/www。</p>
+<p>(1) 安装:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo service apache2 stop
+sudo apt-get libapache2-mod-chroot
+sudo vi /etc/apache2/mod-available/mod_chroot.conf
+</code></pre></td></tr></table>
+</div>
+</div><p>内容为</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">&lt;IfModulemod_chroot.c&gt;
+  LoadFile /lib/libgcc_s.so.1
+  ChrootDir /var/www
+&lt;/IfModule&gt;
+</code></pre></td></tr></table>
+</div>
+</div><p> </p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo a2enmodmod_chroot
+</code></pre></td></tr></table>
+</div>
+</div><p>/etc/apache2/site-enabled/000-default 中 DocumentRoot 改为 /</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo ln -s /var/www/var/run/apache2.pid /var/run/apache2.pid
+</code></pre></td></tr></table>
+</div>
+</div><p>并把</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">ln -s /var/www/var/run/apache2.pid /var/run/apache2.pid
+</code></pre></td></tr></table>
+</div>
+</div><p>加到/etc/rc.local中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo mkdir /var/www/tmp <span class="c1">#放session</span>
+sudo chmod 1777tmp
+sudo mkdir -p /var/www/var/run/mysqld
+sudo ln -s / /var/www/var/www
+</code></pre></td></tr></table>
+</div>
+</div><p>安装好apache,静态页面和php正常后，弄mysql</p>
+<ol>
+<li>sudo service mysql stop.</li>
+<li>改/etc/apparmor.d/usr.sbin.mysqld，
+        把&rdquo;/var/run/mysqld.sock w,&ldquo;那一行复制并改为
+       &ldquo;/var/www/var/run/mysqld.sock w,&rdquo;</li>
+<li>改/etc/mysql/my.cnf
+        在[client],[mysqld_safe],[mysqld]每一节里socket路径改为
+       &ldquo;socket = /var/www/var/run/mysqld/mysqld.sock&rdquo;</li>
+<li>sudo servicemysql start.</li>
+</ol>
+<p> </p>
+<p>一些其他问题</p>
+<p>date()不正常，解决办法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo mkdir -p /var/www/usr/share /var/www/etc
+sudo cp -rp /usr/share/zoneinfo /var/www/usr/share/
+sudo cp /etc/localtime/var/www/etc/
+</code></pre></td></tr></table>
+</div>
+</div><p>DNS可能出问题(没试过)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo cp /etc/resolv.conf/var/www/etc/resolv.conf
+</code></pre></td></tr></table>
+</div>
+</div><p>找不到错误页面</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo cp -rp /usr/share/apache2//var/www/usr/share/
+</code></pre></td></tr></table>
+</div>
+</div><p> </p>
+<p>2.mod_security的安装，配置</p>
+<p>安装</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo aptitude install libapache2-mod-security2
+sudo cp/usr/share/doc/mod-security-common/examples/rules/modsecurity_crs_10_config.conf  /etc/apache2/mods-enabled/mod-security.conf
+sudo a2enmod mod-security
+sudo apache2ctl stop
+</code></pre></td></tr></table>
+</div>
+</div><p>修改 /etc/apache2/mods-available/mod-security.conf 中的 debug_log 和 audit_log 路径到合适的位置，并添加如下两行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Include/usr/share/doc/mod-security-common/examples/rules/modsecurity_crs_10_global_config.conf
+Include/usr/share/doc/mod-security-common/examples/rules/base_rules/*.conf
+</code></pre></td></tr></table>
+</div>
+</div><p> </p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">sudo apache2ctl start
+</code></pre></td></tr></table>
+</div>
+</div><p> #/usr/share/doc/mod-security-common/examples/rules/目录下还有一些规则可用</p>
+<p>参照gentoo的ebuild中的如下内容（http://gentoo-portage.com/www-apache/mod_security/ChangeLog）</p>
+<p> </p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="k">if</span> ! use vanilla<span class="p">;</span> <span class="k">then</span> 
+         mv <span class="s2">&#34;</span><span class="si">${</span><span class="nv">D</span><span class="si">}</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">APACHE_MODULES_CONFDIR</span><span class="si">}</span>/mod_security/modsecurity_*<span class="o">{</span>41_phpids,50_outbound<span class="o">}</span>*/
+                 <span class="s2">&#34;</span><span class="si">${</span><span class="nv">D</span><span class="si">}</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">APACHE_MODULES_CONFDIR</span><span class="si">}</span>/mod_security/optional_rules <span class="o">||</span> die
+<span class="k">fi</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>modsecurity_*{41_phpids,50_outbound}*的这几个规则还是不要用比较好。</p>
+<p>另外，http://www.gotroot.com/tiki-index.php?page=mod_security+rules 提供一些规则</p>
+<p>3.另外，可以把/var/www/放在一个单独的分区上，用noexec,nosuid,nodev参数挂载,打开mysql的apparmor,可以极大增强安全性。</p>
+<p>参考资料：
+/usr/share/doc/mod-chroot-common/</p>
+<p><a href="http://core.segfault.pl/~hobbit/mod_chroot/index.html">http://core.segfault.pl/~hobbit/mod_chroot/index.html</a></p>
+<p><a href="http://server.it168.com/a2010/0714/1077/000001077357.shtml">http://server.it168.com/a2010/0714/1077/000001077357.shtml</a></p>
+<p><a href="http://www.howtoforge.com/chrooting-apache2-mod-chroot-debian-etch">http://www.howtoforge.com/chrooting-apache2-mod-chroot-debian-etch</a></p>
+<p>/usr/share/doc/mod-security-common</p>
+<p>  </p>
+<p>后期补充一些：</p>
+<p>chroot的关键是确保/var/www/ ,/var/www/var/www都存在，并且/var/www/var/www 是指向/的符号连接</p>
+<p>对apache chroot的过程，我的理解（如有不对，欢迎指正）是</p>
+<ol>
+<li>先初始化其他模块</li>
+<li>chroot到/var/www</li>
+<li>改变当前目录到/var/www(此时实际上是改变到/var/www/var/www目录下)</li>
+<li>当http请求到来时，比如http://127.0.0.1/index.php,根据vhost的配置（如果documentroot是/，网页实际放在/var/www/下的话），apache寻找/index.php(实际上是/var/www/index.php)</li>
+</ol>
+<p>另外，还有个诊断方法是查看/proc/<!-- raw HTML omitted -->/root和/proc/<!-- raw HTML omitted -->/cwd，一个是apache的root路径，一个是apache的当前目录（<!-- raw HTML omitted -->是apache的pid ），再看看apache的访问日志</p>
+
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/2010/08/29/apache-monitor-inotify-script/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">一个用inotify监控apache的脚本</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'byronheblog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
+  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2010 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">byronhe</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-49290834-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>scheme on Tech Ideas</title>
+    <link>https://blog.helong.info/categories/scheme/</link>
+    <description>Recent content in scheme on Tech Ideas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 09 Apr 2012 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://blog.helong.info/categories/scheme/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>一个基于约束传播的微型计算语言的设计和实现</title>
+      <link>https://blog.helong.info/post/2012/04/09/propagation-of-constraints-lang-in-py/</link>
+      <pubDate>Mon, 09 Apr 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2012/04/09/propagation-of-constraints-lang-in-py/</guid>
+      <description>&lt;p&gt;一个基于约束传播的，玩具级微型计算语言的设计和简单实现。&lt;/p&gt;
+&lt;p&gt;这个程序就是做来玩和练习的，代码是玩具级别的，用的python，基本可以正常工作了。&lt;/p&gt;
+&lt;p&gt;先介绍应用背景：&lt;/p&gt;
+&lt;p&gt;在流体机械设计中，通常根据性能参数进行设计，算出其它变量，但问题是，在设计过程中，需要进行变量的&lt;strong&gt;手工调整&lt;/strong&gt;，例如圆整，修正到某一范围，校核等等。&lt;/p&gt;
+&lt;p&gt;其计算模式举例如下：&lt;/p&gt;
+&lt;p&gt;1.定义变量，如输入压力P&lt;!-- raw HTML omitted --&gt;in&lt;!-- raw HTML omitted --&gt;=0.98，输入温度T&lt;!-- raw HTML omitted --&gt;in&lt;!-- raw HTML omitted --&gt;=27,输入流量Q&lt;!-- raw HTML omitted --&gt;vin&lt;!-- raw HTML omitted --&gt;=400,k&lt;!-- raw HTML omitted --&gt;v2，&lt;!-- raw HTML omitted --&gt;φ&lt;!-- raw HTML omitted --&gt;2r，&lt;!-- raw HTML omitted --&gt;b2，D2，u2，qin等等。。。&lt;/p&gt;
+&lt;p&gt;2.根据某些物理公式，算出几个新的量，如转速 &lt;em&gt;n=33.9*sqrt(k&lt;!-- raw HTML omitted --&gt;v2&lt;!-- raw HTML omitted --&gt;*φ&lt;!-- raw HTML omitted --&gt;2r*&lt;!-- raw HTML omitted --&gt;b2/D2*(u2^3)/qin)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;3.把n从8296.93圆整为整数8300，&lt;/p&gt;
+&lt;p&gt;4.重新计算b2/D2=0.06455，校核可知0.02&amp;lt;0.06455&amp;lt;0.065，符合要求&lt;/p&gt;
+&lt;p&gt;5.根据n计算出其它新的变量，修正，校核。。。&lt;/p&gt;
+&lt;p&gt;。。。&lt;/p&gt;
+&lt;p&gt;观察可以发现，这种计算模式，和《计算机程序的构造与解释》中提到的约束传播系统很像，如果把一个变量看作一个对象，那么，当它位于一个公式的左侧，例如n，也就意味着，右侧变量例如k&lt;!-- raw HTML omitted --&gt;v2&lt;!-- raw HTML omitted --&gt;更新时，应该给它发送一个消息，让它重新计算自己的值，当n更新后，如果它发现有别的变量依赖于自己，它应该发消息通知它们更新自己的值。&lt;/p&gt;
+&lt;p&gt;还可以看出，这种依赖关系形成了一个图，例如应该有一条从k&lt;!-- raw HTML omitted --&gt;v2&lt;!-- raw HTML omitted --&gt;到n的边，把n称为k&lt;!-- raw HTML omitted --&gt;v2&lt;!-- raw HTML omitted --&gt;的订阅者。&lt;/p&gt;
+&lt;p&gt;所以这种计算模式可以用约束传播系统建模，但是此处和书里的约束传播系统有差异：此处的约束传播系统是&lt;strong&gt;有向图&lt;/strong&gt;，而书里是无向图，设计成有向图主要是为了简单，无向图的消息发送顺序是难以控制的，而且构造的时候公式中的每个变量都要持有其它对象的引用，太麻烦，有向图只需要在公式左侧的那个变量哪里保存公式右侧的每个变量的引用。&lt;/p&gt;
+&lt;p&gt;形成有向图后，每个变量的状态设为invaild，这种状态下，不会向它的会订阅者发送更新消息，收到获取值的消息时报错。&lt;/p&gt;
+&lt;p&gt;有向图中，还有一些源点，是最初给定值的变量。&lt;/p&gt;
+&lt;p&gt;当某个变量被赋值时，它把自己设为新值，同时向它的订阅者发送更新消息。订阅者计算自己的新值，如果和旧值相同，就沉默；否则，更新自己，通知订阅者更新。&lt;/p&gt;
+&lt;p&gt;so，想象一下，在你的面前，虚空之中漂浮着一张有向图， 由k&lt;!-- raw HTML omitted --&gt;v2&lt;!-- raw HTML omitted --&gt;—&amp;gt;n这样的一条条边练成，当一个点被赋予值，从这点荡出一圈圈涟漪，传到它的下一级，再从更新过的点荡出新的波纹，传开，传开。。。直到所有的点都收敛，水面恢复宁静。&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>sicp练习2.42 [解8皇后问题的Scheme语言实现]</title>
+      <link>https://blog.helong.info/post/2011/12/22/sicp-02.42-eight-queue/</link>
+      <pubDate>Thu, 22 Dec 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2011/12/22/sicp-02.42-eight-queue/</guid>
+      <description>代码框架来自sicp 练习2.42。算是作业吧。 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47</description>
+    </item>
+    
+    <item>
+      <title>符号求导，scheme实现</title>
+      <link>https://blog.helong.info/post/2011/12/22/symbol-deriv/</link>
+      <pubDate>Thu, 22 Dec 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2011/12/22/symbol-deriv/</guid>
+      <description>sicp练习2.57 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60</description>
+    </item>
+    
+    <item>
+      <title>Church计数</title>
+      <link>https://blog.helong.info/post/2011/11/20/church-encoding/</link>
+      <pubDate>Sun, 20 Nov 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2011/11/20/church-encoding/</guid>
+      <description>my code： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 ;Church计数 (define zero (lambda (f) (lambda (x) x))) (define (add-1 n) (lambda (f) (lambda (x) (f ((n</description>
+    </item>
+    
+  </channel>
+</rss>

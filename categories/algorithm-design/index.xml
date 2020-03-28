@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>algorithm design on Tech Ideas</title>
+    <link>https://blog.helong.info/categories/algorithm-design/</link>
+    <description>Recent content in algorithm design on Tech Ideas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 25 Jul 2012 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://blog.helong.info/categories/algorithm-design/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>圆形坠落模拟算法设计</title>
+      <link>https://blog.helong.info/post/2012/07/25/simulate-object-falling/</link>
+      <pubDate>Wed, 25 Jul 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2012/07/25/simulate-object-falling/</guid>
+      <description>&lt;p&gt;目标：实现一个算法，模拟在一个封闭二维区域，圆形小球朝给定方向坠落的过程，实现二维区域的紧密填充。&lt;/p&gt;
+&lt;p&gt;像下面这样：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012072600504753.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;难点，及其简单解决：&lt;/p&gt;
+&lt;p&gt;1.如何把粒子移动尽可能远？&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012072601011361.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;图中的粒子i，能往下移动多远？一般情况,碰撞？边界？&lt;/p&gt;
+&lt;p&gt;一个简单解法：&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>递增子序列数目计算的算法</title>
+      <link>https://blog.helong.info/post/2011/10/17/inc-sub-seq-count-algo/</link>
+      <pubDate>Mon, 17 Oct 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2011/10/17/inc-sub-seq-count-algo/</guid>
+      <description>这是前几天笔试时，考场上想出来的算法，但是算了两次都不一样，最后只好蒙了一个选项，悲催！ 问题如下： 给定一个整数序列，例如 4,2,6,3,7,1 ，该序列有多少个递</description>
+    </item>
+    
+    <item>
+      <title>找出平面上的特殊无向图中的所有三角形的算法</title>
+      <link>https://blog.helong.info/post/2011/08/22/find-uniqpointoftriangle/</link>
+      <pubDate>Mon, 22 Aug 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2011/08/22/find-uniqpointoftriangle/</guid>
+      <description>&lt;p&gt;问题提出背景：在非结构化三角形网格生成过程中，若采用前沿推进法，在推进过程中是不好构造三角形的（而且也没有要），最好在把所有的边都连好以后再找出所有三角形，于是提出了问题：在由三角形构成的平面无向图中如何找出所有三角形？&lt;/p&gt;
+&lt;p&gt;网格如图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012041000563687.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;要注意的是，这个无向图很特殊，&lt;/p&gt;
+&lt;p&gt;1.这个图在平面上。&lt;/p&gt;
+&lt;p&gt;2.这个图是由三角形构成的（如果不是由三角行构成，那这个网格就没有用处了）。&lt;/p&gt;
+&lt;p&gt;我的算法如下，伪代码表示:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;foreach(点 p in所有的点){
+    foreach(点 np in p的所有邻居点){
+        foreach(点 nnpin np的所有邻居点){
+            if(   p,np,nnp三点两两不重合
+               &amp;amp;&amp;amp; p,np,nnp三点两两相连
+               &amp;amp;&amp;amp; p==uniqPointOfTriangle(p,np,nnp)
+               &amp;amp;&amp;amp; uniqPointOf2Points(np,nnp)==np)  ){
+                   输出p,np,nnp构成的三角形。
+               }
+       }
+   }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;算法的关键在于uniqPointOfTriangle( )和uniqPointOf2Points( )这两个函数。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

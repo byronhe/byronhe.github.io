@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>science on Tech Ideas</title>
+    <link>https://blog.helong.info/categories/science/</link>
+    <description>Recent content in science on Tech Ideas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 15 Nov 2011 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://blog.helong.info/categories/science/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>【旧代码】2010年用matlab做的几张理想流场的图</title>
+      <link>https://blog.helong.info/post/2011/11/15/matlab-flow-field/</link>
+      <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2011/11/15/matlab-flow-field/</guid>
+      <description>&lt;p&gt;就不贴matlab代码了，图比较大。&lt;/p&gt;
+&lt;p&gt;分别是：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;无环量流动&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;有环量流动,两个滞止点&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;有环量流动,一个滞止点&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;有环量流动,柱面外一个滞止点&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012041000071160.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>【旧代码】传热过程数值模拟</title>
+      <link>https://blog.helong.info/post/2011/11/15/heat-grid/</link>
+      <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2011/11/15/heat-grid/</guid>
+      <description>&lt;p&gt;传热过程数值模拟（《传热学》实验指导书第四部分第一题，第一，第二类边界条件）&lt;/p&gt;
+&lt;p&gt;2010年十月写的旧代码。&lt;/p&gt;
+&lt;p&gt;第一类边界条件是给定边界温度。&lt;/p&gt;
+&lt;p&gt;第二类是对流边界。&lt;/p&gt;
+&lt;p&gt;区域都是如下形状的:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt; &lt;span class=&#34;o&#34;&gt;--------------------------------&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;                               &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;                               &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;                               &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;          &lt;span class=&#34;o&#34;&gt;----------------------&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;         &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;     
+&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;         &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;     
+&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;         &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;     
+&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;         &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;         &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;     
+&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;         &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;         &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;     
+&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;         &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;
+ &lt;span class=&#34;o&#34;&gt;---------&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;用C++纯属蛋疼。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

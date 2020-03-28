@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>SSL/TLS CipherSuite 介绍 - Tech Ideas</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="byronhe" /><meta name="description" content="SSL/TLS CipherSuite 介绍" /><meta name="keywords" content="tls,  crypto,  protocol" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
+
+
+<link rel="canonical" href="https://blog.helong.info/post/2015/01/23/ssl_tls_ciphersuite_intro/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="SSL/TLS CipherSuite 介绍" />
+<meta property="og:description" content="SSL/TLS CipherSuite 介绍" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.helong.info/post/2015/01/23/ssl_tls_ciphersuite_intro/" />
+<meta property="article:published_time" content="2015-01-23T00:00:00+00:00" />
+<meta property="article:modified_time" content="2015-01-23T00:00:00+00:00" />
+<meta itemprop="name" content="SSL/TLS CipherSuite 介绍">
+<meta itemprop="description" content="SSL/TLS CipherSuite 介绍">
+<meta itemprop="datePublished" content="2015-01-23T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2015-01-23T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="3173">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="SSL/TLS CipherSuite 介绍"/>
+<meta name="twitter:description" content="SSL/TLS CipherSuite 介绍"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Tech Ideas</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Tech Ideas</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">SSL/TLS CipherSuite 介绍</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-01-23 </span>
+        <div class="post-category">
+            <a href="/categories/crypto/"> crypto </a>
+            <a href="/categories/tls/"> TLS </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#一ciphersuite的概念">一，CipherSuite的概念</a></li>
+        <li><a href="#二ciphersuite的注册管理">二，CipherSuite的注册管理</a></li>
+        <li><a href="#三ciphersuite在现实环境的应用">三，CipherSuite在现实环境的应用</a>
+          <ul>
+            <li><a href="#1服务器端">1.服务器端：</a></li>
+            <li><a href="#2客户端">2，客户端：</a></li>
+            <li><a href="#3-如何指定ciphersuite">3. 如何指定CipherSuite</a></li>
+          </ul>
+        </li>
+        <li><a href="#四ciphersuite的进化与现状">四，CipherSuite的进化与现状</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>本文是关于SSL/TLS的 CipherSuite 的信息摘录，翻译。如有疑问，欢迎指出。</p>
+<h2 id="一ciphersuite的概念">一，CipherSuite的概念</h2>
+<p>CipherSuite 这个名词目前没看到有好的中文翻译，个人觉得翻译成“加密算法套件”比较合适。Cipher泛指是密码学的加密算法，例如 aes, rsa, ecdh 等。
+tls是由各类基础算法，作为原语组合而成。
+一个CipherSuite是4个算法的组合：</p>
+<ol>
+<li>
+<pre><code>1个authentication (认证)算法 
+</code></pre>
+</li>
+<li>
+<pre><code>1个encryption(加密)算法
+</code></pre>
+</li>
+<li>
+<pre><code>1个message authentication code (消息认证码 简称MAC)算法 
+</code></pre>
+</li>
+<li>
+<pre><code>1 个key exchange(密钥交换)算法
+</code></pre>
+</li>
+</ol>
+<h2 id="二ciphersuite的注册管理">二，CipherSuite的注册管理</h2>
+<p>TLS Cipher Suite  在 iana 集中注册，每一个CipherSuite分配有 一个2字节的数字用来标识 ：
+可以在 iana的网页查看：
+<a href="https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4">https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4</a>
+例如:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">0x00,0x2F	TLS_RSA_WITH_AES_128_CBC_SHA	Y	[RFC5246]
+0x00,0x30	TLS_DH_DSS_WITH_AES_128_CBC_SHA	Y	[RFC5246]
+0x00,0x31	TLS_DH_RSA_WITH_AES_128_CBC_SHA	Y	[RFC5246]
+0x00,0x32	TLS_DHE_DSS_WITH_AES_128_CBC_SHA	Y	[RFC5246]
+0x00,0x33	TLS_DHE_RSA_WITH_AES_128_CBC_SHA	Y	[RFC5246]
+0x00,0x34	TLS_DH_anon_WITH_AES_128_CBC_SHA	Y	[RFC5246]
+0x00,0x35	TLS_RSA_WITH_AES_256_CBC_SHA	Y	[RFC5246]
+0x00,0x36	TLS_DH_DSS_WITH_AES_256_CBC_SHA	Y	[RFC5246]
+0x00,0x37	TLS_DH_RSA_WITH_AES_256_CBC_SHA	Y	[RFC5246]
+0x00,0x38	TLS_DHE_DSS_WITH_AES_256_CBC_SHA	Y	[RFC5246]
+0x00,0x39	TLS_DHE_RSA_WITH_AES_256_CBC_SHA	Y	[RFC5246]
+0x00,0x3A	TLS_DH_anon_WITH_AES_256_CBC_SHA	Y	[RFC5246]
+0x00,0x3B	TLS_RSA_WITH_NULL_SHA256	Y	[RFC5246]
+0x00,0x3C	TLS_RSA_WITH_AES_128_CBC_SHA256	Y	[RFC5246]
+0x00,0x3D	TLS_RSA_WITH_AES_256_CBC_SHA256	Y	[RFC5246]
+0x00,0x3E	TLS_DH_DSS_WITH_AES_128_CBC_SHA256	Y	[RFC5246]
+0x00,0x3F	TLS_DH_RSA_WITH_AES_128_CBC_SHA256	Y	[RFC5246]
+</code></pre></td></tr></table>
+</div>
+</div><p>例如其中的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">0x00,0x37	TLS_DH_RSA_WITH_AES_256_CBC_SHA	Y	[RFC5246]
+</code></pre></td></tr></table>
+</div>
+</div><p>这一条，
+0x00,0x37 这个 value 就是  TLS_DH_RSA_WITH_AES_256_CBC_SHA 这个 Cipher Suite的数字，rfc5246 定义了这个CipherSuite的具体实现。</p>
+<h2 id="三ciphersuite在现实环境的应用">三，CipherSuite在现实环境的应用</h2>
+<p>tls/ssl 一共出过 5个版本：ssl2/ssl3/tls1.0/tls1.1/tls1.2 ，ssl2/ssl3这两个版本漏洞太多，请务必禁用。</p>
+<p>tls1.2，当前(2015年)最新的tls协议，定义在：rfc5246</p>
+<p>tls协议的实现有多种，如openssl, gnutls, nss, libressl, cyassl, polarssl, botan等等。</p>
+<p>openssl的代码算是其中最混乱的，但是也是最久经考验的。
+( 请参见此打脸文： <a href="http://blog.csdn.net/dog250/article/details/24552307">http://blog.csdn.net/dog250/article/details/24552307</a> )</p>
+<p>个人觉得polarssl和botan的架构最清晰，代码风格清新可爱，便于学习理解协议（但是不建议在生产环境下用，例如polarssl功能尚有欠缺）。</p>
+<h3 id="1服务器端">1.服务器端：</h3>
+<p>说说openssl，openssl 实现了以上列表中的大部分( 摒弃了不安全的一些CipherSuite)。</p>
+<p>openssl 支持的 cipher 列表，可以用  openssl  ciphers -V  | column -t 命令查看
+输出如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">0xC0,0x30  -  ECDHE-RSA-AES256-GCM-SHA384    TLSv1.2  Kx=ECDH        Au=RSA    Enc=AESGCM(256)    Mac=AEAD
+0xC0,0x2C  -  ECDHE-ECDSA-AES256-GCM-SHA384  TLSv1.2  Kx=ECDH        Au=ECDSA  Enc=AESGCM(256)    Mac=AEAD
+0xC0,0x28  -  ECDHE-RSA-AES256-SHA384        TLSv1.2  Kx=ECDH        Au=RSA    Enc=AES(256)       Mac=SHA384
+0xC0,0x24  -  ECDHE-ECDSA-AES256-SHA384      TLSv1.2  Kx=ECDH        Au=ECDSA  Enc=AES(256)       Mac=SHA384
+0xC0,0x14  -  ECDHE-RSA-AES256-SHA           SSLv3    Kx=ECDH        Au=RSA    Enc=AES(256)       Mac=SHA1
+0xC0,0x0A  -  ECDHE-ECDSA-AES256-SHA         SSLv3    Kx=ECDH        Au=ECDSA  Enc=AES(256)       Mac=SHA1
+0x00,0xA5  -  DH-DSS-AES256-GCM-SHA384       TLSv1.2  Kx=DH/DSS      Au=DH     Enc=AESGCM(256)    Mac=AEAD
+0x00,0xA1  -  DH-RSA-AES256-GCM-SHA384       TLSv1.2  Kx=DH/RSA      Au=DH     Enc=AESGCM(256)    Mac=AEAD
+0x00,0x9F  -  DHE-RSA-AES256-GCM-SHA384      TLSv1.2  Kx=DH          Au=RSA    Enc=AESGCM(256)    Mac=AEAD
+0x00,0x6B  -  DHE-RSA-AES256-SHA256          TLSv1.2  Kx=DH          Au=RSA    Enc=AES(256)       Mac=SHA256
+0x00,0x69  -  DH-RSA-AES256-SHA256           TLSv1.2  Kx=DH/RSA      Au=DH     Enc=AES(256)       Mac=SHA256
+0x00,0x68  -  DH-DSS-AES256-SHA256           TLSv1.2  Kx=DH/DSS      Au=DH     Enc=AES(256)       Mac=SHA256
+0x00,0x39  -  DHE-RSA-AES256-SHA             SSLv3    Kx=DH          Au=RSA    Enc=AES(256)       Mac=SHA1
+0x00,0x37  -  DH-RSA-AES256-SHA              SSLv3    Kx=DH/RSA      Au=DH     Enc=AES(256)       Mac=SHA1
+
+</code></pre></td></tr></table>
+</div>
+</div><p>每一行里：</p>
+<ol>
+<li>第1个字段是 这个CipherSuite的value，</li>
+<li>第2个字段是 CipherSuite 的名字 ，</li>
+<li>第3个字段是本Cipher Suite是用于哪个 SSL/TLS版本的协议，</li>
+<li>第4个字段 Kx 是 key exchange 算法</li>
+<li>第5个字段 Au 是 authentication 算法</li>
+<li>第6个字段Enc是 encryptation算法</li>
+<li>第7个字段 Mac 是 MAC 算法，用于创建消息摘要</li>
+</ol>
+<p>例如:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">0xC0,0x23  -  ECDHE-ECDSA-AES128-SHA256      TLSv1.2  Kx=ECDH        Au=ECDSA  Enc=AES(128)       Mac=SHA256
+</code></pre></td></tr></table>
+</div>
+</div><p>这一行，表示：</p>
+<ul>
+<li>名字为 ECDH-ECDSA-AES128-SHA256  的CipherSuite ，用于 TLSv1.2版本，</li>
+<li>使用 ECDH做密钥交换，</li>
+<li>使用ECDSA做认证，</li>
+<li>使用AES-128做加密算法，</li>
+<li>使用SHA256做MAC算法。</li>
+</ul>
+<p>一个CipherSuite，在 openssl 库里用这个结构体表示:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* used to hold info on the particular ciphers used */</span>
+<span class="k">struct</span> <span class="nc">ssl_cipher_st</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">valid</span><span class="p">;</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>           <span class="cm">/* text name */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">id</span><span class="p">;</span>           <span class="cm">/* id, 4 bytes, first is version */</span>
+    <span class="cm">/*
+</span><span class="cm">     * changed in 0.9.9: these four used to be portions of a single value
+</span><span class="cm">     * &#39;algorithms&#39;
+</span><span class="cm">     */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">algorithm_mkey</span><span class="p">;</span> <span class="cm">/* key exchange algorithm */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">algorithm_auth</span><span class="p">;</span> <span class="cm">/* server authentication */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">algorithm_enc</span><span class="p">;</span> <span class="cm">/* symmetric encryption */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">algorithm_mac</span><span class="p">;</span> <span class="cm">/* symmetric authentication */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">algorithm_ssl</span><span class="p">;</span> <span class="cm">/* (major) protocol version */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">algo_strength</span><span class="p">;</span> <span class="cm">/* strength and export flags */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">algorithm2</span><span class="p">;</span>   <span class="cm">/* Extra flags */</span>
+    <span class="kt">int</span> <span class="n">strength_bits</span><span class="p">;</span>          <span class="cm">/* Number of bits really used */</span>
+    <span class="kt">int</span> <span class="n">alg_bits</span><span class="p">;</span>               <span class="cm">/* Number of bits for algorithm */</span>
+<span class="p">};</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>以上4个算法，对应其中的下面四行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp">     <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">algorithm_mkey</span><span class="p">;</span>   <span class="cm">/* key exchange algorithm */</span>
+     <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">algorithm_auth</span><span class="p">;</span>   <span class="cm">/* server authentication */</span>
+     <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">algorithm_enc</span><span class="p">;</span>    <span class="cm">/* symmetric encryption */</span>
+     <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">algorithm_mac</span><span class="p">;</span>    <span class="cm">/* symmetric authentication */</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="2客户端">2，客户端：</h3>
+<p>在浏览器里面，可以这样查看当前使用的CipherSuite:
+Firefox下打开gmail，点击地址栏左侧锁图标</p>
+<h3 id="3-如何指定ciphersuite">3. 如何指定CipherSuite</h3>
+<p>在tls中，选择CipherSuite的方法是通过cipher list</p>
+<p>格式和用法见：https://www.openssl.org/docs/apps/ciphers.html</p>
+<p>nginx里面的配置项是  cipher_list</p>
+<p>cipher list 的格式是：</p>
+<p>一个cipher list 包含一个或者多个由冒号分隔的cipher string( 逗号和空格也可以接受但不常用)。</p>
+<p>一个cipher string可以是下列形式之一:</p>
+<p>(1).可以由单个cipher suite构成，例如  RC4-SHA。</p>
+<p>(2).它可以表示含有某个特定算法的cipher列表，或者一种特定类型的cipher suite。例如， SHA1表示所有使用摘要算法SHA1的cipher suite, SSLV3表示所有SSL V3算法。</p>
+<p>(3).cipher suite的列表,可以使用加号+ 合并到一个单一的cipher string里面。这被作为一个逻辑且操作。例如，SHA1+DES表示所有包含了 SHA，并且包含了DES的算法。</p>
+<p>(4).每一个cipher string可以在前面加上字符 !,-,或者+</p>
+<p>如果加了!，那么这种cipher永久从列表里面删除，就算后边显式添加进来也不行。</p>
+<p>如果加了-，那么cipher中的一些或者全部可以在后面的选项里面加回来。</p>
+<p>如果加了+，那么cipher被移动到列表的最后，这个选项不增加任何cipher，只是把匹配的cipher移动到最后。</p>
+<p>如果没有上述字符，那么字符串被解析成一个cipher list，追加到当前配置列表的后面。如果cipher list 中的某些cipher已经存在了，就忽略该cipher。</p>
+<p>(5).另外，cipher string @STRENGTH 可以用在任何点，用来把当前cipher list按照加密算法key长度排序。</p>
+<p>当前建议的配置参数可以看看mozilla的这个文档：https://wiki.mozilla.org/Security/Server_Side_TLS#Recommended_configurations</p>
+<h2 id="四ciphersuite的进化与现状">四，CipherSuite的进化与现状</h2>
+<p>随着密码学的发展，硬件性能的提高，加密和破解的不断对抗博弈，常用的算法也在不断进化，旧的算法被破解，新的算法诞生。</p>
+<p>CipherSuite的当前流行趋势：</p>
+<p>authentication (认证)算法 ：常见的有 RSA/DSA/ECDSA 3种，目前最主流的是人民群众喜闻乐见，妇孺皆知的RSA ( 2048 bit及以上)， （ECDSA 是新兴趋势，例如gmail，facebook都在迁移到ECDSA，当然目前用的还不多，DSA 由于只能提供1024bit，已经没啥人敢用）。</p>
+<p>加密算法：主流趋势是使用 aes，128/256 bit都可以，加密模式的趋势是使用gcm，cbc由于被发现有 BEAST 攻击等，比较难以正确使用，至于ecb模式，请勿使用。加密算法 还有RC4（不建议使用），3DES（不建议使用），Camellia(貌似日本人搞的) ，DES(已经被淘汰)等，</p>
+<p>message authentication code (消息认证码 简称MAC)算法 ，主流有 sha256,sha384,sha1,等。tls中使用了HMAC模式，而不是原始的 sha256,sha1等。google已经在淘汰MD5了。（gcm是一种特殊的称为aead的加密模式，不需要配合MAC。）</p>
+<p>key exchange(密钥交换)算法：主流有两种：DH和ECDH，自从斯诺登爆料了NSA的https破解方案以后，现在的 key exchange(密钥交换)算法，普遍流行 PFS，把DH, ECDH变成 DHE，ECDHE 。</p>
+<p>mozilla目前推荐的 cipher list：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK
+</code></pre></td></tr></table>
+</div>
+</div><p>mozilla的优先级选择考虑：</p>
+<p>1.ECDHE+AESGCM最先选，目前没有已知漏洞。</p>
+<p>2.PFS ciphersuite优先，其中ECDHE优先于DHE</p>
+<p>3.SHA256优先于SHA1。完全禁用MD5。</p>
+<p>4.AES 128优先于AES 256。这个问题有一些讨论。</p>
+<p>5.在向后兼容模式中，AES优先于3DES。</p>
+<p>6.完全禁止RC4。3DES只用于兼容老版本。</p>
+<p>cloudflare的ssl cipher list配置：</p>
+<p><a href="https://github.com/cloudflare/sslconfig/blob/master/conf">https://github.com/cloudflare/sslconfig/blob/master/conf</a></p>
+<p>google的一篇文章解释当前cipher suite的流行趋势
+<a href="http://googleonlinesecurity.blogspot.com.au/2013/11/a-roster-of-tls-cipher-suites-weaknesses.html">http://googleonlinesecurity.blogspot.com.au/2013/11/a-roster-of-tls-cipher-suites-weaknesses.html</a></p>
+<p>google在密码学方面的最新进展可以在这个博客追踪：http://googleonlinesecurity.blogspot.com/</p>
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015/03/13/jump_consistent_hash/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">【翻译/介绍】jump consistent hash 零内存消耗，均匀，快速，简洁，来自Google的一致性哈希算法</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2014/03/27/mock-c-plus-plus-function-for-unit-test/">
+            <span class="next-text nav-default">mock C&#43;&#43; function for unit test</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'byronheblog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
+  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2010 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">byronhe</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-49290834-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

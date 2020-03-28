@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>crypto on Tech Ideas</title>
+    <link>https://blog.helong.info/categories/crypto/</link>
+    <description>Recent content in crypto on Tech Ideas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 06 Sep 2015 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://blog.helong.info/categories/crypto/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>TLS协议分析 与 现代加密通信协议设计</title>
+      <link>https://blog.helong.info/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/</link>
+      <pubDate>Sun, 06 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/</guid>
+      <description>&lt;p&gt;最近发现密码学很有意思，刚好还和工作有点关系，就研究了一下，本文是其中一部分笔记和一些思考。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;密码学理论艰深，概念繁多，本人知识水平有限，错误难免，如果您发现错误，请务必指出，非常感谢!&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;本文禁止转载&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;本文目标：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;学习鉴赏TLS协议的设计，透彻理解原理和重点细节&lt;/li&gt;
+&lt;li&gt;跟进一下密码学应用领域的历史和进展&lt;/li&gt;
+&lt;li&gt;整理现代加密通信协议设计的一般思路&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;本文有门槛，读者需要对现代密码学有清晰而系统的理解，建议花精力补足背景知识再读。本文最后的参考文献里有一些很不错的学习资料。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>现代密码学实践指南[2015年]</title>
+      <link>https://blog.helong.info/post/2015/06/05/modern-crypto/</link>
+      <pubDate>Fri, 05 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2015/06/05/modern-crypto/</guid>
+      <description>&lt;p&gt;本文介绍目前现代密码学的最先进技术，
+前半部分主要翻译自  &lt;a href=&#34;https://gist.github.com/tqbf/be58d2d39690c3b366ad&#34;&gt;《Cryptographic Right Answers》&lt;/a&gt;，附上收集的资料，和byron个人的理解。&lt;/p&gt;
+&lt;p&gt;密码学理论艰深，概念繁多，本人知识水平有限，错误难免，如果您发现错误，请务必指出，非常感谢!&lt;/p&gt;
+&lt;hr&gt;
+&lt;h5 id=&#34;下文分类介绍在各种适用场景下你应该使用的现代密码学算法&#34;&gt;下文分类介绍在各种适用场景下，你应该使用的现代密码学算法&lt;/h5&gt;
+&lt;h3 id=&#34;1--加密数据-&#34;&gt;1.  &lt;strong&gt;加密数据&lt;/strong&gt; :&lt;/h3&gt;
+&lt;p&gt;按照优先级，应该选择:&lt;/p&gt;
+&lt;p&gt;(1)   首选 NaCl库，或者libsodium库，使用里面的crypto_secretbox()/crypto_secretbox_open() 函数
+(2)   Chacha20-Poly1305 算法
+(3)   AES-GCM 算法&lt;/p&gt;
+&lt;p&gt;适用场景:当你需要避免把明文数据在网络上传输的时候。&lt;/p&gt;
+&lt;p&gt;以上3种算法，都是AEAD类的算法，AEAD是2015年最好的选择。
+其中的(2)和(3)在结构上类似：一个流加密模式的算法，配合一个多项式结构的MAC。
+(2)是一个流加密算法，配合一个为通用cpu优化的MAC算法，
+对密码学库的实现者来说，Poly1305也比GCM更容易安全地实现。
+AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都有专门为AES-GCM设计的硬件指令，但是在没有硬件指令支持的CPU上(比如32位的arm)，(3)性能低于(2)。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>nginx下配置高性能，高安全性的https TLS服务</title>
+      <link>https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/</link>
+      <pubDate>Fri, 08 May 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/</guid>
+      <description>&lt;p&gt;下文以nginx为例，介绍如何部署一个高性能，高安全性的https服务器。&lt;/p&gt;
+&lt;p&gt;并附送一个优化出来的openssl编译脚本，可以编译出一个高性能，高安全性的openssl库，您可以直接复制粘贴使用。&lt;/p&gt;
+&lt;p&gt;此处直接给出实践指导，后续再写文章解释tls协议的这些原理细节。&lt;/p&gt;
+&lt;p&gt;nginx下https配置的优化点，主要有:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;session ticket&lt;/li&gt;
+&lt;li&gt;session id cache&lt;/li&gt;
+&lt;li&gt;ocsp stapling&lt;/li&gt;
+&lt;li&gt;http KeepAlive&lt;/li&gt;
+&lt;li&gt;ECDHE等ciphersuite优化&lt;/li&gt;
+&lt;li&gt;openssl 编译优化&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;一-nginx-https的配置&#34;&gt;一， nginx https的配置&lt;/h3&gt;
+&lt;p&gt;先贴一下nginx配置，如下。&lt;/p&gt;
+&lt;p&gt;是根据&lt;a href=&#34;https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx&#34;&gt;mozilla的权威文档&lt;/a&gt;
+,和&lt;a href=&#34;https://mozilla.github.io/server-side-tls/ssl-config-generator/&#34;&gt;生成工具&lt;/a&gt;(选择 nginx，intermediate ) 生成的配置为基础，加入session ticket等配置的结果&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>【翻译】密码学一小时必知</title>
+      <link>https://blog.helong.info/post/2015/04/12/translate-everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
+      <pubDate>Sun, 12 Apr 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2015/04/12/translate-everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
+      <description>&lt;p&gt;本文翻译了Colin Percival 于2010年在bsdcan的演讲ppt&lt;/p&gt;
+&lt;p&gt;原文标题：Everything you need to know about cryptography in 1 hour&lt;/p&gt;
+&lt;p&gt;演讲时间：May 13, 2010&lt;/p&gt;
+&lt;p&gt;原文在 &lt;a href=&#34;https://www.bsdcan.org/2010/schedule/attachments/135_crypto1hr.pdf&#34;&gt;https://www.bsdcan.org/2010/schedule/attachments/135_crypto1hr.pdf&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;演讲视频在 &lt;a href=&#34;https://www.youtube.com/watch?v=jzY3m5Kv7Y8&#34;&gt;https://www.youtube.com/watch?v=jzY3m5Kv7Y8&lt;/a&gt; ( 请自行翻墙 )&lt;/p&gt;
+&lt;p&gt;Colin Percival 是密码学方面的专家，FreeBSD项目的安全长官，Tarsnap在线备份服务的创始人，scrypt密钥衍生算法的作者，致力于改进软件中密码学的应用，向程序员传播密码学的正确使用。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>SSL/TLS CipherSuite 介绍</title>
+      <link>https://blog.helong.info/post/2015/01/23/ssl_tls_ciphersuite_intro/</link>
+      <pubDate>Fri, 23 Jan 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2015/01/23/ssl_tls_ciphersuite_intro/</guid>
+      <description>&lt;p&gt;本文是关于SSL/TLS的 CipherSuite 的信息摘录，翻译。如有疑问，欢迎指出。&lt;/p&gt;
+&lt;h2 id=&#34;一ciphersuite的概念&#34;&gt;一，CipherSuite的概念&lt;/h2&gt;
+&lt;p&gt;CipherSuite 这个名词目前没看到有好的中文翻译，个人觉得翻译成“加密算法套件”比较合适。Cipher泛指是密码学的加密算法，例如 aes, rsa, ecdh 等。
+tls是由各类基础算法，作为原语组合而成。
+一个CipherSuite是4个算法的组合：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;1个authentication (认证)算法 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;1个encryption(加密)算法
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;1个message authentication code (消息认证码 简称MAC)算法 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;1 个key exchange(密钥交换)算法
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

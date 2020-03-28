@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>server on Tech Ideas</title>
+    <link>https://blog.helong.info/categories/server/</link>
+    <description>Recent content in server on Tech Ideas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 03 Mar 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://blog.helong.info/categories/server/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>用 abstract unix socket 实现进程单实例运行</title>
+      <link>https://blog.helong.info/post/2020/03/03/abstract-unix-socket-single-instance/</link>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2020/03/03/abstract-unix-socket-single-instance/</guid>
+      <description>&lt;h2 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h2&gt;
+&lt;p&gt;很多时候，我们需要&lt;strong&gt;确保进程只有一个实例运行&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;有几种方法：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux&#34;&gt;http://stackoverflow.com/questions/2964391/preventing-multiple-process-instances-on-linux&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c&#34;&gt;http://stackoverflow.com/questions/5339200/how-to-create-a-single-instance-application-in-c-or-c&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src&#34;&gt;https://github.com/qtproject/qt-solutions/tree/master/qtsingleapplication/src&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;比较常规的做法，是对一个文件加文件锁 flock，比如对 pid 文件 flock( LOCK_EX|LOCK_NB )&lt;/p&gt;
+&lt;p&gt;但是这种方法有些弊端：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;如果文件被 mv 或者 rm，是会被绕过的。&lt;/li&gt;
+&lt;li&gt;如果磁盘故障比如磁盘满，目录没有写权限，会失败。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;二abstract-namespace-unix-socket&#34;&gt;二，abstract namespace unix socket&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;http://linux.die.net/man/7/unix&#34;&gt;http://linux.die.net/man/7/unix&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;unix socket 有3种：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;基于文件的&lt;/li&gt;
+&lt;li&gt;socketpair 创建的，匿名的&lt;/li&gt;
+&lt;li&gt;abstract namespace 的，Linux特有&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Linux 下， AF_UNIX socket 支持一种特殊的
+abstract namespace unix socket 。&lt;/p&gt;
+&lt;p&gt;相比 普通的基于文件系统的 unix socket，abstract namespace unix socket ：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;没有磁盘文件&lt;/li&gt;
+&lt;li&gt;进程挂了以后自动删除，无残留文件&lt;/li&gt;
+&lt;li&gt;无需担心与 文件系统上的文件冲突，不需要关心文件系统上的绝对路径是否存在的问题&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
+    
+    <item>
+      <title>Python 自动翻译成 C&#43;&#43; ，彻底保证离线在线特征一致</title>
+      <link>https://blog.helong.info/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</link>
+      <pubDate>Fri, 29 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</guid>
+      <description>&lt;h1 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h1&gt;
+&lt;p&gt;随着深度学习的广泛应用，在搜索引擎/推荐系统/机器视觉等业务系统中，越来越多的深度学习模型部署到线上服务。&lt;/p&gt;
+&lt;p&gt;机器学习模型在离线训练时，一般要将输入的数据做特征工程预处理，再输入模型在 TensorFlow PyTorch 等框架上做训练。&lt;/p&gt;
+&lt;h3 id=&#34;1常见的特征工程逻辑&#34;&gt;1.常见的特征工程逻辑&lt;/h3&gt;
+&lt;p&gt;常见的特征工程逻辑有：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;分箱/分桶 离散化&lt;/li&gt;
+&lt;li&gt;log/exp 对数/幂等 math numpy 常见数学运算&lt;/li&gt;
+&lt;li&gt;特征缩放/归一化/截断&lt;/li&gt;
+&lt;li&gt;交叉特征生成&lt;/li&gt;
+&lt;li&gt;分词匹配程度计算&lt;/li&gt;
+&lt;li&gt;字符串分隔匹配判断tong&lt;/li&gt;
+&lt;li&gt;缺省值填充等&lt;/li&gt;
+&lt;li&gt;数据平滑&lt;/li&gt;
+&lt;li&gt;onehot 编码，hash 编码等&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这些特征工程代码，当然一般使用深度学习最主要的语言 &lt;strong&gt;python&lt;/strong&gt; 实现。&lt;/p&gt;
+&lt;h1 id=&#34;二业务痛点&#34;&gt;二，业务痛点&lt;/h1&gt;
+&lt;p&gt;离线训练完成，模型上线部署后，同样要&lt;strong&gt;用 C++ 重新实现&lt;/strong&gt; 这些 python 的特征工程逻辑代码。&lt;/p&gt;
+&lt;p&gt;我们发现，&lt;strong&gt;“用 C++ 重新实现”&lt;/strong&gt; 这个步骤，给实际业务带来了大量的问题：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;繁琐，费时费力，极容易出现 python 和 C++ 代码&lt;strong&gt;不一致&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;不一致&lt;/strong&gt;会直接影响模型在线上的效果，导致大盘业务指标不如预期，产生各种 bad case&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;不一致&lt;/strong&gt;难以发现，无法测试，无法监控，经常要靠用户投诉反馈，甚至大盘数据异常才能发现&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
+    
+    <item>
+      <title>用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</title>
+      <link>https://blog.helong.info/post/2019/11/25/cppjieba-darts-dat-memory_optimize/</link>
+      <pubDate>Mon, 25 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2019/11/25/cppjieba-darts-dat-memory_optimize/</guid>
+      <description>&lt;h2 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h2&gt;
+&lt;p&gt;中文分词应用比较广泛的开源算法，是 &lt;a href=&#34;https://github.com/fxsjy/jieba&#34;&gt;jieba 结巴分词&lt;/a&gt;，结巴分词较高性能的实现是 C++ 版本的 CppJieba :
+&lt;a href=&#34;https://github.com/yanyiwu/cppjieba&#34;&gt;https://github.com/yanyiwu/cppjieba&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;在实际使用 CppJieba 的过程中，我们发现 CppJieba 的内存占用比较高。&lt;/p&gt;
+&lt;p&gt;比如对一个 76W 词 大小 11MB 的词典 ，加载 2份 （比如为了支持平滑改动用户词典）就需要耗费 505MB内存。&lt;/p&gt;
+&lt;p&gt;这对一些多进程的后台服务，浪费大量内存，难以接受，因此这里希望削减内存耗费。&lt;/p&gt;
+&lt;p&gt;经过初步调查，确定改进方法，然后动手改造，&lt;strong&gt;最终把 505MB 缩减到了 4.7MB ，实现了 99% 内存降低&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;此处也有 issue 讨论 &lt;a href=&#34;https://github.com/yanyiwu/cppjieba/issues/3&#34;&gt;https://github.com/yanyiwu/cppjieba/issues/3&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;代码稍后可能会开源出来。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>GB 规模语料上的高性能新词发现算法</title>
+      <link>https://blog.helong.info/post/2019/09/18/newwords_discovery/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2019/09/18/newwords_discovery/</guid>
+      <description>分词是中文搜索的重要环节，目前分词算法已经比较成熟，分词错误的主要是由于未登录词。 因此发现业务领域语料库中的新词，减少未登录词，对改善搜索引</description>
+    </item>
+    
+    <item>
+      <title>现代密码学实践指南[2015年]</title>
+      <link>https://blog.helong.info/post/2015/06/05/modern-crypto/</link>
+      <pubDate>Fri, 05 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2015/06/05/modern-crypto/</guid>
+      <description>&lt;p&gt;本文介绍目前现代密码学的最先进技术，
+前半部分主要翻译自  &lt;a href=&#34;https://gist.github.com/tqbf/be58d2d39690c3b366ad&#34;&gt;《Cryptographic Right Answers》&lt;/a&gt;，附上收集的资料，和byron个人的理解。&lt;/p&gt;
+&lt;p&gt;密码学理论艰深，概念繁多，本人知识水平有限，错误难免，如果您发现错误，请务必指出，非常感谢!&lt;/p&gt;
+&lt;hr&gt;
+&lt;h5 id=&#34;下文分类介绍在各种适用场景下你应该使用的现代密码学算法&#34;&gt;下文分类介绍在各种适用场景下，你应该使用的现代密码学算法&lt;/h5&gt;
+&lt;h3 id=&#34;1--加密数据-&#34;&gt;1.  &lt;strong&gt;加密数据&lt;/strong&gt; :&lt;/h3&gt;
+&lt;p&gt;按照优先级，应该选择:&lt;/p&gt;
+&lt;p&gt;(1)   首选 NaCl库，或者libsodium库，使用里面的crypto_secretbox()/crypto_secretbox_open() 函数
+(2)   Chacha20-Poly1305 算法
+(3)   AES-GCM 算法&lt;/p&gt;
+&lt;p&gt;适用场景:当你需要避免把明文数据在网络上传输的时候。&lt;/p&gt;
+&lt;p&gt;以上3种算法，都是AEAD类的算法，AEAD是2015年最好的选择。
+其中的(2)和(3)在结构上类似：一个流加密模式的算法，配合一个多项式结构的MAC。
+(2)是一个流加密算法，配合一个为通用cpu优化的MAC算法，
+对密码学库的实现者来说，Poly1305也比GCM更容易安全地实现。
+AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都有专门为AES-GCM设计的硬件指令，但是在没有硬件指令支持的CPU上(比如32位的arm)，(3)性能低于(2)。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>nginx下配置高性能，高安全性的https TLS服务</title>
+      <link>https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/</link>
+      <pubDate>Fri, 08 May 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/</guid>
+      <description>&lt;p&gt;下文以nginx为例，介绍如何部署一个高性能，高安全性的https服务器。&lt;/p&gt;
+&lt;p&gt;并附送一个优化出来的openssl编译脚本，可以编译出一个高性能，高安全性的openssl库，您可以直接复制粘贴使用。&lt;/p&gt;
+&lt;p&gt;此处直接给出实践指导，后续再写文章解释tls协议的这些原理细节。&lt;/p&gt;
+&lt;p&gt;nginx下https配置的优化点，主要有:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;session ticket&lt;/li&gt;
+&lt;li&gt;session id cache&lt;/li&gt;
+&lt;li&gt;ocsp stapling&lt;/li&gt;
+&lt;li&gt;http KeepAlive&lt;/li&gt;
+&lt;li&gt;ECDHE等ciphersuite优化&lt;/li&gt;
+&lt;li&gt;openssl 编译优化&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;一-nginx-https的配置&#34;&gt;一， nginx https的配置&lt;/h3&gt;
+&lt;p&gt;先贴一下nginx配置，如下。&lt;/p&gt;
+&lt;p&gt;是根据&lt;a href=&#34;https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx&#34;&gt;mozilla的权威文档&lt;/a&gt;
+,和&lt;a href=&#34;https://mozilla.github.io/server-side-tls/ssl-config-generator/&#34;&gt;生成工具&lt;/a&gt;(选择 nginx，intermediate ) 生成的配置为基础，加入session ticket等配置的结果&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>apache的安全增强配置(使用mod_chroot,mod_security)</title>
+      <link>https://blog.helong.info/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/</link>
+      <pubDate>Tue, 17 Aug 2010 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/</guid>
+      <description>LAMP环境的一般入侵，大致经过sql注入，上传webshell，本地提权至root，安装rootkit等步骤。 采用如下的配置，mod_ch</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>visual studio静态，动态链接库开发工具简单使用 - Tech Ideas</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="byronhe" /><meta name="description" content="这是2011年8月份做过的一点实验，查了MSDN等等很多资料，基本搞明白了。 这里我不会使用visual studio的图形界面工具，作为专业人" /><meta name="keywords" content="C&#43;&#43;, Linux, Crypto, Algorithm, Lisp, etc" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
+
+
+<link rel="canonical" href="https://blog.helong.info/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="visual studio静态，动态链接库开发工具简单使用" />
+<meta property="og:description" content="这是2011年8月份做过的一点实验，查了MSDN等等很多资料，基本搞明白了。 这里我不会使用visual studio的图形界面工具，作为专业人" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.helong.info/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/" />
+<meta property="article:published_time" content="2011-11-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2011-11-13T00:00:00+00:00" />
+<meta itemprop="name" content="visual studio静态，动态链接库开发工具简单使用">
+<meta itemprop="description" content="这是2011年8月份做过的一点实验，查了MSDN等等很多资料，基本搞明白了。 这里我不会使用visual studio的图形界面工具，作为专业人">
+<meta itemprop="datePublished" content="2011-11-13T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2011-11-13T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2374">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="visual studio静态，动态链接库开发工具简单使用"/>
+<meta name="twitter:description" content="这是2011年8月份做过的一点实验，查了MSDN等等很多资料，基本搞明白了。 这里我不会使用visual studio的图形界面工具，作为专业人"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Tech Ideas</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Tech Ideas</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">visual studio静态，动态链接库开发工具简单使用</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2011-11-13 </span>
+        <div class="post-category">
+            <a href="/categories/cpp/"> cpp </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>这是2011年8月份做过的一点实验，查了MSDN等等很多资料，基本搞明白了。</p>
+<p>这里我不会使用visual studio的图形界面工具，作为专业人士，还是搞懂自己的工具是怎么运转的，这样比较好。</p>
+<p>要使用的是visual studio的命令行工具，其实和gcc那堆工具对应关系挺明显的，大致如下：</p>
+<table>
+<thead>
+<tr>
+<th>gcc</th>
+<th>cl</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ar</td>
+<td>lib</td>
+</tr>
+<tr>
+<td>ld</td>
+<td>link</td>
+</tr>
+</tbody>
+</table>
+<p>文件后缀对应关系:</p>
+<table>
+<thead>
+<tr>
+<th>gcc</th>
+<th>cl</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.a</td>
+<td>.lib</td>
+</tr>
+<tr>
+<td>.so</td>
+<td>.dll</td>
+</tr>
+<tr>
+<td>.o</td>
+<td>.obj</td>
+</tr>
+</tbody>
+</table>
+<p>新手注意：这个命令提示符是&quot;开始菜单&rdquo;&ndash;&raquo;&quot;Microsoft Visual studio&rdquo;&ndash;&raquo;&quot;Visual Tools&rdquo; 那里的提示符，其实就是设置过一些环境变量的cmd。</p>
+<p><img src="/images/0_1321170608jSJW.gif" alt=""></p>
+<p>先把实验代码贴出来（可以先跳过不看），共有五个文件：</p>
+<p>1.build.bat</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bat" data-lang="bat">
+<span class="s2">&#34;&#34;</span>C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat<span class="s2">&#34;&#34;</span> x86
+<span class="k">cd</span> dynamic
+<span class="k">del</span> /f /Q *
+cl /LD ..\ext.c
+<span class="k">del</span> ext.obj
+cl ..\main.c /link ext.lib
+<span class="k">del</span> main.obj
+<span class="k">cd</span> ..
+
+
+<span class="k">cd</span> static
+<span class="k">del</span> /f /Q *
+cl /c  ..\ext.c 
+lib ext.obj
+<span class="k">del</span> ext.obj
+cl ..\main-static.c /link ext.lib
+<span class="k">del</span> main*.obj main*.exp main*.lib
+<span class="k">cd</span> ..
+</code></pre></td></tr></table>
+</div>
+</div><p>2.库的头文件，ext.h</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#ifndef EXT_H
+</span><span class="cp">#define EXT_H
+</span><span class="cp"></span> 
+<span class="cp">#ifdef Import
+</span><span class="cp">#define Dll __declspec(dllimport)
+</span><span class="cp">#else
+</span><span class="cp"></span> 
+<span class="cp">#ifdef Export 
+</span><span class="cp">#define Dll __declspec(dllexport)
+</span><span class="cp">#else 
+</span><span class="cp">#define Dll 
+</span><span class="cp">#endif
+</span><span class="cp"></span> 
+<span class="cp">#endif
+</span><span class="cp"></span> 
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span> 
+<span class="n">Dll</span> <span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">st</span><span class="p">;</span>
+ 
+<span class="n">Dll</span> <span class="k">extern</span> <span class="kt">int</span> <span class="n">num</span><span class="p">;</span>
+<span class="n">Dll</span> <span class="kt">void</span> <span class="nf">fun</span><span class="p">();</span>
+<span class="n">Dll</span> <span class="k">extern</span> <span class="n">st</span> <span class="n">s</span><span class="p">;</span>
+ 
+<span class="cp">#endif
+</span></code></pre></td></tr></table>
+</div>
+</div><p>3.库的实现文件,ext.c</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#define Export
+</span><span class="cp">#include</span> <span class="cpf">&#34;ext.h&#34;</span><span class="cp">
+</span><span class="cp"></span><span class="n">st</span> <span class="n">s</span><span class="o">=</span><span class="p">{</span><span class="mi">24</span><span class="p">,</span><span class="sc">&#39;h&#39;</span><span class="p">};</span>
+<span class="kt">int</span> <span class="n">num</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+<span class="kt">void</span> <span class="nf">fun</span><span class="p">(){</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;hello,i am in lib. num=%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">num</span><span class="o">++</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>4.以动态链接库方式使用这个库的程序代码，main.c</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#define Import
+</span><span class="cp">#include</span> <span class="cpf">&#34;ext.h&#34; </span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&#34;windows.h&#34;</span><span class="cp">
+</span><span class="cp">#include</span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span> 
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+	<span class="n">fun</span><span class="p">();</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;num=%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">num</span><span class="p">);</span>
+	<span class="n">fun</span><span class="p">();</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;num=%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">num</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;st i=%d c=%c </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">s</span><span class="p">.</span><span class="n">i</span><span class="p">,</span><span class="n">s</span><span class="p">.</span><span class="n">c</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>5.以静态链接库方式使用这个库的程序代码，main-static.c</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&#34;ext.h&#34; </span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&#34;windows.h&#34;</span><span class="cp">
+</span><span class="cp">#include</span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span> 
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+	<span class="n">fun</span><span class="p">();</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;num=%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">num</span><span class="p">);</span>
+	<span class="n">fun</span><span class="p">();</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;num=%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">num</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;st i=%d c=%c </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">s</span><span class="p">.</span><span class="n">i</span><span class="p">,</span><span class="n">s</span><span class="p">.</span><span class="n">c</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>一，静态链接库
+要给用户提供静态链接库，都要提供哪些文件呢？.h头文件+.lib库文件 
+先问个问题： 使用库的最简单方式是什么？当然是不使用库！
+不使用库谁不会啊？使用如下命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">        cl main-static.c ext.c 
+</code></pre></td></tr></table>
+</div>
+</div><p>在当前目录下，就会编译，链接成一个main-static.exe，执行一下，没有问题！</p>
+<p>再问个问题：除了exe文件，还看见了什么？有ext.obj, main-static.obj, main-static.lib ,main-static.exp .</p>
+<p>.obj文件是目标文件（object file），
+.lib文件是静态库文件（msdn中称为导入库），
+.exp文件，导出文件，辅助作用（参看这里和这里）
+可以猜想，用cl直接编译生成exe的过程，是</p>
+<ol>
+<li>ext.c&mdash;&raquo;ext.obj</li>
+<li>main-static.c&ndash;&raquo;main-static.obj</li>
+<li>main-static.obj&mdash;&raquo;main-static.exp+main-static.lib</li>
+<li>ext.obj+main-static.lib+main-static.exp&mdash;&raquo;main-static.exe</li>
+</ol>
+<p>的过程</p>
+<p>我尝试了改换参数顺序，即用命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">cl ext.c main-static.c 
+</code></pre></td></tr></table>
+</div>
+</div><p>发现main-static.exp + main-static.lib换成了ext.lib+ext.exp
+这说明是cl是先把.c文件都生成为obj文件，然后把第一个命令行参数指定xxx.c的xxx.obj文件再生成为xxx.lib+xxx.exp文件
+ 
+这和静态链接有什么关系呢？关系密切啊！
+把除了ext.lib 以外的所有生成文件删除，运行如下命令:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">cl main-static.c /link ext.lib
+</code></pre></td></tr></table>
+</div>
+</div><p>就可以看见，生成了main-static.exe，运行正常。ext.lib就是静态链接库。
+其实，这就是一个静态链接的过程。 </p>
+<p> 静态链接的第一步，怎么由ext.c生成obj文件？查msdn（或者 命令cl /?）可知，给cl提供/c参数就可以了，先清掉那堆文件，运行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">         cl /c ext.c
+</code></pre></td></tr></table>
+</div>
+</div><p>成功生成ext.obj.同理可以生成main-static.obj。
+严格来说编译已经完成，接下来的，都是链接过程。</p>
+<p>第二步，怎么从obj文件生成.lib文件（加/DEF参数，就可以同时生成.exp文件)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">     lib  ext.obj
+</code></pre></td></tr></table>
+</div>
+</div><p>就生成了ext.lib
+第三步，怎么从main-static.c + ext.lib 生成exe</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">     cl  main-static.c /link ext.lib
+</code></pre></td></tr></table>
+</div>
+</div><p>需要注意的是，头文件一定要可以找到。</p>
+<p>二，动态链接库
+visual studio的动态链接分为显式链接和隐式链接两种（http://msdn.microsoft.com/zh-cn/library/253b8k2c(v=vs.80).aspx），显式链接就是自己写代码调用win32 Api加载dll文件，要使用LoadLibrary, GetProcAddress(), FreeLibrary()这些函数，这个方法几乎不需要工具，就不说了，看看msdn的例子就明白了。
+以下说的都是隐式链接</p>
+<p>visual studio的动态链接库使用很与众不同，竟然需要提供三种文件：.h+.lib+.dll文件，诡异的是，这个.lib文件和静态链接库里的.lib文件其实不一样！
+更诡异的是，用户链接的时候，其实不需要.dll文件！</p>
+<p>对比之下，linux下的gcc，若是动态链接库，需要的是.so+.h 文件（.so相当于.dll），这是显著的差异。</p>
+<p>参看csdn(<a href="http://msdn.microsoft.com/zh-cn/library/3y1sfaz2(v=vs.100).aspx">http://msdn.microsoft.com/zh-cn/library/3y1sfaz2(v=vs.100).aspx</a>)可知，和静态链接不同的是，动态链接需要对库的源代码进行改动，添加</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">__declspec( dllimport )
+</code></pre></td></tr></table>
+</div>
+</div><p> 或</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"> __declspec( dllexport ) 
+</code></pre></td></tr></table>
+</div>
+</div><p>补充：也可以用def文件，不过我没试过，参看 <a href="http://msdn.microsoft.com/zh-cn/library/0b9xe492.aspx">http://msdn.microsoft.com/zh-cn/library/0b9xe492.aspx</a> 和 http://msdn.microsoft.com/zh-cn/library/28d6s79h.aspx 。</p>
+<p>这个时候要注意，__declspec( dllimport )和__declspec( dllexport ) 的使用是不一样的，在库里导出的符号（函数，变量等，可以用dumpbin查看）应该使用__declspec( dllexport ) ，而使用库的代码，在包含头文件后，要有这些符号的声明，要看到__declspec( dllimport )形式的声明，所以这是有区别的。在上面ext.h里，我用了一个宏Dll来统一处理。 </p>
+<p>处理完源代码，就可以编译了。</p>
+<p>第一步，生成obj文件，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">cl /c ext.c
+</code></pre></td></tr></table>
+</div>
+</div><p>第二步，由obj文件生成dll文件+lib文件，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">cl /LD ext.obj
+</code></pre></td></tr></table>
+</div>
+</div><p>或者也可以用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">link /DLL ext.obj
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到，生成了ext.dll , ext.exp, ext.lib 三个文件，其中的ext.lib 这个文件和静态链接时生成的ext.lib文件是不一样的！而且ext.dll在main.c的链接过程中是用不着的！
+（此时已经生成了dll文件，要是使用显式链接，就把dll文件弄走，自己写代码去啦），继续隐式链接
+第三步，不妨移走ext.dll，然后编译</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">cl main.c /link ext.lib
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到生成main.exe，但是运行一下，会报告找不到ext.dll，当然找不到啦，只要把ext.dll移到当前目录下（或在dll文件查找路径中的一个中）即可正常运行。</p>
+<p>   注：dll文件查找路径参看 http://msdn.microsoft.com/zh-cn/library/7d83bc18(v=vs.80).aspx</p>
+<p>这个领域关注的人少，鄙人理解浅薄，错误难免，欢迎指正。</p>
+
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/2011/11/15/heat-grid/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">【旧代码】传热过程数值模拟</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2011/10/17/inc-sub-seq-count-algo/">
+            <span class="next-text nav-default">递增子序列数目计算的算法</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'byronheblog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
+  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2010 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">byronhe</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-49290834-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

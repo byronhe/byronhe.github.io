@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>nginx下配置高性能，高安全性的https TLS服务 - Tech Ideas</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="byronhe" /><meta name="description" content="nginx下配置高性能，高安全性的https TLS服务" /><meta name="keywords" content="tls ,  https ,  crypto,  server" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
+
+
+<link rel="canonical" href="https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="nginx下配置高性能，高安全性的https TLS服务" />
+<meta property="og:description" content="nginx下配置高性能，高安全性的https TLS服务" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/" />
+<meta property="article:published_time" content="2015-05-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2015-05-08T00:00:00+00:00" />
+<meta itemprop="name" content="nginx下配置高性能，高安全性的https TLS服务">
+<meta itemprop="description" content="nginx下配置高性能，高安全性的https TLS服务">
+<meta itemprop="datePublished" content="2015-05-08T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2015-05-08T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1476">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="nginx下配置高性能，高安全性的https TLS服务"/>
+<meta name="twitter:description" content="nginx下配置高性能，高安全性的https TLS服务"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Tech Ideas</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Tech Ideas</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">nginx下配置高性能，高安全性的https TLS服务</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-05-08 </span>
+        <div class="post-category">
+            <a href="/categories/tls/"> tls </a>
+            <a href="/categories/crypto/"> crypto </a>
+            <a href="/categories/server/"> server </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#一-nginx-https的配置">一， nginx https的配置</a></li>
+            <li><a href="#二-其中的几个配置项">二， 其中的几个配置项</a></li>
+            <li><a href="#三--openssl编译优化">三，  openssl编译优化</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>下文以nginx为例，介绍如何部署一个高性能，高安全性的https服务器。</p>
+<p>并附送一个优化出来的openssl编译脚本，可以编译出一个高性能，高安全性的openssl库，您可以直接复制粘贴使用。</p>
+<p>此处直接给出实践指导，后续再写文章解释tls协议的这些原理细节。</p>
+<p>nginx下https配置的优化点，主要有:</p>
+<ol>
+<li>session ticket</li>
+<li>session id cache</li>
+<li>ocsp stapling</li>
+<li>http KeepAlive</li>
+<li>ECDHE等ciphersuite优化</li>
+<li>openssl 编译优化</li>
+</ol>
+<h3 id="一-nginx-https的配置">一， nginx https的配置</h3>
+<p>先贴一下nginx配置，如下。</p>
+<p>是根据<a href="https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx">mozilla的权威文档</a>
+,和<a href="https://mozilla.github.io/server-side-tls/ssl-config-generator/">生成工具</a>(选择 nginx，intermediate ) 生成的配置为基础，加入session ticket等配置的结果</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="n">server</span> <span class="p">{</span>
+    <span class="n">listen</span> <span class="mi">443</span> <span class="n">ssl</span><span class="p">;</span>
+
+    <span class="cp"># certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
+</span><span class="cp"></span>    <span class="n">ssl_certificate</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">signed_cert_plus_intermediates</span><span class="p">;</span>
+    <span class="n">ssl_certificate_key</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">private_key</span><span class="p">;</span>
+    <span class="n">ssl_session_timeout</span> <span class="mi">1</span><span class="n">d</span><span class="p">;</span>
+    <span class="n">ssl_session_cache</span> <span class="nl">shared</span><span class="p">:</span><span class="nl">SSL</span><span class="p">:</span><span class="mi">50</span><span class="n">m</span><span class="p">;</span>
+
+    <span class="n">ssl_session_ticket_key</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">conf</span><span class="p">.</span><span class="n">d</span><span class="o">/</span><span class="n">tls_session_ticket</span><span class="p">.</span><span class="n">key</span><span class="p">;</span>
+    <span class="n">ssl_session_tickets</span> <span class="n">on</span><span class="p">;</span>
+    
+    <span class="n">keepalive_timeout</span> <span class="mi">75</span><span class="n">s</span><span class="p">;</span>
+
+    <span class="cp"># Diffie-Hellman parameter for DHE ciphersuites, recommended 2048 bits
+</span><span class="cp"></span>    <span class="n">ssl_dhparam</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">dhparam</span><span class="p">.</span><span class="n">pem</span><span class="p">;</span>
+
+    <span class="cp"># intermediate configuration. tweak to your needs.
+</span><span class="cp"></span>    <span class="n">ssl_protocols</span> <span class="n">TLSv1</span> <span class="n">TLSv1</span><span class="mf">.1</span> <span class="n">TLSv1</span><span class="mf">.2</span><span class="p">;</span>
+    <span class="n">ssl_ciphers</span> <span class="err">&#39;</span><span class="n">ECDHE</span><span class="o">-</span><span class="n">RSA</span><span class="o">-</span><span class="n">AES128</span><span class="o">-</span><span class="n">GCM</span><span class="o">-</span><span class="nl">SHA256</span><span class="p">:</span><span class="n">ECDHE</span><span class="o">-</span><span class="n">ECDSA</span><span class="o">-</span><span class="n">AES128</span><span class="o">-</span><span class="n">GCM</span><span class="o">-</span><span class="nl">SHA256</span><span class="p">:</span><span class="n">ECDHE</span><span class="o">-</span><span class="n">RSA</span><span class="o">-</span><span class="n">AES256</span><span class="o">-</span><span class="n">GCM</span><span class="o">-</span><span class="nl">SHA384</span><span class="p">:</span><span class="n">ECDHE</span><span class="o">-</span><span class="n">ECDSA</span><span class="o">-</span><span class="n">AES256</span><span class="o">-</span><span class="n">GCM</span><span class="o">-</span><span class="nl">SHA384</span><span class="p">:</span><span class="n">DHE</span><span class="o">-</span><span class="n">RSA</span><span class="o">-</span><span class="n">AES128</span><span class="o">-</span><span class="n">GCM</span><span class="o">-</span><span class="nl">SHA256</span><span class="p">:</span><span class="n">DHE</span><span class="o">-</span><span class="n">DSS</span><span class="o">-</span><span class="n">AES128</span><span class="o">-</span><span class="n">GCM</span><span class="o">-</span><span class="nl">SHA256</span><span class="p">:</span><span class="n">kEDH</span><span class="o">+</span><span class="nl">AESGCM</span><span class="p">:</span><span class="n">ECDHE</span><span class="o">-</span><span class="n">RSA</span><span class="o">-</span><span class="n">AES128</span><span class="o">-</span><span class="nl">SHA256</span><span class="p">:</span><span class="n">ECDHE</span><span class="o">-</span><span class="n">ECDSA</span><span class="o">-</span><span class="n">AES128</span><span class="o">-</span><span class="nl">SHA256</span><span class="p">:</span><span class="n">ECDHE</span><span class="o">-</span><span class="n">RSA</span><span class="o">-</span><span class="n">AES128</span><span class="o">-</span><span class="nl">SHA</span><span class="p">:</span><span class="n">ECDHE</span><span class="o">-</span><span class="n">ECDSA</span><span class="o">-</span><span class="n">AES128</span><span class="o">-</span><span class="nl">SHA</span><span class="p">:</span><span class="n">ECDHE</span><span class="o">-</span><span class="n">RSA</span><span class="o">-</span><span class="n">AES256</span><span class="o">-</span><span class="nl">SHA384</span><span class="p">:</span><span class="n">ECDHE</span><span class="o">-</span><span class="n">ECDSA</span><span class="o">-</span><span class="n">AES256</span><span class="o">-</span><span class="nl">SHA384</span><span class="p">:</span><span class="n">ECDHE</span><span class="o">-</span><span class="n">RSA</span><span class="o">-</span><span class="n">AES256</span><span class="o">-</span><span class="nl">SHA</span><span class="p">:</span><span class="n">ECDHE</span><span class="o">-</span><span class="n">ECDSA</span><span class="o">-</span><span class="n">AES256</span><span class="o">-</span><span class="nl">SHA</span><span class="p">:</span><span class="n">DHE</span><span class="o">-</span><span class="n">RSA</span><span class="o">-</span><span class="n">AES128</span><span class="o">-</span><span class="nl">SHA256</span><span class="p">:</span><span class="n">DHE</span><span class="o">-</span><span class="n">RSA</span><span class="o">-</span><span class="n">AES128</span><span class="o">-</span><span class="nl">SHA</span><span class="p">:</span><span class="n">DHE</span><span class="o">-</span><span class="n">DSS</span><span class="o">-</span><span class="n">AES128</span><span class="o">-</span><span class="nl">SHA256</span><span class="p">:</span><span class="n">DHE</span><span class="o">-</span><span class="n">RSA</span><span class="o">-</span><span class="n">AES256</span><span class="o">-</span><span class="nl">SHA256</span><span class="p">:</span><span class="n">DHE</span><span class="o">-</span><span class="n">DSS</span><span class="o">-</span><span class="n">AES256</span><span class="o">-</span><span class="nl">SHA</span><span class="p">:</span><span class="n">DHE</span><span class="o">-</span><span class="n">RSA</span><span class="o">-</span><span class="n">AES256</span><span class="o">-</span><span class="nl">SHA</span><span class="p">:</span><span class="n">AES128</span><span class="o">-</span><span class="n">GCM</span><span class="o">-</span><span class="nl">SHA256</span><span class="p">:</span><span class="n">AES256</span><span class="o">-</span><span class="n">GCM</span><span class="o">-</span><span class="nl">SHA384</span><span class="p">:</span><span class="n">AES128</span><span class="o">-</span><span class="nl">SHA256</span><span class="p">:</span><span class="n">AES256</span><span class="o">-</span><span class="nl">SHA256</span><span class="p">:</span><span class="n">AES128</span><span class="o">-</span><span class="nl">SHA</span><span class="p">:</span><span class="n">AES256</span><span class="o">-</span><span class="nl">SHA</span><span class="p">:</span><span class="nl">AES</span><span class="p">:</span><span class="nl">CAMELLIA</span><span class="p">:</span><span class="n">DES</span><span class="o">-</span><span class="n">CBC3</span><span class="o">-</span><span class="nl">SHA</span><span class="p">:</span><span class="o">!</span><span class="nl">aNULL</span><span class="p">:</span><span class="o">!</span><span class="nl">eNULL</span><span class="p">:</span><span class="o">!</span><span class="nl">EXPORT</span><span class="p">:</span><span class="o">!</span><span class="nl">DES</span><span class="p">:</span><span class="o">!</span><span class="nl">RC4</span><span class="p">:</span><span class="o">!</span><span class="nl">MD5</span><span class="p">:</span><span class="o">!</span><span class="nl">PSK</span><span class="p">:</span><span class="o">!</span><span class="nl">aECDH</span><span class="p">:</span><span class="o">!</span><span class="n">EDH</span><span class="o">-</span><span class="n">DSS</span><span class="o">-</span><span class="n">DES</span><span class="o">-</span><span class="n">CBC3</span><span class="o">-</span><span class="nl">SHA</span><span class="p">:</span><span class="o">!</span><span class="n">EDH</span><span class="o">-</span><span class="n">RSA</span><span class="o">-</span><span class="n">DES</span><span class="o">-</span><span class="n">CBC3</span><span class="o">-</span><span class="nl">SHA</span><span class="p">:</span><span class="o">!</span><span class="n">KRB5</span><span class="o">-</span><span class="n">DES</span><span class="o">-</span><span class="n">CBC3</span><span class="o">-</span><span class="n">SHA</span><span class="err">&#39;</span><span class="p">;</span>
+    <span class="n">ssl_prefer_server_ciphers</span> <span class="n">on</span><span class="p">;</span>
+
+    <span class="cp"># HSTS (ngx_http_headers_module is required) (15768000 seconds = 6 months)
+</span><span class="cp"></span>    <span class="n">add_header</span> <span class="n">Strict</span><span class="o">-</span><span class="n">Transport</span><span class="o">-</span><span class="n">Security</span> <span class="n">max</span><span class="o">-</span><span class="n">age</span><span class="o">=</span><span class="mi">15768000</span><span class="p">;</span>
+
+    <span class="cp"># OCSP Stapling ---
+</span><span class="cp"></span>    <span class="cp"># fetch OCSP records from URL in ssl_certificate and cache them
+</span><span class="cp"></span>    <span class="n">ssl_stapling</span> <span class="n">on</span><span class="p">;</span>
+    <span class="n">ssl_stapling_verify</span> <span class="n">on</span><span class="p">;</span>
+
+    <span class="cp">## verify chain of trust of OCSP response using Root CA and Intermediate certs
+</span><span class="cp"></span>    <span class="n">ssl_trusted_certificate</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">signed_cert_plus_intermediates</span><span class="p">;</span>
+
+    <span class="n">resolver</span> <span class="mf">114.114.114.114</span><span class="p">;</span>
+ 
+    <span class="p">....</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="二-其中的几个配置项">二， 其中的几个配置项</h3>
+<h5 id="1-pathtosigned_cert_plus_intermediates">1. /path/to/signed_cert_plus_intermediates</h5>
+<p>是你的证书链，就是ca签署之后发给你的文件，是一串这样的内容</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+...
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="2-pathtoprivate_key">2. /path/to/private_key</h5>
+<p>是你的私钥，一定要保密，最好chown+chmod限制只有http server可以读取！内容大致是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">-----BEGIN RSA PRIVATE KEY-----
+...
+-----END RSA PRIVATE KEY-----
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="3-pathtodhparampem">3. /path/to/dhparam.pem</h5>
+<p>是dhe密钥协商的参数，生成方法：</p>
+<pre><code>     openssl  dhparam -out dhparam.pem 2048
+</code></pre>
+<h5 id="4-etcnginxconfdtls_session_ticketkey">4. /etc/nginx/conf.d/tls_session_ticket.key</h5>
+<p>是用来加解密session ticket的密码文件，这个文件的安全等级应该和私钥一样，最好chmod+chown限制只有http server能读取。 生成方法:</p>
+<pre><code>     openssl rand 48 &gt; tls_session_ticket.key
+</code></pre>
+<p>最好定期（比如2天一次）轮换，配置文件里把新的key文件放在最前面，旧的在下面，如下</p>
+<pre><code>    ssl_session_ticket_key current.key;
+    ssl_session_ticket_key previous.key;
+</code></pre>
+<h5 id="5-ssl_trusted_certificate-pathtosigned_cert_plus_intermediates">5. ssl_trusted_certificate /path/to/signed_cert_plus_intermediates</h5>
+<p>ssl_trusted_certificate，是用来验证ocsp响应的各个ca证书+中级证书，和信任的ca根证书列表。当用来验证ocsp响应的时候，应该配置为你的ca根证书+和中级ca证书的列表，此处可以简单和ssl_certificate使用同一个证书列表文件。<br>
+其中当需要使用tls的客户端认证的时候（大多数https server都用不到客户端认证），需要指定信任的ca根证书列表文件, 这个文件在centos里面是/etc/ssl/certs/ca-bundle.trust.crt 这个文件。</p>
+<p>配置完成之后，使用ssllabs的这个在线检查工具<a href="https://www.ssllabs.com/ssltest/analyze.html">https://www.ssllabs.com/ssltest/analyze.html</a> 做检查，里面提出的警告，都需要改正。</p>
+<h3 id="三--openssl编译优化">三，  openssl编译优化</h3>
+<p>主流的https server，都是依赖openssl来提供tls协议，openssl本身代码复杂，概念繁多，最近对这方面做了研究，下面是一个深入分析过后的最优化编译配置，可以编译出一个高性能，高安全性的openssl版本，您可以直接复制粘贴使用。</p>
+<p>openssl请使用最新的1.0.2a版本，这个版本有intel针对ecdh p256曲线的优化，编译脚本见本文末尾。</p>
+<p>编译好之后，需要让nginx使用我们编译的这个openssl库，在centos下，可以用LD_LIBRARY_PATH的办法：</p>
+<pre><code>sudo vim /usr/lib/systemd/system/nginx.service
+</code></pre>
+<p>在其中添加一行Environment，如下：</p>
+<pre><code>[Service]
+...
+Environment=LD_LIBRARY_PATH=/usr/local/bin/openssl-1.0.2a_64_build/lib/
+ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx.conf
+...
+</code></pre>
+<p>其中的路径，请自行修改。</p>
+<p>还需要创建软连接，解决so库版本号的问题，如下</p>
+<pre><code>ln -s libcrypto.so.1.0.0 libcrypto.so.10
+ln -s libssl.so.1.0.0 libssl.so.10
+</code></pre>
+<p>脚本中包含了一个cloudflare的patch，增加chacha20_poly1305 cipher，使用了这个patch之后，可以使用<a href="https://github.com/cloudflare/sslconfig/blob/master/conf">cloudflare的ciphers配置</a></p>
+<p><a href="https://github.com/byronhe/modern-crypto-toolbox/blob/master/build_openssl.sh">https://github.com/byronhe/modern-crypto-toolbox/blob/master/build_openssl.sh</a></p>
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015/06/05/modern-crypto/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">现代密码学实践指南[2015年]</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015/04/12/translate-everything-you-need-to-know-about-cryptgraphy-in-1-hour/">
+            <span class="next-text nav-default">【翻译】密码学一小时必知</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'byronheblog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
+  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2010 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">byronhe</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-49290834-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>libpcap试玩 - Tech Ideas</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="byronhe" /><meta name="description" content="libpcap驱动了tcpdump,和wireshark这类抓包工具.提供了高度灵活的包过滤语言. 据wikipedia,高性能的包过滤最早是在bsd上作为一个问题被解决,被称为bpf,在内核实现了一个解释器,进行包匹配,用户态提供一个字符设备, linux作为后来者,支持与bsd基本相同的packet filter,称为lpf,不同的是,linux是通过在一个raw socket来支持包过滤的,通过setsockopt来SO_ATTACH_FILTER,挂载过滤器. strace 可知,libpcap实际上进行了如下syscall:
+1 2  socket(PF_PACKET, SOCK_RAW, 768) = 59 setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &amp;#34;\1\0\0\0\0\0\0\0\250\327Vc\375\177\0\0&amp;#34;, 16) = 0   libpcap的api文档和demo代码可以参见
+ http://www.tcpdump.org/pcap3_man.html http://www.tcpdump.org/sniffex.c  参考文档了demo,我写了一个小的sniffer,
+" /><meta name="keywords" content="C&#43;&#43;, Linux, Crypto, Algorithm, Lisp, etc" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
+
+
+<link rel="canonical" href="https://blog.helong.info/post/2013/08/04/libpcap-sniffer/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="libpcap试玩" />
+<meta property="og:description" content="libpcap驱动了tcpdump,和wireshark这类抓包工具.提供了高度灵活的包过滤语言. 据wikipedia,高性能的包过滤最早是在bsd上作为一个问题被解决,被称为bpf,在内核实现了一个解释器,进行包匹配,用户态提供一个字符设备, linux作为后来者,支持与bsd基本相同的packet filter,称为lpf,不同的是,linux是通过在一个raw socket来支持包过滤的,通过setsockopt来SO_ATTACH_FILTER,挂载过滤器. strace 可知,libpcap实际上进行了如下syscall:
+
+
+1
+2
+
+
+socket(PF_PACKET, SOCK_RAW, 768) = 59 
+setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &#34;\1\0\0\0\0\0\0\0\250\327Vc\375\177\0\0&#34;, 16) = 0
+
+
+libpcap的api文档和demo代码可以参见
+
+http://www.tcpdump.org/pcap3_man.html
+http://www.tcpdump.org/sniffex.c
+
+参考文档了demo,我写了一个小的sniffer," />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.helong.info/post/2013/08/04/libpcap-sniffer/" />
+<meta property="article:published_time" content="2013-08-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2013-08-04T00:00:00+00:00" />
+<meta itemprop="name" content="libpcap试玩">
+<meta itemprop="description" content="libpcap驱动了tcpdump,和wireshark这类抓包工具.提供了高度灵活的包过滤语言. 据wikipedia,高性能的包过滤最早是在bsd上作为一个问题被解决,被称为bpf,在内核实现了一个解释器,进行包匹配,用户态提供一个字符设备, linux作为后来者,支持与bsd基本相同的packet filter,称为lpf,不同的是,linux是通过在一个raw socket来支持包过滤的,通过setsockopt来SO_ATTACH_FILTER,挂载过滤器. strace 可知,libpcap实际上进行了如下syscall:
+
+
+1
+2
+
+
+socket(PF_PACKET, SOCK_RAW, 768) = 59 
+setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &#34;\1\0\0\0\0\0\0\0\250\327Vc\375\177\0\0&#34;, 16) = 0
+
+
+libpcap的api文档和demo代码可以参见
+
+http://www.tcpdump.org/pcap3_man.html
+http://www.tcpdump.org/sniffex.c
+
+参考文档了demo,我写了一个小的sniffer,">
+<meta itemprop="datePublished" content="2013-08-04T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2013-08-04T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="615">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="libpcap试玩"/>
+<meta name="twitter:description" content="libpcap驱动了tcpdump,和wireshark这类抓包工具.提供了高度灵活的包过滤语言. 据wikipedia,高性能的包过滤最早是在bsd上作为一个问题被解决,被称为bpf,在内核实现了一个解释器,进行包匹配,用户态提供一个字符设备, linux作为后来者,支持与bsd基本相同的packet filter,称为lpf,不同的是,linux是通过在一个raw socket来支持包过滤的,通过setsockopt来SO_ATTACH_FILTER,挂载过滤器. strace 可知,libpcap实际上进行了如下syscall:
+
+
+1
+2
+
+
+socket(PF_PACKET, SOCK_RAW, 768) = 59 
+setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &#34;\1\0\0\0\0\0\0\0\250\327Vc\375\177\0\0&#34;, 16) = 0
+
+
+libpcap的api文档和demo代码可以参见
+
+http://www.tcpdump.org/pcap3_man.html
+http://www.tcpdump.org/sniffex.c
+
+参考文档了demo,我写了一个小的sniffer,"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Tech Ideas</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Tech Ideas</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">libpcap试玩</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2013-08-04 </span>
+        <div class="post-category">
+            <a href="/categories/linux/"> Linux </a>
+            <a href="/categories/%E7%BD%91%E7%BB%9C/"> 网络 </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>libpcap驱动了tcpdump,和wireshark这类抓包工具.提供了高度灵活的包过滤语言. 据wikipedia,高性能的包过滤最早是在bsd上作为一个问题被解决,被称为bpf,在内核实现了一个解释器,进行包匹配,用户态提供一个字符设备, linux作为后来者,支持与bsd基本相同的packet filter,称为lpf,不同的是,linux是通过在一个raw socket来支持包过滤的,通过setsockopt来SO_ATTACH_FILTER,挂载过滤器. strace 可知,libpcap实际上进行了如下syscall:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">socket(PF_PACKET, SOCK_RAW, 768) = 59 
+setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &#34;\1\0\0\0\0\0\0\0\250\327Vc\375\177\0\0&#34;, 16) = 0
+</code></pre></td></tr></table>
+</div>
+</div><p>libpcap的api文档和demo代码可以参见</p>
+<ol>
+<li><a href="http://www.tcpdump.org/pcap3_man.html">http://www.tcpdump.org/pcap3_man.html</a></li>
+<li><a href="http://www.tcpdump.org/sniffex.c">http://www.tcpdump.org/sniffex.c</a></li>
+</ol>
+<p>参考文档了demo,我写了一个小的sniffer,</p>
+<p>如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">class</span> <span class="nc">Sniffer</span><span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">Sniffer</span><span class="p">()</span><span class="o">:</span><span class="n">handle</span><span class="p">(</span><span class="nb">NULL</span><span class="p">),</span><span class="n">cap_exp</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">),</span><span class="n">net_if</span><span class="p">(</span><span class="s">&#34;any&#34;</span><span class="p">),</span><span class="n">exp_compiled</span><span class="p">(</span><span class="nb">false</span><span class="p">){}</span>
+    <span class="o">~</span><span class="n">Sniffer</span><span class="p">(){</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">handle</span><span class="p">){</span>
+            <span class="n">pcap_freecode</span><span class="p">(</span><span class="o">&amp;</span><span class="n">filter_code</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">exp_compiled</span><span class="p">){</span>
+            <span class="n">pcap_close</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">string</span> <span class="nf">help</span><span class="p">(){</span>
+        <span class="n">string</span> <span class="n">h</span><span class="p">(</span><span class="s">&#34;avaliable net_interface:&#34;</span><span class="p">);</span>
+        <span class="n">pcap_if_t</span><span class="o">*</span> <span class="n">alldev</span><span class="o">=</span><span class="nb">NULL</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="mi">0</span><span class="o">==</span><span class="n">pcap_findalldevs</span><span class="p">(</span><span class="o">&amp;</span><span class="n">alldev</span><span class="p">,</span> <span class="n">errbuf</span><span class="p">)){</span>
+            <span class="k">for</span><span class="p">(</span><span class="n">pcap_if_t</span> <span class="o">*</span> <span class="n">dev</span> <span class="o">=</span><span class="n">alldev</span><span class="p">;</span><span class="nb">NULL</span><span class="o">!=</span><span class="n">dev</span><span class="p">;</span><span class="n">dev</span><span class="o">=</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">){</span>
+                <span class="n">h</span><span class="o">+=</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">;</span>
+                <span class="n">h</span><span class="o">+=</span><span class="s">&#34; &#34;</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="n">pcap_freealldevs</span><span class="p">(</span><span class="n">alldev</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="kt">char</span> <span class="o">*</span> <span class="n">default_if</span><span class="o">=</span><span class="n">pcap_lookupdev</span><span class="p">(</span><span class="n">errbuf</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">default_if</span><span class="p">){</span>
+            <span class="n">h</span><span class="o">+=</span><span class="s">&#34; default interface:&#34;</span><span class="p">;</span>
+            <span class="n">h</span><span class="o">+=</span><span class="n">default_if</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">h</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">string</span> <span class="nf">err</span><span class="p">(){</span>
+        <span class="k">return</span> <span class="n">pcap_geterr</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kt">bool</span> <span class="nf">configure</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span> <span class="n">net_interface</span><span class="p">,</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span> <span class="n">exp</span><span class="p">){</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">net_interface</span><span class="o">!=</span><span class="s">&#34;&#34;</span><span class="p">)</span>
+            <span class="n">net_if</span><span class="o">=</span><span class="n">net_interface</span><span class="p">;</span>
+        <span class="n">cap_exp</span><span class="o">=</span><span class="n">exp</span><span class="p">;</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="mi">0</span><span class="o">!=</span><span class="n">pcap_lookupnet</span><span class="p">(</span><span class="n">net_if</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="o">&amp;</span><span class="n">netp</span><span class="p">,</span><span class="o">&amp;</span><span class="n">maskp</span><span class="p">,</span><span class="n">errbuf</span><span class="p">)){</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">handle</span><span class="o">=</span><span class="n">pcap_create</span><span class="p">(</span><span class="n">net_if</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="n">errbuf</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="nb">NULL</span><span class="o">==</span><span class="n">handle</span><span class="p">){</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span><span class="p">(</span><span class="mi">0</span><span class="o">!=</span><span class="n">pcap_activate</span><span class="p">(</span><span class="n">handle</span><span class="p">)){</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="c1">//ignore:?
+</span><span class="c1"></span>        <span class="c1">//pcap_set_snaplen
+</span><span class="c1"></span>        <span class="c1">//pcap_set_promisc
+</span><span class="c1"></span>        <span class="c1">//pcap_set_rfmon
+</span><span class="c1"></span>        <span class="c1">//pcap_set_timeout
+</span><span class="c1"></span>        <span class="c1">//pcap_set_buffer_size
+</span><span class="c1"></span>        <span class="c1">//pcap_set_tstamp_type
+</span><span class="c1"></span>
+        <span class="c1">//only cap ethernet packet
+</span><span class="c1"></span>        <span class="k">if</span><span class="p">(</span><span class="n">DLT_EN10MB</span><span class="o">!=</span><span class="n">pcap_datalink</span><span class="p">(</span><span class="n">handle</span><span class="p">)){</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="mi">0</span><span class="o">!=</span><span class="n">pcap_compile</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">filter_code</span><span class="p">,</span> <span class="n">cap_exp</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">maskp</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">exp_compiled</span><span class="o">=</span><span class="nb">true</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="mi">0</span><span class="o">!=</span><span class="n">pcap_setfilter</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">filter_code</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kt">bool</span> <span class="nf">loop</span><span class="p">(</span><span class="kt">int</span> <span class="n">pkg_num</span><span class="o">=-</span><span class="mi">1</span><span class="p">){</span>
+        <span class="k">typedef</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">pcap_handler</span><span class="p">)(</span><span class="n">u_char</span> <span class="o">*</span><span class="n">user</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="nc">pcap_pkthdr</span> <span class="o">*</span><span class="n">h</span><span class="p">,</span>
+                <span class="k">const</span> <span class="n">u_char</span> <span class="o">*</span><span class="n">bytes</span><span class="p">);</span>
+        <span class="n">pcap_loop</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span><span class="n">pkg_num</span><span class="p">,</span><span class="o">&amp;</span><span class="p">(</span><span class="n">Sniffer</span><span class="o">::</span><span class="n">pcap_callback</span><span class="p">),(</span><span class="n">u_char</span><span class="o">*</span><span class="p">)</span><span class="k">this</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">pcap_callback</span><span class="p">(</span><span class="n">u_char</span> <span class="o">*</span><span class="n">user</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="nc">pcap_pkthdr</span> <span class="o">*</span><span class="n">h</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">u_char</span> <span class="o">*</span><span class="n">bytes</span><span class="p">){</span>
+    <span class="n">Sniffer</span> <span class="o">*</span> <span class="n">p_this</span><span class="o">=</span><span class="p">(</span><span class="n">Sniffer</span><span class="o">*</span><span class="p">)</span> <span class="n">user</span><span class="p">;</span>
+    <span class="n">p_this</span><span class="o">-&gt;</span><span class="n">dispatch</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="n">bytes</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+
+    <span class="kt">void</span> <span class="n">dispatch</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="nc">pcap_pkthdr</span> <span class="o">*</span><span class="n">h</span><span class="p">,</span> <span class="k">const</span> <span class="n">u_char</span> <span class="o">*</span><span class="n">bytes</span><span class="p">){</span>
+        <span class="n">got_packet</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="n">h</span><span class="p">,</span><span class="n">bytes</span><span class="p">);</span>
+    <span class="p">}</span>
+
+
+    <span class="k">private</span><span class="o">:</span>
+    <span class="n">pcap_t</span> <span class="o">*</span><span class="n">handle</span><span class="p">;</span>             <span class="c1">// packet capture handle 
+</span><span class="c1"></span>    <span class="n">string</span> <span class="n">net_if</span><span class="p">;</span> <span class="c1">//e.g. &#34;eth0&#34;
+</span><span class="c1"></span>    <span class="n">string</span> <span class="n">cap_exp</span><span class="p">;</span> <span class="c1">//e.g &#34;tcp and dst port 80&#34;
+</span><span class="c1"></span>    <span class="kt">bool</span> <span class="n">exp_compiled</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">bpf_program</span> <span class="n">filter_code</span><span class="p">;</span>         <span class="c1">// compiled filter program (expression) 
+</span><span class="c1"></span>    <span class="n">bpf_u_int32</span> <span class="n">netp</span><span class="p">;</span>
+    <span class="n">bpf_u_int32</span> <span class="n">maskp</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">errbuf</span><span class="p">[</span><span class="n">PCAP_ERRBUF_SIZE</span><span class="p">];</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/2013/11/18/a-http-proxy-script/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">a http proxy script</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2013/07/11/begin-blog/">
+            <span class="next-text nav-default">开始写博客</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'byronheblog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
+  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2010 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">byronhe</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-49290834-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

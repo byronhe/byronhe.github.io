@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>tls on Tech Ideas</title>
+    <link>https://blog.helong.info/categories/tls/</link>
+    <description>Recent content in tls on Tech Ideas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 06 Sep 2015 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://blog.helong.info/categories/tls/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>TLS协议分析 与 现代加密通信协议设计</title>
+      <link>https://blog.helong.info/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/</link>
+      <pubDate>Sun, 06 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/</guid>
+      <description>&lt;p&gt;最近发现密码学很有意思，刚好还和工作有点关系，就研究了一下，本文是其中一部分笔记和一些思考。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;密码学理论艰深，概念繁多，本人知识水平有限，错误难免，如果您发现错误，请务必指出，非常感谢!&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;本文禁止转载&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;本文目标：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;学习鉴赏TLS协议的设计，透彻理解原理和重点细节&lt;/li&gt;
+&lt;li&gt;跟进一下密码学应用领域的历史和进展&lt;/li&gt;
+&lt;li&gt;整理现代加密通信协议设计的一般思路&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;本文有门槛，读者需要对现代密码学有清晰而系统的理解，建议花精力补足背景知识再读。本文最后的参考文献里有一些很不错的学习资料。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>nginx下配置高性能，高安全性的https TLS服务</title>
+      <link>https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/</link>
+      <pubDate>Fri, 08 May 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/</guid>
+      <description>&lt;p&gt;下文以nginx为例，介绍如何部署一个高性能，高安全性的https服务器。&lt;/p&gt;
+&lt;p&gt;并附送一个优化出来的openssl编译脚本，可以编译出一个高性能，高安全性的openssl库，您可以直接复制粘贴使用。&lt;/p&gt;
+&lt;p&gt;此处直接给出实践指导，后续再写文章解释tls协议的这些原理细节。&lt;/p&gt;
+&lt;p&gt;nginx下https配置的优化点，主要有:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;session ticket&lt;/li&gt;
+&lt;li&gt;session id cache&lt;/li&gt;
+&lt;li&gt;ocsp stapling&lt;/li&gt;
+&lt;li&gt;http KeepAlive&lt;/li&gt;
+&lt;li&gt;ECDHE等ciphersuite优化&lt;/li&gt;
+&lt;li&gt;openssl 编译优化&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;一-nginx-https的配置&#34;&gt;一， nginx https的配置&lt;/h3&gt;
+&lt;p&gt;先贴一下nginx配置，如下。&lt;/p&gt;
+&lt;p&gt;是根据&lt;a href=&#34;https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx&#34;&gt;mozilla的权威文档&lt;/a&gt;
+,和&lt;a href=&#34;https://mozilla.github.io/server-side-tls/ssl-config-generator/&#34;&gt;生成工具&lt;/a&gt;(选择 nginx，intermediate ) 生成的配置为基础，加入session ticket等配置的结果&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>SSL/TLS CipherSuite 介绍</title>
+      <link>https://blog.helong.info/post/2015/01/23/ssl_tls_ciphersuite_intro/</link>
+      <pubDate>Fri, 23 Jan 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2015/01/23/ssl_tls_ciphersuite_intro/</guid>
+      <description>&lt;p&gt;本文是关于SSL/TLS的 CipherSuite 的信息摘录，翻译。如有疑问，欢迎指出。&lt;/p&gt;
+&lt;h2 id=&#34;一ciphersuite的概念&#34;&gt;一，CipherSuite的概念&lt;/h2&gt;
+&lt;p&gt;CipherSuite 这个名词目前没看到有好的中文翻译，个人觉得翻译成“加密算法套件”比较合适。Cipher泛指是密码学的加密算法，例如 aes, rsa, ecdh 等。
+tls是由各类基础算法，作为原语组合而成。
+一个CipherSuite是4个算法的组合：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;1个authentication (认证)算法 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;1个encryption(加密)算法
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;1个message authentication code (消息认证码 简称MAC)算法 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;1 个key exchange(密钥交换)算法
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

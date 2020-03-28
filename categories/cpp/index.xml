@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cpp on Tech Ideas</title>
+    <link>https://blog.helong.info/categories/cpp/</link>
+    <description>Recent content in cpp on Tech Ideas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 13 Nov 2011 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://blog.helong.info/categories/cpp/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>visual studio静态，动态链接库开发工具简单使用</title>
+      <link>https://blog.helong.info/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/</link>
+      <pubDate>Sun, 13 Nov 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/</guid>
+      <description>这是2011年8月份做过的一点实验，查了MSDN等等很多资料，基本搞明白了。 这里我不会使用visual studio的图形界面工具，作为专业人</description>
+    </item>
+    
+    <item>
+      <title>Codeblocks配合gfortran作为fortran开发环境的配置方法</title>
+      <link>https://blog.helong.info/post/2011/05/12/codeblocks-with-gfortran-for-fortran-dev/</link>
+      <pubDate>Thu, 12 May 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2011/05/12/codeblocks-with-gfortran-for-fortran-dev/</guid>
+      <description>（以前在bmy bbs发过一次） 这个方法试过在64位win7和32位winxp上可用。 1，首先安装codeblockes，必须选完全安装（Fu</description>
+    </item>
+    
+  </channel>
+</rss>
