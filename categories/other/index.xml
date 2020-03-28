@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>other on Tech Ideas</title>
+    <link>https://blog.helong.info/categories/other/</link>
+    <description>Recent content in other on Tech Ideas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 15 Nov 2011 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://blog.helong.info/categories/other/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>【旧代码】fortran中的指针实现链表的代码</title>
+      <link>https://blog.helong.info/post/2011/11/15/linked-list-in-fortran-with-pointer/</link>
+      <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2011/11/15/linked-list-in-fortran-with-pointer/</guid>
+      <description>我不喜欢fortran， 奇怪的词法规则（竟然不用空格分开token）， io操作竟然是语言的一部分（这种非本质的东西像C那样用库来扩展多好） 。</description>
+    </item>
+    
+  </channel>
+</rss>
