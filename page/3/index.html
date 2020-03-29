@@ -107,6 +107,61 @@
           <section id="posts" class="posts">
     <article class="post">
   <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2015/03/13/jump_consistent_hash/">【翻译/介绍】jump consistent hash 零内存消耗，均匀，快速，简洁，来自Google的一致性哈希算法</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2015-03-13 </span>
+      <div class="post-category">
+          <a href="/categories/translate/"> translate </a>
+          <a href="/categories/algorithm/"> algorithm </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <h2 id="一简介">一，简介</h2>
+<p>jump consistent hash是一种一致性哈希算法, 此算法<strong>零内存消耗</strong>，<strong>均匀分配</strong>，<strong>快速</strong>，并且<strong>只有5行代码</strong>。</p>
+<p>此算法适合使用在分shard的分布式存储系统中 。</p>
+<p>此算法的作者是 Google 的 John Lamping 和 Eric Veach，论文原文在 <a href="http://arxiv.org/ftp/arxiv/papers/1406/1406.2294.pdf">http://arxiv.org/ftp/arxiv/papers/1406/1406.2294.pdf</a></p>
+<p>完整代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp">    
+    <span class="kt">int32_t</span> <span class="nf">JumpConsistentHash</span><span class="p">(</span><span class="kt">uint64_t</span> <span class="n">key</span><span class="p">,</span> <span class="kt">int32_t</span> <span class="n">num_buckets</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">int64_t</span> <span class="n">b</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">num_buckets</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">j</span><span class="p">;</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">key</span> <span class="o">*</span> <span class="mi">2862933555777941757ULL</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="kt">double</span><span class="p">(</span><span class="mi">1LL</span> <span class="o">&lt;&lt;</span> <span class="mi">31</span><span class="p">)</span> <span class="o">/</span> <span class="kt">double</span><span class="p">((</span><span class="n">key</span> <span class="o">&gt;&gt;</span> <span class="mi">33</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">b</span><span class="p">;</span>
+    <span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>输入是一个64位的key，和桶的数量（一般对应服务器的数量），输出是一个桶的编号。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2015/03/13/jump_consistent_hash/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/2015/01/23/ssl_tls_ciphersuite_intro/">SSL/TLS CipherSuite 介绍</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2015-01-23 </span>
@@ -213,29 +268,6 @@ tls是由各类基础算法，作为原语组合而成。
     </div>
     <div class="read-more">
       <a href="/post/2014/02/08/kuaipan-backup-script/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2013/11/18/a-http-proxy-script/">a http proxy script</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2013-11-18 </span>
-      <div class="post-category">
-          <a href="/categories/linux/"> Linux </a>
-          <a href="/categories/python/"> python </a>
-          <a href="/categories/%E7%BD%91%E7%BB%9C/"> 网络 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 #!/usr/local/bin/python # -*- coding: utf-8 -*- import base64 import select import socket import httplib
-    </div>
-    <div class="read-more">
-      <a href="/post/2013/11/18/a-http-proxy-script/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

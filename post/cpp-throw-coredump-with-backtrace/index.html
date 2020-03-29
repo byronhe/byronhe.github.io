@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈 - Tech Ideas</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="byronhe" /><meta name="description" content="1. 问题 一个 C&#43;&#43; 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，" /><meta name="keywords" content="linux, cpp" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
+
+
+<link rel="canonical" href="https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈" />
+<meta property="og:description" content="1. 问题 一个 C&#43;&#43; 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/" />
+<meta property="article:published_time" content="2020-03-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-03-29T00:00:00+00:00" />
+<meta itemprop="name" content="怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈">
+<meta itemprop="description" content="1. 问题 一个 C&#43;&#43; 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，">
+<meta itemprop="datePublished" content="2020-03-29T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-03-29T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="526">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈"/>
+<meta name="twitter:description" content="1. 问题 一个 C&#43;&#43; 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Tech Ideas</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Tech Ideas</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-03-29 </span>
+        <div class="post-category">
+            <a href="/categories/linux/"> linux </a>
+            <a href="/categories/cpp/"> cpp </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-问题">1. 问题</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#1代码-hook-__cxa_throw-让-coredump-带上堆栈">1.代码 hook <code>__cxa_throw</code> ，让 coredump 带上堆栈</a></li>
+            <li><a href="#2-gdb-catch-throw">2. gdb <code>catch throw</code></a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h1 id="1-问题">1. 问题</h1>
+<p>一个 C++ 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump，
+问题是，在 gcc 4.x 版本产生的 coredump 文件中，<em>没有 throw 时候的堆栈信息</em>，导致不知道是哪里 throw 的，没法查问题。</p>
+<p>原因是 gcc 4.x 的 /libstdc++-v3/src/c++11/thread.cc:92 里面有个 catch(&hellip;)，所以 stack unwind 了，就没了 throw 时候的 stack 。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="o">*</span> <span class="nf">execute_native_thread_routine</span><span class="p">(){</span>
+    <span class="k">try</span> <span class="p">{</span>
+     <span class="p">...</span>   
+    <span class="p">}</span><span class="k">catch</span><span class="p">(...){</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">terminate</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><a href="https://abcdabcd987.com/libstdc++-bug/">https://abcdabcd987.com/libstdc++-bug/</a></p>
+<p>一个解决办法是可以升级 GCC 7 ，或者可以这样：</p>
+<h3 id="1代码-hook-__cxa_throw-让-coredump-带上堆栈">1.代码 hook <code>__cxa_throw</code> ，让 coredump 带上堆栈</h3>
+<p>一个解决办法是通过改代码，hook <code>__cxa_throw()</code> 让每次生成的 coredump 都带上堆栈：</p>
+<p><a href="https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h#L616">https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h#L616</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="c1">// Throw the exception.
+</span><span class="c1"></span><span class="kt">void</span> <span class="nf">__cxa_throw</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">type_info</span><span class="o">*</span><span class="p">,</span> <span class="kt">void</span> <span class="p">(</span><span class="n">_GLIBCXX_CDTOR_CALLABI</span> <span class="o">*</span><span class="p">)</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">))</span> <span class="n">__attribute__</span><span class="p">((</span><span class="n">__noreturn__</span><span class="p">));</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>__cxa_throw()</code> 是 libstdc++/libc++ 用于实现 throw 的函数。</p>
+<p><a href="https://libcxxabi.llvm.org/spec.html">https://libcxxabi.llvm.org/spec.html</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdexcept&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;thread&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="k">extern</span> <span class="s">&#34;C&#34;</span> <span class="p">{</span> <span class="c1">//加这3行代码，通过 hook __cxa_throw，直接 abort，可以避免 stack unwind。
+</span><span class="c1"></span>   <span class="kt">void</span> <span class="nf">__cxa_throw</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">ex</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">info</span><span class="p">,</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">dest</span><span class="p">)(</span><span class="kt">void</span><span class="o">*</span><span class="p">))</span> <span class="p">{</span> <span class="o">::</span><span class="n">abort</span><span class="p">();</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">func</span><span class="p">(){</span>
+   <span class="k">throw</span> <span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&#34;die&#34;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+   <span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">t</span><span class="p">(</span><span class="n">func</span><span class="p">);</span>
+   <span class="n">t</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>效果如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-txt" data-lang="txt">(gdb) bt
+#0  __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:51
+#1  0x00007ffff7264801 in __GI_abort () at abort.c:79
+#2  0x0000555555554f53 in __cxa_throw (ex=0x7ffff0000ba0, info=0x555555756ce0 &lt;typeinfo for std::runtime_error@@GLIBCXX_3.4&gt;, 
+   dest=0x7ffff7af4140 &lt;std::runtime_error::~runtime_error()&gt;) at test.cpp:6
+#3  0x0000555555554f8f in func () at test.cpp:10
+#4  0x0000555555555371 in std::__invoke_impl&lt;void, void (*)()&gt; (__f=@0x555555769e78: 0x555555554f53 &lt;func()&gt;)
+   at /usr/include/c++/7/bits/invoke.h:60
+#5  0x000055555555517e in std::__invoke&lt;void (*)()&gt; (__fn=@0x555555769e78: 0x555555554f53 &lt;func()&gt;) at /usr/include/c++/7/bits/invoke.h:95
+#6  0x000055555555584c in std:: thread::_Invoker&lt;std::tuple&lt;void (*)()&gt; &gt;::_M_invoke&lt;0ul&gt; (this=0x555555769e78) at /usr/include/c++/7/thread:234
+#7  0x0000555555555808 in std:: thread::_Invoker&lt;std::tuple&lt;void (*)()&gt; &gt;::operator() (this=0x555555769e78) at /usr/include/c++/7/thread:243
+#8  0x00005555555557d8 in std:: thread::_State_impl&lt;std:: thread::_Invoker&lt;std::tuple&lt;void (*)()&gt; &gt; &gt;::_M_run (this=0x555555769e70)
+   at /usr/include/c++/7/thread:186
+#9  0x00007ffff7b096ef in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#10 0x00007ffff761c6db in start_thread (arg=0x7ffff6e85700) at pthread_create.c:463
+#11 0x00007ffff734588f in clone () at ../sysdeps/unix/sysv/linux/x86_64/clone.S:95
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="2-gdb-catch-throw">2. gdb <code>catch throw</code></h3>
+<p>如果是对已有的二进制，或者已经在运行的进程：</p>
+<p>gdb 里面输入
+<code>catch throw </code>
+然后运行，gdb 就会在任何 throw 的时候暂停，即可看到 throw 时候的栈。</p>
+
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/elasticsearch-dev-arch/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">基于 ElasticSearch 开发垂直搜索系统</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2020/03/03/abstract-unix-socket-single-instance/">
+            <span class="next-text nav-default">用 abstract unix socket 实现进程单实例运行</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'byronheblog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
+  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2010 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">byronhe</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-49290834-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

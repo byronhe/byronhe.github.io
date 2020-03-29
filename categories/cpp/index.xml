@@ -6,10 +6,19 @@
     <description>Recent content in cpp on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 27 Mar 2014 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 29 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://blog.helong.info/categories/cpp/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈</title>
+      <link>https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/</link>
+      <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/</guid>
+      <description>1. 问题 一个 C++ 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，</description>
+    </item>
     
     <item>
       <title>mock C&#43;&#43; function for unit test</title>

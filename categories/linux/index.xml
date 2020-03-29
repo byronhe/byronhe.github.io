@@ -21,6 +21,15 @@
     </item>
     
     <item>
+      <title>怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈</title>
+      <link>https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/</link>
+      <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/</guid>
+      <description>1. 问题 一个 C++ 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，</description>
+    </item>
+    
+    <item>
       <title>用 abstract unix socket 实现进程单实例运行</title>
       <link>https://blog.helong.info/post/2020/03/03/abstract-unix-socket-single-instance/</link>
       <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
