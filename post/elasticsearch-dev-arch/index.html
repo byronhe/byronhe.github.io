@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>基于 ElasticSearch 开发垂直搜索系统 - Tech Ideas</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="byronhe" /><meta name="description" content="一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。 近两年在业界热度大增，主要有 3 种应用场景： 全文搜索引擎 NOSQL 数" /><meta name="keywords" content="search,  linux,  server" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
+
+
+<link rel="canonical" href="https://blog.helong.info/post/elasticsearch-dev-arch/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="基于 ElasticSearch 开发垂直搜索系统" />
+<meta property="og:description" content="一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。 近两年在业界热度大增，主要有 3 种应用场景： 全文搜索引擎 NOSQL 数" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.helong.info/post/elasticsearch-dev-arch/" />
+<meta property="article:published_time" content="2020-03-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-03-29T00:00:00+00:00" />
+<meta itemprop="name" content="基于 ElasticSearch 开发垂直搜索系统">
+<meta itemprop="description" content="一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。 近两年在业界热度大增，主要有 3 种应用场景： 全文搜索引擎 NOSQL 数">
+<meta itemprop="datePublished" content="2020-03-29T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-03-29T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="3944">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="基于 ElasticSearch 开发垂直搜索系统"/>
+<meta name="twitter:description" content="一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。 近两年在业界热度大增，主要有 3 种应用场景： 全文搜索引擎 NOSQL 数"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Tech Ideas</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Tech Ideas</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">基于 ElasticSearch 开发垂直搜索系统</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-03-29 </span>
+        <div class="post-category">
+            <a href="/categories/linux/"> linux </a>
+            <a href="/categories/search/"> search </a>
+            <a href="/categories/server/"> server </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#一背景介绍">一，背景介绍</a></li>
+        <li><a href="#二架构方案">二，架构方案</a>
+          <ul>
+            <li><a href="#1--转发代理-proxy">1.  转发代理 proxy</a></li>
+            <li><a href="#2-队列">2. 队列</a></li>
+            <li><a href="#3-其他工具">3. 其他工具</a></li>
+          </ul>
+        </li>
+        <li><a href="#三搜索应用开发优化指南">三，搜索应用开发优化指南</a>
+          <ul>
+            <li><a href="#1-query-dsl-语法">1. query DSL 语法</a></li>
+            <li><a href="#2-分词">2. 分词</a></li>
+            <li><a href="#3关系型搜索">3.关系型搜索</a></li>
+            <li><a href="#4-粗排相关性打分">4. 粗排相关性打分</a></li>
+          </ul>
+        </li>
+        <li><a href="#四性能优化">四，性能优化</a>
+          <ul>
+            <li><a href="#1-page-cache-内存优化">1. page cache 内存优化</a></li>
+            <li><a href="#2--int-字段查询优化">2.  int 字段查询优化</a></li>
+            <li><a href="#3-副本数-replicas-num">3. 副本数 replicas num</a></li>
+            <li><a href="#4--多-ssd">4.  多 SSD</a></li>
+            <li><a href="#5-内存配置">5. 内存配置</a></li>
+            <li><a href="#6-refresh_interval">6. refresh_interval</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="一背景介绍">一，背景介绍</h2>
+<p>ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。</p>
+<p>近两年在业界热度大增，主要有 3 种应用场景：</p>
+<ol>
+<li>全文搜索引擎</li>
+<li>NOSQL 数据库</li>
+<li>日志分析数据库 ELK</li>
+</ol>
+<p>很多垂直领域搜索需求，都可以基于 ElasticSearch 来设计架构。</p>
+<p>ElasticSearch 能大幅度提升相关业务的迭代开发速度，实现类似 sql 数据库增删改查一样的快速开发。
+并在相对高 qps 的在线业务中，保证毫秒级的延迟，提供极高的可用性和稳定性。</p>
+<p>经过持续的研读官方文档，调研业界经验，并在实践中应用反思后，总结出一套架构方案。供参考，欢迎意见建议。</p>
+<h2 id="二架构方案">二，架构方案</h2>
+<p>一个 ElasticSearch 集群 cluster ，配套：</p>
+<ol>
+<li>转发代理 proxy</li>
+<li>队列</li>
+</ol>
+<h3 id="1--转发代理-proxy">1.  转发代理 proxy</h3>
+<p>proxy 的功能是：</p>
+<ol>
+<li>协议转换 ，做 rpc 协议如 protobuf 和 ElasticSearch REST json 之间的协议转换，
+对文档更新等请求，定义了 rpc 协议，便于队列做各种处理。</li>
+<li>引入 RPC 框架成熟的负载均衡，容灾，故障屏蔽等功能，到对 ES 的 RPC 中，
+比如如果单机 ES 进程挂了，通过返回码让调用方自动换机器重试。</li>
+<li>统一监控告警系统，监控各种请求失败，延迟分布等，并监控 ElasticSearch java 进程状态，集群状态</li>
+<li>转发文档更新请求给本机的队列 。用队列做削峰填谷，自动合并批量，做限流。</li>
+<li>提供双写能力，便于索引升级切换</li>
+<li>proxy 到本机 ES 做了 http 连接池，避免频繁的 HTTP tcp 建连接。</li>
+</ol>
+<h3 id="2-队列">2. 队列</h3>
+<p>队列 实现了 出队限流，请求合并，削峰填谷 3个功能。</p>
+<p>在实际业务中，常常会定期做文档全量更新，会出现短时间内写请求高峰，</p>
+<p>如果直接写 ES，请求高峰时，经常出现 ES  write 线程池占满，导致部分写请求失败。</p>
+<p>另外部分业务每次请求只更新1个文档，导致 ES cpu 高，影响 ES 的写性能，不符合官方推荐做法。</p>
+<p>为此，引入队列:</p>
+<ol>
+<li>
+<p>配置限制了出队的 QPS ，确保集中高峰被抹平，以匀速稳定地写入 ES，彻底消除了更新失败。</p>
+</li>
+<li>
+<p>并用配置自动把多个请求合并成批量 （比如 5000个文档一个批量），优化了 ES 的写入性能。</p>
+</li>
+<li>
+<p>请求高峰中超出配置 QPS 的请求，队列自动暂存在文件中，随后处理，保证了 ES 服务平稳。</p>
+</li>
+</ol>
+<h3 id="3-其他工具">3. 其他工具</h3>
+<p>另外，繁荣的 ES 开源生态中，周边工具非常丰富便捷，
+我们常用的两种周边工具：kinana 和 bin/elasticsearch-sql-cli，极其方便快捷，大幅度提升了开发效率。</p>
+<h2 id="三搜索应用开发优化指南">三，搜索应用开发优化指南</h2>
+<p>垂直搜索系统的在线检索部分，一般流程如下</p>
+<p><img src="/images/custom_search_arch.png" alt=""></p>
+<p>ES 用来实现 召回和粗排环节 ，和部分自动补全环节。</p>
+<p>基于 ES 开发的优点：</p>
+<ol>
+<li>ES/Lucene 的 Query DSL 极其强大全面灵活，业务逻辑代码大幅度简化，开发简单便捷，业务迭代开发速度大大提高。</li>
+<li>有商业公司维护的高质量官方文档， 网上也有海量资料，新人几天就可以上手，快速形成生产力，提升团队效率。</li>
+<li>成熟稳定，就目前经验看没有遇到过 bug</li>
+<li>业务如果扩展，后续伸缩性，扩展性，分 shard ，多副本等，都有比较成熟方案。</li>
+</ol>
+<h3 id="1-query-dsl-语法">1. query DSL 语法</h3>
+<p>基于 ES 的开发，首先需要学习常见的几种 query，</p>
+<p>ES 的 query  简单分成 4 类:</p>
+<ol>
+<li>term query，对单个词的 query，包括 term/terms/range/exists/missing/ids/regexp 等</li>
+<li>full text query ，全文检索query，对多个词（即句子）的query，包括
+match/multi_match/common 等</li>
+<li>compound query 复合 query，包括 bool/dis_max/function_score 等</li>
+<li>match_all ，简单匹配所有文档</li>
+</ol>
+<p>建议先学习 term/match/range/bool ，就可以实现大部分业务逻辑。</p>
+<p>网上资料较多，就不转述了。</p>
+<p>可以先看看这些中文资料，在 test 环境的 kibana 做做实验，快速上手：</p>
+<p><a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/search-in-depth.html">https://www.elastic.co/guide/cn/elasticsearch/guide/current/search-in-depth.html</a></p>
+<p><a href="https://my.oschina.net/yumg/blog/637409">https://my.oschina.net/yumg/blog/637409</a></p>
+<p><a href="https://www.cnblogs.com/yjf512/p/4897294.html">https://www.cnblogs.com/yjf512/p/4897294.html</a></p>
+<p>当然最好的还是官方英文文档：</p>
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a></p>
+<h3 id="2-分词">2. 分词</h3>
+<p>中文搜索的一个核心议题，就是分词。</p>
+<p>ElasticSearch 常用的中文分词是 ik analyzer。ik 是开箱即用，便于小型业务快速开发的。</p>
+<p>但是作为对分词可定制性要求较高的业务，我们实际测试，发现 ik analyzer :</p>
+<ol>
+<li>不支持本地自定义词典文件的热加载；</li>
+<li>无法针对不同 index 配置不同自定义词典；</li>
+<li>另外对一些分词的 bad case ，比如没有正确切分的词，没法简单 fix。</li>
+</ol>
+<p>因此推荐不用 ik ，而是在更新文档和搜索的时候，在外部做分词，然后用空格拼起来，传给 ES 做索引/搜索。这种方案中，在 ES mapping 中配置成 whitespace 分词器。</p>
+<p>外部分词可以用 cppjieba 等，索引分词还可以合并多种分词算法结果提高召回率。</p>
+<p>对 cppjieba ，我之前做过内存优化，将内存优化到了 1/100。</p>
+<p>另外，索引之前，也有必要做 UTF8 的 normalize，全角转半角，英文大小写统一，和英文的词干提取， mapping 中常用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">&#34;cjk_width&#34;, &#34;lowercase&#34;, &#34;porter_stem&#34;
+</code></pre></td></tr></table>
+</div>
+</div><p>这些filter</p>
+<p>具体可以参考已有业务代码。</p>
+<h3 id="3关系型搜索">3.关系型搜索</h3>
+<p>实际开发遇到典型的  one-many 关系型数据上的 query，</p>
+<p>比如在某业务中，就遇到这种逻辑，经过调研发现常见有 4 种方案：</p>
+<ol>
+<li>
+<p>分开2 个 index : one + many ，分开2次串行 search，
+问题: 需要2次延迟大</p>
+</li>
+<li>
+<p>反范式，完全展开，one 的数据追加到每一个 many 文档中，
+问题：数据量变大，更新 one 需要用 _update_by_query
+如果 one 数据更新频繁，可能导致大量写操作</p>
+</li>
+<li>
+<p>nested ，比如 one 嵌套 many 子文档
+问题是：nested 嵌套文档更新需要更新整个 root 文档，即要把整个 one 文档 和含有的 many 文档 select 出来，修改，再写回。
+对热门 one 文档， 更新会操作大量数据，并发写还可能 data race。</p>
+</li>
+<li>
+<p>join, has_parent, has_child
+把 one 和 many 的所有字段合并到一个 index 中， one 和  many 分别独立更新。</p>
+</li>
+</ol>
+<p>经过实际数据测试 join field 方案， 发现当 one:many = 1:1000万 时， 延迟在 5ms 可以接受，因此目前采用了这种方案。</p>
+<p>当然，官方文档指出 join 性能是会慢的，后续也有待实践检验。</p>
+<h3 id="4-粗排相关性打分">4. 粗排相关性打分</h3>
+<p>Lucene 从 2016年的 6.0 版本开始，默认的相关性算法切换成了 bm25 ，
+bm25 是一种调整过的 tf idf 算法。</p>
+<p>这里可以做一简单举例介绍，更深入的介绍可以参见下面文章，以及官方文档：</p>
+<p><a href="https://farer.org/2018/09/10/practical-bm25-part-1-how-shards-affect-relevance-scoring-in-elasticsearch/">https://farer.org/2018/09/10/practical-bm25-part-1-how-shards-affect-relevance-scoring-in-elasticsearch/</a></p>
+<p><a href="https://www.cnblogs.com/richaaaard/p/5254988.html">https://www.cnblogs.com/richaaaard/p/5254988.html</a></p>
+<p>ES 的 explain 对 bm25 算分的过程有详尽的解释，推荐自行实验。</p>
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-explain.html">https://www.elastic.co/guide/en/elasticsearch/reference/current/search-explain.html</a></p>
+<h4 id="41-bm25-例解">4.1. BM25 例解</h4>
+<p>比如某业务的真实数据中，我们在所有文档的 title 这个 field 搜索 “牛奶 ” 这个词，</p>
+<p>explain 可以看到，这个 bm25 分数的是这样得来的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">sum( weight(title:牛奶 in 77341) [PerFieldSimilarity] ) ，
+weight(title:牛奶 in 77341) [PerFieldSimilarity] = idf * tfNorm
+</code></pre></td></tr></table>
+</div>
+</div><p>首先，如果某 field 被多个 term 命中，分别算每个 term 的分数 (PerFieldSimilarity)，然后求和，本例子只有1个 term “牛奶”。</p>
+<p>每个 term 的分数 PerFieldSimilarity</p>
+<p><code>PerFieldSimilarity = idf * tfNorm</code></p>
+<p>而 idf 表征词的重要程度，与具体文档无关。</p>
+<p><code>idf = log(1 + (docCount - docFreq + 0.5) / (docFreq + 0.5))</code></p>
+<p>其中
+docFreq 就是本shard 中，有多少个文档含有 “牛奶”，
+docCount 就是本shard 一共有多少个文档。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">tfNorm = (freq * (k1 + 1)) / (freq + k1 * (1 - b + b * fieldLength / avgFieldLength))
+termFreq=1.0
+k1=1.2
+b=0.75
+avgFieldLength=14.456173
+fieldLength=2 //比如如果 title 是 &#34;牛奶 醪糟&#34; ，那就是 2个 term
+</code></pre></td></tr></table>
+</div>
+</div><p>freq 即该 field 中，“牛奶”这个词出现了几次
+k1 和 b 都是固定常数。
+fieldLength 是当前文档的当前field ，一共有多少个 term。
+avgFieldLength 即本 shard 中的所有文档的本 field 的 fieldLength 的平均值</p>
+<h4 id="42-bm25-shard-调整">4.2. BM25 shard 调整</h4>
+<p>实际业务发现，当 index 内文档太少(比如 10w 量级就算少) 时 ， 有的词在多个 shard 内，词频分布会出现严重不均匀，可能会导致 bm25 分数产生较大偏差，</p>
+<p>实践中的解决办法：</p>
+<ol>
+<li>Search 的 url_parameters 参数填 “&amp;search_type=dfs_query_then_fetch”</li>
+<li>减少 shard 数</li>
+</ol>
+<h4 id="43-bm25-similarity-参数调整">4.3. BM25 similarity 参数调整</h4>
+<p>如上计算过程可见，bm25 中的 b 参数，是用来给短文档做加权的，即 b 越大，越倾向于给短文档更高的 score，
+实际中，和算法同学一起分析后，发现针对我们的某业务，不应该对短文本有太高偏向，所以我们把 b 调整成了 0.3 ，
+实测发现解决了一批 bad case，用户体验有明显改善。</p>
+<h2 id="四性能优化">四，性能优化</h2>
+<p>计算机程序的性能取决于数据结构和算法，
+ES/Lucene 中主要有几种数据结构:</p>
+<ol>
+<li>FST</li>
+<li>Posting List ，著名的倒排索引，PForDelta 压缩，支持 SkipList 方式跳跃</li>
+<li>BKD Tree，用来实现 int 和 geo 查询</li>
+<li>DocValues , 以 DocID 为 Key 的列存储</li>
+</ol>
+<p><a href="https://zhuanlan.zhihu.com/p/47951652">https://zhuanlan.zhihu.com/p/47951652</a></p>
+<p><a href="https://www.elastic.co/blog/elasticsearch-query-execution-order">https://www.elastic.co/blog/elasticsearch-query-execution-order</a></p>
+<p>更深入的理解，我目前也在探索中。</p>
+<p>在垂直搜索引擎业务中，用户对延迟非常敏感，一般业界经验认为，良好的用户体验应该是在 ** 200毫秒 ** 内返回搜索结果，
+这就意味着 ES 延迟最好控制在 100毫秒之内。</p>
+<p>经过我们实际业务发现，决定 ES 延迟的因素主要有：</p>
+<ol>
+<li>内存是否足够， page cache 是否 cache 了检索过程用到的文件数据</li>
+<li>具体 query 的优化，类比 mysql query 优化</li>
+</ol>
+<h3 id="1-page-cache-内存优化">1. page cache 内存优化</h3>
+<p>page cache 是决定 ES 延迟的首要因素，用作在线检索服务的 ES ，
+实际中在线检索的代码路径不能有硬盘 io 访问  (实践证明， SSD也不行)</p>
+<p>当 ES 用作在线垂直搜索引擎时，</p>
+<p>《查询亿级数据毫秒级返回！牛逼哄哄的ElasticSearch是如何做到的？》
+<a href="https://zhuanlan.zhihu.com/p/68706615">https://zhuanlan.zhihu.com/p/68706615</a></p>
+<p>《ElasticSearch在数十亿级别数据下，如何提高查询效率？》
+<a href="https://zhuanlan.zhihu.com/p/60458049">https://zhuanlan.zhihu.com/p/60458049</a></p>
+<p>实践中，某 index 发现延迟非常高，达到了 1-2秒，用户体验很差。
+调查发现，iostat 看下 io util 很高，经常到 80% 90%，单机索引数据文件是 page cache 可用内存的 4倍，
+于是降低了副本数，单机数据量减少到 page cache 可用内存2倍后， 硬盘 io 降到了 0 ，延迟一下降低到了 150ms 。</p>
+<h3 id="2--int-字段查询优化">2.  int 字段查询优化</h3>
+<p>业务中常会有一些 int 型的字段，存一些枚举性质的值。
+在 10亿以上文档的情况下，实际发现有的会出性能问题。</p>
+<p>比如 比如前述业务有1个 int 类型的 filter 字段，实际只有 {0,1} 2种取值，</p>
+<p>借助 ES 的 profile  ，我们发现搜索 query  93% 的耗时在 filter 字段的 PointInSetQuery 中，</p>
+<p>随后发现，针对该业务，只需要返回 filter 为 0 的文档，于是我们在更新文档时，发现 filter 非0 的文档，直接把所有字段都清空，并随后在 query 中去掉了 filter 字段的过滤。</p>
+<p>之后发现耗时从 150ms 降到了 20ms。</p>
+<h3 id="3-副本数-replicas-num">3. 副本数 replicas num</h3>
+<p>确定副本数的思路：</p>
+<ol>
+<li>副本数越小越好。越小，单机数据越少，文件被 cache 的比例越高，性能越好。</li>
+<li>副本太少会影响可用性。因此必须大于最大能容忍故障单机个数 max_failures 。</li>
+</ol>
+<p>综合起来就是：</p>
+<p><code>max(max_failures, ceil(num_nodes / num_primaries) - 1).</code></p>
+<p>num_primaries 是 primary shards 的数量，就是一个 index 有多少个 shards，一般都 &gt; num_nodes</p>
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/master/tune-for-search-speed.html#_replicas_might_help_with_throughput_but_not_always">replicas_might_help_with_throughput_but_not_always</a></p>
+<p>对数据量特别少的 index，可以每台机都存一个副本
+&ldquo;auto_expand_replicas&rdquo;: &ldquo;0-all&rdquo;,</p>
+<h3 id="4--多-ssd">4.  多 SSD</h3>
+<p>在 elasticsearc.yml 的 path.data 配置多个路径，ES 会自动把 shard 均分到多个路径上，如果有多个硬盘，可以充分利用多设备的 io 带宽，当然对在线业务意义不大。</p>
+<h3 id="5-内存配置">5. 内存配置</h3>
+<p>最开始我们使用 16G 内存机型，
+后来发现出现大量 Elasticsearch Data too large Error 错误，随后发现，解决办法就是换到 64G 内存机型，</p>
+<p>改 jvm.options 加大 jvm 的 heap 解决，从 10G 加大到 30G 解决
+-Xms30g
+-Xmx30g</p>
+<p>需要注意的是，不建议大于 32G，避免 jvm 的指针压缩优化失效。
+可以看 ES 的启动 log 确定</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">[2019-05-22T12:29:16,961][INFO ][o.e.e.NodeEnvironment    ] [node_xxx] heap size [29.7gb], compressed ordinary object pointers [true]
+</code></pre></td></tr></table>
+</div>
+</div><p><a href="https://www.elastic.co/cn/blog/a-heap-of-trouble">https://www.elastic.co/cn/blog/a-heap-of-trouble</a></p>
+<h3 id="6-refresh_interval">6. refresh_interval</h3>
+<p>如网上众多文章所说， refresh_interval 一般都设成了 30秒。</p>
+<p>一些参考资料：</p>
+<ul>
+<li>滴滴 Elasticsearch 多集群架构实践 <a href="https://cloud.tencent.com/developer/article/1405404">https://cloud.tencent.com/developer/article/1405404</a></li>
+<li>京东到家订单中心 Elasticsearch 演进历程 <a href="https://cloud.tencent.com/developer/article/1377194">https://cloud.tencent.com/developer/article/1377194</a></li>
+<li>从平台到中台：Elaticsearch在蚂蚁金服的实践经验 <a href="https://new.qq.com/omn/20190117/20190117A09ADY.html">https://new.qq.com/omn/20190117/20190117A09ADY.html</a></li>
+<li>美团点评旅游搜索召回策略的演进 <a href="https://tech.meituan.com/2017/06/16/travel-search-strategy.html">https://tech.meituan.com/2017/06/16/travel-search-strategy.html</a></li>
+<li>eBay 的 Elasticsearch 性能调优实践  <a href="https://www.infoq.cn/article/elasticsearch-performance-tuning-practice-at-ebay">https://www.infoq.cn/article/elasticsearch-performance-tuning-practice-at-ebay</a></li>
+<li>有赞搜索系统的架构演进 <a href="https://tech.youzan.com/search-tech-1/">https://tech.youzan.com/search-tech-1/</a></li>
+<li>有赞搜索引擎实践(工程篇) <a href="https://tech.youzan.com/search-engine1/">https://tech.youzan.com/search-engine1/</a></li>
+<li>全面理解搜索Query：当你在搜索引擎中敲下回车后，发生了什么？  <a href="https://zhuanlan.zhihu.com/p/112719984">https://zhuanlan.zhihu.com/p/112719984</a></li>
+</ul>
+
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2020/03/03/abstract-unix-socket-single-instance/">
+            <span class="next-text nav-default">用 abstract unix socket 实现进程单实例运行</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'byronheblog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
+  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2010 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">byronhe</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-49290834-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

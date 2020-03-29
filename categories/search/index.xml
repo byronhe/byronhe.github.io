@@ -6,10 +6,19 @@
     <description>Recent content in search on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 29 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 29 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://blog.helong.info/categories/search/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>基于 ElasticSearch 开发垂直搜索系统</title>
+      <link>https://blog.helong.info/post/elasticsearch-dev-arch/</link>
+      <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/elasticsearch-dev-arch/</guid>
+      <description>一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。 近两年在业界热度大增，主要有 3 种应用场景： 全文搜索引擎 NOSQL 数</description>
+    </item>
     
     <item>
       <title>Python 自动翻译成 C&#43;&#43; ，彻底保证离线在线特征一致</title>

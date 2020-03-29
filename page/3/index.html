@@ -44,7 +44,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blog.helong.info/" />
-<meta property="og:updated_time" content="2020-03-03T00:00:00+00:00" />
+<meta property="og:updated_time" content="2020-03-29T00:00:00+00:00" />
 <meta itemprop="name" content="Tech Ideas">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Tech Ideas"/>
@@ -105,6 +105,50 @@
       <div class="content-wrapper">
         <div id="content" class="content">
           <section id="posts" class="posts">
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2015/01/23/ssl_tls_ciphersuite_intro/">SSL/TLS CipherSuite 介绍</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2015-01-23 </span>
+      <div class="post-category">
+          <a href="/categories/crypto/"> crypto </a>
+          <a href="/categories/tls/"> TLS </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>本文是关于SSL/TLS的 CipherSuite 的信息摘录，翻译。如有疑问，欢迎指出。</p>
+<h2 id="一ciphersuite的概念">一，CipherSuite的概念</h2>
+<p>CipherSuite 这个名词目前没看到有好的中文翻译，个人觉得翻译成“加密算法套件”比较合适。Cipher泛指是密码学的加密算法，例如 aes, rsa, ecdh 等。
+tls是由各类基础算法，作为原语组合而成。
+一个CipherSuite是4个算法的组合：</p>
+<ol>
+<li>
+<pre><code>1个authentication (认证)算法 
+</code></pre>
+</li>
+<li>
+<pre><code>1个encryption(加密)算法
+</code></pre>
+</li>
+<li>
+<pre><code>1个message authentication code (消息认证码 简称MAC)算法 
+</code></pre>
+</li>
+<li>
+<pre><code>1 个key exchange(密钥交换)算法
+</code></pre>
+</li>
+</ol>
+    </div>
+    <div class="read-more">
+      <a href="/post/2015/01/23/ssl_tls_ciphersuite_intro/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     <article class="post">
   <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/2014/03/27/mock-c-plus-plus-function-for-unit-test/">mock C&#43;&#43; function for unit test</a></h1>
@@ -192,44 +236,6 @@
     </div>
     <div class="read-more">
       <a href="/post/2013/11/18/a-http-proxy-script/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2013/08/04/libpcap-sniffer/">libpcap试玩</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2013-08-04 </span>
-      <div class="post-category">
-          <a href="/categories/linux/"> Linux </a>
-          <a href="/categories/%E7%BD%91%E7%BB%9C/"> 网络 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <p>libpcap驱动了tcpdump,和wireshark这类抓包工具.提供了高度灵活的包过滤语言. 据wikipedia,高性能的包过滤最早是在bsd上作为一个问题被解决,被称为bpf,在内核实现了一个解释器,进行包匹配,用户态提供一个字符设备, linux作为后来者,支持与bsd基本相同的packet filter,称为lpf,不同的是,linux是通过在一个raw socket来支持包过滤的,通过setsockopt来SO_ATTACH_FILTER,挂载过滤器. strace 可知,libpcap实际上进行了如下syscall:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">socket(PF_PACKET, SOCK_RAW, 768) = 59 
-setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &#34;\1\0\0\0\0\0\0\0\250\327Vc\375\177\0\0&#34;, 16) = 0
-</code></pre></td></tr></table>
-</div>
-</div><p>libpcap的api文档和demo代码可以参见</p>
-<ol>
-<li><a href="http://www.tcpdump.org/pcap3_man.html">http://www.tcpdump.org/pcap3_man.html</a></li>
-<li><a href="http://www.tcpdump.org/sniffex.c">http://www.tcpdump.org/sniffex.c</a></li>
-</ol>
-<p>参考文档了demo,我写了一个小的sniffer,</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/2013/08/04/libpcap-sniffer/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

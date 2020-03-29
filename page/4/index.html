@@ -44,7 +44,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blog.helong.info/" />
-<meta property="og:updated_time" content="2020-03-03T00:00:00+00:00" />
+<meta property="og:updated_time" content="2020-03-29T00:00:00+00:00" />
 <meta itemprop="name" content="Tech Ideas">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Tech Ideas"/>
@@ -105,6 +105,44 @@
       <div class="content-wrapper">
         <div id="content" class="content">
           <section id="posts" class="posts">
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2013/08/04/libpcap-sniffer/">libpcap试玩</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2013-08-04 </span>
+      <div class="post-category">
+          <a href="/categories/linux/"> Linux </a>
+          <a href="/categories/%E7%BD%91%E7%BB%9C/"> 网络 </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>libpcap驱动了tcpdump,和wireshark这类抓包工具.提供了高度灵活的包过滤语言. 据wikipedia,高性能的包过滤最早是在bsd上作为一个问题被解决,被称为bpf,在内核实现了一个解释器,进行包匹配,用户态提供一个字符设备, linux作为后来者,支持与bsd基本相同的packet filter,称为lpf,不同的是,linux是通过在一个raw socket来支持包过滤的,通过setsockopt来SO_ATTACH_FILTER,挂载过滤器. strace 可知,libpcap实际上进行了如下syscall:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">socket(PF_PACKET, SOCK_RAW, 768) = 59 
+setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &#34;\1\0\0\0\0\0\0\0\250\327Vc\375\177\0\0&#34;, 16) = 0
+</code></pre></td></tr></table>
+</div>
+</div><p>libpcap的api文档和demo代码可以参见</p>
+<ol>
+<li><a href="http://www.tcpdump.org/pcap3_man.html">http://www.tcpdump.org/pcap3_man.html</a></li>
+<li><a href="http://www.tcpdump.org/sniffex.c">http://www.tcpdump.org/sniffex.c</a></li>
+</ol>
+<p>参考文档了demo,我写了一个小的sniffer,</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2013/08/04/libpcap-sniffer/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     <article class="post">
   <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/2013/07/11/begin-blog/">开始写博客</a></h1>
@@ -291,27 +329,6 @@
     </div>
     <div class="read-more">
       <a href="/post/2012/04/09/propagation-of-constraints-lang-in-py/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2011/12/22/sicp-02.42-eight-queue/">sicp练习2.42 [解8皇后问题的Scheme语言实现]</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2011-12-22 </span>
-      <div class="post-category">
-          <a href="/categories/scheme/"> scheme </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      代码框架来自sicp 练习2.42。算是作业吧。 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47
-    </div>
-    <div class="read-more">
-      <a href="/post/2011/12/22/sicp-02.42-eight-queue/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>
