@@ -16,7 +16,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="byronhe" /><meta name="description" content="一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。 近两年在业界热度大增，主要有 3 种应用场景： 全文搜索引擎 NOSQL 数" /><meta name="keywords" content="search,  linux,  server" />
+<meta name="author" content="byronhe" /><meta name="description" content="一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。
+近两年在业界热度大增，主要有 3 种应用场景：
+ 全文搜索引擎 NOSQL 数据库 日志分析数据库 ELK  很多垂直领域搜索需求，都可以基于 ElasticSearch 来设计架构。
+ElasticSearch 能大幅度提升相关业务的迭代开发速度，实现类似 sql 数据库增删改查一样的快速开发。 并在相对高 qps 的在线业务中，保证毫秒级的延迟，提供极高的可用性和稳定性。
+经过持续的研读官方文档，调研业界经验，并在实践中应用反思后，总结出一套架构方案。供参考，欢迎意见建议。
+" /><meta name="keywords" content="search,  linux,  server" />
 
 
 
@@ -39,13 +44,35 @@
 
 
 <meta property="og:title" content="基于 ElasticSearch 开发垂直搜索系统" />
-<meta property="og:description" content="一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。 近两年在业界热度大增，主要有 3 种应用场景： 全文搜索引擎 NOSQL 数" />
+<meta property="og:description" content="一，背景介绍
+ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。
+近两年在业界热度大增，主要有 3 种应用场景：
+
+全文搜索引擎
+NOSQL 数据库
+日志分析数据库 ELK
+
+很多垂直领域搜索需求，都可以基于 ElasticSearch 来设计架构。
+ElasticSearch 能大幅度提升相关业务的迭代开发速度，实现类似 sql 数据库增删改查一样的快速开发。
+并在相对高 qps 的在线业务中，保证毫秒级的延迟，提供极高的可用性和稳定性。
+经过持续的研读官方文档，调研业界经验，并在实践中应用反思后，总结出一套架构方案。供参考，欢迎意见建议。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.helong.info/post/elasticsearch-dev-arch/" />
 <meta property="article:published_time" content="2020-03-29T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-03-29T00:00:00+00:00" />
 <meta itemprop="name" content="基于 ElasticSearch 开发垂直搜索系统">
-<meta itemprop="description" content="一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。 近两年在业界热度大增，主要有 3 种应用场景： 全文搜索引擎 NOSQL 数">
+<meta itemprop="description" content="一，背景介绍
+ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。
+近两年在业界热度大增，主要有 3 种应用场景：
+
+全文搜索引擎
+NOSQL 数据库
+日志分析数据库 ELK
+
+很多垂直领域搜索需求，都可以基于 ElasticSearch 来设计架构。
+ElasticSearch 能大幅度提升相关业务的迭代开发速度，实现类似 sql 数据库增删改查一样的快速开发。
+并在相对高 qps 的在线业务中，保证毫秒级的延迟，提供极高的可用性和稳定性。
+经过持续的研读官方文档，调研业界经验，并在实践中应用反思后，总结出一套架构方案。供参考，欢迎意见建议。">
 <meta itemprop="datePublished" content="2020-03-29T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2020-03-29T00:00:00&#43;00:00" />
 <meta itemprop="wordCount" content="3944">
@@ -54,7 +81,18 @@
 
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="基于 ElasticSearch 开发垂直搜索系统"/>
-<meta name="twitter:description" content="一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。 近两年在业界热度大增，主要有 3 种应用场景： 全文搜索引擎 NOSQL 数"/>
+<meta name="twitter:description" content="一，背景介绍
+ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。
+近两年在业界热度大增，主要有 3 种应用场景：
+
+全文搜索引擎
+NOSQL 数据库
+日志分析数据库 ELK
+
+很多垂直领域搜索需求，都可以基于 ElasticSearch 来设计架构。
+ElasticSearch 能大幅度提升相关业务的迭代开发速度，实现类似 sql 数据库增删改查一样的快速开发。
+并在相对高 qps 的在线业务中，保证毫秒级的延迟，提供极高的可用性和稳定性。
+经过持续的研读官方文档，调研业界经验，并在实践中应用反思后，总结出一套架构方案。供参考，欢迎意见建议。"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -436,7 +474,6 @@ ES/Lucene 中主要有几种数据结构:</p>
 <li>有赞搜索引擎实践(工程篇) <a href="https://tech.youzan.com/search-engine1/">https://tech.youzan.com/search-engine1/</a></li>
 <li>全面理解搜索Query：当你在搜索引擎中敲下回车后，发生了什么？  <a href="https://zhuanlan.zhihu.com/p/112719984">https://zhuanlan.zhihu.com/p/112719984</a></li>
 </ul>
-
     </div>
 
     

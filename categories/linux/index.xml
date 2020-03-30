@@ -17,7 +17,18 @@
       <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>https://blog.helong.info/post/elasticsearch-dev-arch/</guid>
-      <description>一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。 近两年在业界热度大增，主要有 3 种应用场景： 全文搜索引擎 NOSQL 数</description>
+      <description>&lt;h2 id=&#34;一背景介绍&#34;&gt;一，背景介绍&lt;/h2&gt;
+&lt;p&gt;ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。&lt;/p&gt;
+&lt;p&gt;近两年在业界热度大增，主要有 3 种应用场景：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;全文搜索引擎&lt;/li&gt;
+&lt;li&gt;NOSQL 数据库&lt;/li&gt;
+&lt;li&gt;日志分析数据库 ELK&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;很多垂直领域搜索需求，都可以基于 ElasticSearch 来设计架构。&lt;/p&gt;
+&lt;p&gt;ElasticSearch 能大幅度提升相关业务的迭代开发速度，实现类似 sql 数据库增删改查一样的快速开发。
+并在相对高 qps 的在线业务中，保证毫秒级的延迟，提供极高的可用性和稳定性。&lt;/p&gt;
+&lt;p&gt;经过持续的研读官方文档，调研业界经验，并在实践中应用反思后，总结出一套架构方案。供参考，欢迎意见建议。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -26,7 +37,32 @@
       <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/</guid>
-      <description>1. 问题 一个 C++ 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，</description>
+      <description>&lt;h1 id=&#34;1-问题&#34;&gt;1. 问题&lt;/h1&gt;
+&lt;p&gt;一个 C++ 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump，
+问题是，在 gcc 4.x 版本产生的 coredump 文件中，&lt;em&gt;没有 throw 时候的堆栈信息&lt;/em&gt;，导致不知道是哪里 throw 的，没法查问题。&lt;/p&gt;
+&lt;p&gt;原因是 gcc 4.x 的 /libstdc++-v3/src/c++11/thread.cc:92 里面有个 catch(&amp;hellip;)，所以 stack unwind 了，就没了 throw 时候的 stack 。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;execute_native_thread_routine&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(){&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;try&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+     &lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;   
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;catch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(...){&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;terminate&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;https://abcdabcd987.com/libstdc++-bug/&#34;&gt;https://abcdabcd987.com/libstdc++-bug/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;一个解决办法是可以升级 GCC 7 ，或者可以用更简单的办法：&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -71,7 +107,11 @@ abstract namespace unix socket 。&lt;/p&gt;
       <pubDate>Thu, 13 Aug 2015 00:00:00 +0000</pubDate>
       
       <guid>https://blog.helong.info/post/2015/08/13/linux-loadavg-competation/</guid>
-      <description>问题背景 https://timyang.net/programming/load-average/ 2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高 多线程写几个 while 循环的方法太 trivial 了，就不提了。 下面是 byronhe 的两个解： 1. 究极版之 stap</description>
+      <description>&lt;h2 id=&#34;问题背景&#34;&gt;问题背景&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://timyang.net/programming/load-average/&#34;&gt;https://timyang.net/programming/load-average/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高&lt;/p&gt;
+&lt;p&gt;多线程写几个 while 循环的方法太 trivial 了，就不提了。&lt;/p&gt;
+&lt;p&gt;下面是 byronhe 的两个解：&lt;/p&gt;</description>
     </item>
     
     <item>

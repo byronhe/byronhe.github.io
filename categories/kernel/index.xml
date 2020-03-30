@@ -17,7 +17,11 @@
       <pubDate>Thu, 13 Aug 2015 00:00:00 +0000</pubDate>
       
       <guid>https://blog.helong.info/post/2015/08/13/linux-loadavg-competation/</guid>
-      <description>问题背景 https://timyang.net/programming/load-average/ 2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高 多线程写几个 while 循环的方法太 trivial 了，就不提了。 下面是 byronhe 的两个解： 1. 究极版之 stap</description>
+      <description>&lt;h2 id=&#34;问题背景&#34;&gt;问题背景&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://timyang.net/programming/load-average/&#34;&gt;https://timyang.net/programming/load-average/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高&lt;/p&gt;
+&lt;p&gt;多线程写几个 while 循环的方法太 trivial 了，就不提了。&lt;/p&gt;
+&lt;p&gt;下面是 byronhe 的两个解：&lt;/p&gt;</description>
     </item>
     
   </channel>

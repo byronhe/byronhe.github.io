@@ -17,7 +17,32 @@
       <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/</guid>
-      <description>1. 问题 一个 C++ 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，</description>
+      <description>&lt;h1 id=&#34;1-问题&#34;&gt;1. 问题&lt;/h1&gt;
+&lt;p&gt;一个 C++ 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump，
+问题是，在 gcc 4.x 版本产生的 coredump 文件中，&lt;em&gt;没有 throw 时候的堆栈信息&lt;/em&gt;，导致不知道是哪里 throw 的，没法查问题。&lt;/p&gt;
+&lt;p&gt;原因是 gcc 4.x 的 /libstdc++-v3/src/c++11/thread.cc:92 里面有个 catch(&amp;hellip;)，所以 stack unwind 了，就没了 throw 时候的 stack 。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;execute_native_thread_routine&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(){&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;try&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+     &lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;   
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;catch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(...){&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;terminate&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;https://abcdabcd987.com/libstdc++-bug/&#34;&gt;https://abcdabcd987.com/libstdc++-bug/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;一个解决办法是可以升级 GCC 7 ，或者可以用更简单的办法：&lt;/p&gt;</description>
     </item>
     
     <item>

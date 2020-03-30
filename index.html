@@ -120,7 +120,18 @@
   
   <div class="post-content">
     <div class="post-summary">
-      一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。 近两年在业界热度大增，主要有 3 种应用场景： 全文搜索引擎 NOSQL 数
+      <h2 id="一背景介绍">一，背景介绍</h2>
+<p>ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。</p>
+<p>近两年在业界热度大增，主要有 3 种应用场景：</p>
+<ol>
+<li>全文搜索引擎</li>
+<li>NOSQL 数据库</li>
+<li>日志分析数据库 ELK</li>
+</ol>
+<p>很多垂直领域搜索需求，都可以基于 ElasticSearch 来设计架构。</p>
+<p>ElasticSearch 能大幅度提升相关业务的迭代开发速度，实现类似 sql 数据库增删改查一样的快速开发。
+并在相对高 qps 的在线业务中，保证毫秒级的延迟，提供极高的可用性和稳定性。</p>
+<p>经过持续的研读官方文档，调研业界经验，并在实践中应用反思后，总结出一套架构方案。供参考，欢迎意见建议。</p>
     </div>
     <div class="read-more">
       <a href="/post/elasticsearch-dev-arch/" class="read-more-link">阅读更多</a>
@@ -142,7 +153,32 @@
   
   <div class="post-content">
     <div class="post-summary">
-      1. 问题 一个 C++ 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，
+      <h1 id="1-问题">1. 问题</h1>
+<p>一个 C++ 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump，
+问题是，在 gcc 4.x 版本产生的 coredump 文件中，<em>没有 throw 时候的堆栈信息</em>，导致不知道是哪里 throw 的，没法查问题。</p>
+<p>原因是 gcc 4.x 的 /libstdc++-v3/src/c++11/thread.cc:92 里面有个 catch(&hellip;)，所以 stack unwind 了，就没了 throw 时候的 stack 。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="o">*</span> <span class="nf">execute_native_thread_routine</span><span class="p">(){</span>
+    <span class="k">try</span> <span class="p">{</span>
+     <span class="p">...</span>   
+    <span class="p">}</span><span class="k">catch</span><span class="p">(...){</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">terminate</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><a href="https://abcdabcd987.com/libstdc++-bug/">https://abcdabcd987.com/libstdc++-bug/</a></p>
+<p>一个解决办法是可以升级 GCC 7 ，或者可以用更简单的办法：</p>
     </div>
     <div class="read-more">
       <a href="/post/cpp-throw-coredump-with-backtrace/" class="read-more-link">阅读更多</a>

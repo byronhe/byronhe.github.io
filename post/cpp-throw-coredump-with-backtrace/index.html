@@ -16,7 +16,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="byronhe" /><meta name="description" content="1. 问题 一个 C&#43;&#43; 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，" /><meta name="keywords" content="linux, cpp" />
+<meta name="author" content="byronhe" /><meta name="description" content="1. 问题 一个 C&#43;&#43; 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，导致不知道是哪里 throw 的，没法查问题。
+原因是 gcc 4.x 的 /libstdc&#43;&#43;-v3/src/c&#43;&#43;11/thread.cc:92 里面有个 catch(&amp;hellip;)，所以 stack unwind 了，就没了 throw 时候的 stack 。
+1 2 3 4 5 6 7  void * execute_native_thread_routine(){ try { ... }catch(...){ std::terminate(); } }   https://abcdabcd987.com/libstdc&#43;&#43;-bug/
+一个解决办法是可以升级 GCC 7 ，或者可以用更简单的办法：
+" /><meta name="keywords" content="linux, cpp" />
 
 
 
@@ -39,22 +43,97 @@
 
 
 <meta property="og:title" content="怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈" />
-<meta property="og:description" content="1. 问题 一个 C&#43;&#43; 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，" />
+<meta property="og:description" content="1. 问题
+一个 C&#43;&#43; 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump，
+问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，导致不知道是哪里 throw 的，没法查问题。
+原因是 gcc 4.x 的 /libstdc&#43;&#43;-v3/src/c&#43;&#43;11/thread.cc:92 里面有个 catch(&hellip;)，所以 stack unwind 了，就没了 throw 时候的 stack 。
+
+
+1
+2
+3
+4
+5
+6
+7
+
+
+void * execute_native_thread_routine(){
+    try {
+     ...   
+    }catch(...){
+        std::terminate();
+    }
+}
+
+
+https://abcdabcd987.com/libstdc&#43;&#43;-bug/
+一个解决办法是可以升级 GCC 7 ，或者可以用更简单的办法：" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/" />
 <meta property="article:published_time" content="2020-03-29T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-03-29T00:00:00+00:00" />
 <meta itemprop="name" content="怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈">
-<meta itemprop="description" content="1. 问题 一个 C&#43;&#43; 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，">
+<meta itemprop="description" content="1. 问题
+一个 C&#43;&#43; 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump，
+问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，导致不知道是哪里 throw 的，没法查问题。
+原因是 gcc 4.x 的 /libstdc&#43;&#43;-v3/src/c&#43;&#43;11/thread.cc:92 里面有个 catch(&hellip;)，所以 stack unwind 了，就没了 throw 时候的 stack 。
+
+
+1
+2
+3
+4
+5
+6
+7
+
+
+void * execute_native_thread_routine(){
+    try {
+     ...   
+    }catch(...){
+        std::terminate();
+    }
+}
+
+
+https://abcdabcd987.com/libstdc&#43;&#43;-bug/
+一个解决办法是可以升级 GCC 7 ，或者可以用更简单的办法：">
 <meta itemprop="datePublished" content="2020-03-29T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2020-03-29T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="526">
+<meta itemprop="wordCount" content="531">
 
 
 
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈"/>
-<meta name="twitter:description" content="1. 问题 一个 C&#43;&#43; 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump， 问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，"/>
+<meta name="twitter:description" content="1. 问题
+一个 C&#43;&#43; 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump，
+问题是，在 gcc 4.x 版本产生的 coredump 文件中，没有 throw 时候的堆栈信息，导致不知道是哪里 throw 的，没法查问题。
+原因是 gcc 4.x 的 /libstdc&#43;&#43;-v3/src/c&#43;&#43;11/thread.cc:92 里面有个 catch(&hellip;)，所以 stack unwind 了，就没了 throw 时候的 stack 。
+
+
+1
+2
+3
+4
+5
+6
+7
+
+
+void * execute_native_thread_routine(){
+    try {
+     ...   
+    }catch(...){
+        std::terminate();
+    }
+}
+
+
+https://abcdabcd987.com/libstdc&#43;&#43;-bug/
+一个解决办法是可以升级 GCC 7 ，或者可以用更简单的办法："/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -170,7 +249,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p><a href="https://abcdabcd987.com/libstdc++-bug/">https://abcdabcd987.com/libstdc++-bug/</a></p>
-<p>一个解决办法是可以升级 GCC 7 ，或者可以这样：</p>
+<p>一个解决办法是可以升级 GCC 7 ，或者可以用更简单的办法：</p>
 <h3 id="1代码-hook-__cxa_throw-让-coredump-带上堆栈">1.代码 hook <code>__cxa_throw</code> ，让 coredump 带上堆栈</h3>
 <p>一个解决办法是通过改代码，hook <code>__cxa_throw()</code> 让每次生成的 coredump 都带上堆栈：</p>
 <p><a href="https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h#L616">https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h#L616</a></p>
@@ -272,7 +351,6 @@
 <p>gdb 里面输入
 <code>catch throw </code>
 然后运行，gdb 就会在任何 throw 的时候暂停，即可看到 throw 时候的栈。</p>
-
     </div>
 
     

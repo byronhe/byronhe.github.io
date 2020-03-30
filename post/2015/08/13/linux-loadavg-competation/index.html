@@ -16,7 +16,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="byronhe" /><meta name="description" content="问题背景 https://timyang.net/programming/load-average/ 2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高 多线程写几个 while 循环的方法太 trivial 了，就不提了。 下面是 byronhe 的两个解： 1. 究极版之 stap" /><meta name="keywords" content="abstract unix socket ,  单实例,  进程,  linux,  server" />
+<meta name="author" content="byronhe" /><meta name="description" content="问题背景 https://timyang.net/programming/load-average/
+2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高
+多线程写几个 while 循环的方法太 trivial 了，就不提了。
+下面是 byronhe 的两个解：
+" /><meta name="keywords" content="abstract unix socket ,  单实例,  进程,  linux,  server" />
 
 
 
@@ -39,13 +43,21 @@
 
 
 <meta property="og:title" content="Linux LoadAvg 编程比赛" />
-<meta property="og:description" content="问题背景 https://timyang.net/programming/load-average/ 2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高 多线程写几个 while 循环的方法太 trivial 了，就不提了。 下面是 byronhe 的两个解： 1. 究极版之 stap" />
+<meta property="og:description" content="问题背景
+https://timyang.net/programming/load-average/
+2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高
+多线程写几个 while 循环的方法太 trivial 了，就不提了。
+下面是 byronhe 的两个解：" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.helong.info/post/2015/08/13/linux-loadavg-competation/" />
 <meta property="article:published_time" content="2015-08-13T00:00:00+00:00" />
 <meta property="article:modified_time" content="2015-08-13T00:00:00+00:00" />
 <meta itemprop="name" content="Linux LoadAvg 编程比赛">
-<meta itemprop="description" content="问题背景 https://timyang.net/programming/load-average/ 2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高 多线程写几个 while 循环的方法太 trivial 了，就不提了。 下面是 byronhe 的两个解： 1. 究极版之 stap">
+<meta itemprop="description" content="问题背景
+https://timyang.net/programming/load-average/
+2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高
+多线程写几个 while 循环的方法太 trivial 了，就不提了。
+下面是 byronhe 的两个解：">
 <meta itemprop="datePublished" content="2015-08-13T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2015-08-13T00:00:00&#43;00:00" />
 <meta itemprop="wordCount" content="567">
@@ -54,7 +66,11 @@
 
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Linux LoadAvg 编程比赛"/>
-<meta name="twitter:description" content="问题背景 https://timyang.net/programming/load-average/ 2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高 多线程写几个 while 循环的方法太 trivial 了，就不提了。 下面是 byronhe 的两个解： 1. 究极版之 stap"/>
+<meta name="twitter:description" content="问题背景
+https://timyang.net/programming/load-average/
+2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高
+多线程写几个 while 循环的方法太 trivial 了，就不提了。
+下面是 byronhe 的两个解："/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -230,7 +246,6 @@ linux 下的  loadavg ，表示 runnable 进程数，加上 uninterruptible 状�
 uninterruptible 状态出现在进程不希望被信号打断时，比如阻塞在磁盘  IO 上，或者某些锁上。
 就是有时候会在 ps 或者 top 中看到的 &ldquo;D&rdquo; 状态。</p>
 <p>因此 linux 下的 load average，不是整个系统对各种资源的需求，不仅包含对 cpu 的需求，也包含了对 磁盘 iops 等资源的需求，是一种广义的负载。</p>
-
     </div>
 
     

@@ -17,7 +17,18 @@
       <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>https://blog.helong.info/post/elasticsearch-dev-arch/</guid>
-      <description>一，背景介绍 ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。 近两年在业界热度大增，主要有 3 种应用场景： 全文搜索引擎 NOSQL 数</description>
+      <description>&lt;h2 id=&#34;一背景介绍&#34;&gt;一，背景介绍&lt;/h2&gt;
+&lt;p&gt;ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。&lt;/p&gt;
+&lt;p&gt;近两年在业界热度大增，主要有 3 种应用场景：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;全文搜索引擎&lt;/li&gt;
+&lt;li&gt;NOSQL 数据库&lt;/li&gt;
+&lt;li&gt;日志分析数据库 ELK&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;很多垂直领域搜索需求，都可以基于 ElasticSearch 来设计架构。&lt;/p&gt;
+&lt;p&gt;ElasticSearch 能大幅度提升相关业务的迭代开发速度，实现类似 sql 数据库增删改查一样的快速开发。
+并在相对高 qps 的在线业务中，保证毫秒级的延迟，提供极高的可用性和稳定性。&lt;/p&gt;
+&lt;p&gt;经过持续的研读官方文档，调研业界经验，并在实践中应用反思后，总结出一套架构方案。供参考，欢迎意见建议。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -76,7 +87,17 @@
       <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
       
       <guid>https://blog.helong.info/post/2019/09/18/newwords_discovery/</guid>
-      <description>分词是中文搜索的重要环节，目前分词算法已经比较成熟，分词错误的主要是由于未登录词。 因此发现业务领域语料库中的新词，减少未登录词，对改善搜索引</description>
+      <description>&lt;p&gt;分词是中文搜索的重要环节，目前分词算法已经比较成熟，分词错误的主要是由于未登录词。&lt;/p&gt;
+&lt;p&gt;因此发现业务领域语料库中的新词，减少未登录词，对改善搜索引擎的用户体验有重要意义。&lt;/p&gt;
+&lt;p&gt;新词发现的一种常用算法，是 matrix67 大神 2012 年提出的 《互联网时代的社会语言学：基于SNS的文本数据挖掘》
+&lt;a href=&#34;https://www.matrix67.com/blog/archives/5044&#34;&gt;https://www.matrix67.com/blog/archives/5044&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;其主要思路，是统计语料中出现的所有 ngram 子字符串的凝固度，自由度，信息熵。&lt;/p&gt;
+&lt;p&gt;算法中需要统计所有 ngram 子字符串的 左熵右熵，实现该算法时，一般以子字符串为 key，用哈希表来存。&lt;/p&gt;
+&lt;p&gt;但随着语料库变大时，内存消耗变大，&lt;/p&gt;
+&lt;p&gt;比如之前的 python 版本实现，对 200MB 的语料，就需要约 30G 内存来存哈希表，&lt;/p&gt;
+&lt;p&gt;导致单机内存不足无法运行，而且对这样规模的语料库，算法需要跑一两天才能出结果。&lt;/p&gt;
+&lt;p&gt;这里我应用一些工程实现方面的技巧，
+把用哈希表统计左熵右熵的计算，拆分成多个子哈希表，分批计算，并利用多核并行，大幅度优化了算法的性能。&lt;/p&gt;</description>
     </item>
     
   </channel>
