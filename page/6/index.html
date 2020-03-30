@@ -107,6 +107,43 @@
           <section id="posts" class="posts">
     <article class="post">
   <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2011/11/15/matlab-flow-field/">【旧代码】2010年用matlab做的几张理想流场的图</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2011-11-15 </span>
+      <div class="post-category">
+          <a href="/categories/science/"> science </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>就不贴matlab代码了，图比较大。</p>
+<p>分别是：</p>
+<ol>
+<li>
+<p>无环量流动</p>
+</li>
+<li>
+<p>有环量流动,两个滞止点</p>
+</li>
+<li>
+<p>有环量流动,一个滞止点</p>
+</li>
+<li>
+<p>有环量流动,柱面外一个滞止点</p>
+</li>
+</ol>
+<p><img src="/images/2012041000071160.png" alt=""></p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2011/11/15/matlab-flow-field/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/2011/11/15/linked-list-in-fortran-with-pointer/">【旧代码】fortran中的指针实现链表的代码</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2011-11-15 </span>
@@ -224,64 +261,6 @@
     </div>
     <div class="read-more">
       <a href="/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2011/08/22/find-uniqpointoftriangle/">找出平面上的特殊无向图中的所有三角形的算法</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2011-08-22 </span>
-      <div class="post-category">
-          <a href="/categories/algorithm-design/"> algorithm design </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <p>问题提出背景：在非结构化三角形网格生成过程中，若采用前沿推进法，在推进过程中是不好构造三角形的（而且也没有要），最好在把所有的边都连好以后再找出所有三角形，于是提出了问题：在由三角形构成的平面无向图中如何找出所有三角形？</p>
-<p>网格如图：</p>
-<p><img src="/images/2012041000563687.png" alt=""></p>
-<p>要注意的是，这个无向图很特殊，</p>
-<p>1.这个图在平面上。</p>
-<p>2.这个图是由三角形构成的（如果不是由三角行构成，那这个网格就没有用处了）。</p>
-<p>我的算法如下，伪代码表示:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">foreach(点 p in所有的点){
-    foreach(点 np in p的所有邻居点){
-        foreach(点 nnpin np的所有邻居点){
-            if(   p,np,nnp三点两两不重合
-               &amp;&amp; p,np,nnp三点两两相连
-               &amp;&amp; p==uniqPointOfTriangle(p,np,nnp)
-               &amp;&amp; uniqPointOf2Points(np,nnp)==np)  ){
-                   输出p,np,nnp构成的三角形。
-               }
-       }
-   }
-}
-</code></pre></td></tr></table>
-</div>
-</div><p>算法的关键在于uniqPointOfTriangle( )和uniqPointOf2Points( )这两个函数。</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/2011/08/22/find-uniqpointoftriangle/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

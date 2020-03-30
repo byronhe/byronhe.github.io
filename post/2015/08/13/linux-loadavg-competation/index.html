@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Linux LoadAvg 编程比赛 - Tech Ideas</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="byronhe" /><meta name="description" content="问题背景 https://timyang.net/programming/load-average/ 2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高 多线程写几个 while 循环的方法太 trivial 了，就不提了。 下面是 byronhe 的两个解： 1. 究极版之 stap" /><meta name="keywords" content="abstract unix socket ,  单实例,  进程,  linux,  server" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
+
+
+<link rel="canonical" href="https://blog.helong.info/post/2015/08/13/linux-loadavg-competation/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Linux LoadAvg 编程比赛" />
+<meta property="og:description" content="问题背景 https://timyang.net/programming/load-average/ 2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高 多线程写几个 while 循环的方法太 trivial 了，就不提了。 下面是 byronhe 的两个解： 1. 究极版之 stap" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.helong.info/post/2015/08/13/linux-loadavg-competation/" />
+<meta property="article:published_time" content="2015-08-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2015-08-13T00:00:00+00:00" />
+<meta itemprop="name" content="Linux LoadAvg 编程比赛">
+<meta itemprop="description" content="问题背景 https://timyang.net/programming/load-average/ 2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高 多线程写几个 while 循环的方法太 trivial 了，就不提了。 下面是 byronhe 的两个解： 1. 究极版之 stap">
+<meta itemprop="datePublished" content="2015-08-13T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2015-08-13T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="567">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux LoadAvg 编程比赛"/>
+<meta name="twitter:description" content="问题背景 https://timyang.net/programming/load-average/ 2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高 多线程写几个 while 循环的方法太 trivial 了，就不提了。 下面是 byronhe 的两个解： 1. 究极版之 stap"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Tech Ideas</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Tech Ideas</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Linux LoadAvg 编程比赛</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-08-13 </span>
+        <div class="post-category">
+            <a href="/categories/linux/"> linux </a>
+            <a href="/categories/server/"> server </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#问题背景">问题背景</a></li>
+        <li><a href="#1-究极版之-stap-大法">1. 究极版之 stap 大法</a></li>
+        <li><a href="#2-用-o_sync-制造-uninterruptible-进程">2. 用 O_SYNC 制造 uninterruptible 进程</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="问题背景">问题背景</h2>
+<p><a href="https://timyang.net/programming/load-average/">https://timyang.net/programming/load-average/</a></p>
+<p>2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高</p>
+<p>多线程写几个 while 循环的方法太 trivial 了，就不提了。</p>
+<p>下面是 byronhe 的两个解：</p>
+<h2 id="1-究极版之-stap-大法">1. 究极版之 stap 大法</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">vagrant@vagrant-ubuntu-trusty-64:~$ cat loadavg.stap
+
+probe kernel.function<span class="o">(</span><span class="s2">&#34;get_avenrun&#34;</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nv">$avenrun</span><span class="o">[</span>0<span class="o">]=</span> <span class="o">(</span><span class="nv">$1</span><span class="s">&lt;&lt;11);
+</span><span class="s">    $avenrun[1]=$avenrun[0];
+</span><span class="s">    $avenrun[2]=$avenrun[1];
+</span><span class="s">}
+</span><span class="s">
+</span><span class="s">vagrant@vagrant-ubuntu-trusty-64:~$ sudo stap  -g loadavg.stap  $(((1&lt;&lt;(64-11</span><span class="o">))</span>-1<span class="o">))</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>效果如下:</p>
+<p><img src="/images/load_avg.png" alt=""></p>
+<p><a href="https://github.com/torvalds/linux/blob/master/fs/proc/loadavg.c">https://github.com/torvalds/linux/blob/master/fs/proc/loadavg.c</a></p>
+<p><a href="https://github.com/torvalds/linux/blob/master/kernel/sched/loadavg.c">https://github.com/torvalds/linux/blob/master/kernel/sched/loadavg.c</a></p>
+<p>已经到达内核变量可以表示的最大值了，所以是究极版。嘿嘿嘿。</p>
+<p>《用systemtap来修改下linux内核变量的值》
+<a href="http://blog.yufeng.info/archives/102">http://blog.yufeng.info/archives/102</a></p>
+<p>《Install SystemTap in Ubuntu 14.04 》
+<a href="http://blog.jeffli.me/blog/2014/10/10/install-systemtap-in-ubuntu-14-dot-04/">http://blog.jeffli.me/blog/2014/10/10/install-systemtap-in-ubuntu-14-dot-04/</a></p>
+<h2 id="2-用-o_sync-制造-uninterruptible-进程">2. 用 O_SYNC 制造 uninterruptible 进程</h2>
+<p>利用 O_SYNC 制造同步请求，使得进程进入  D 状态，增大 loadavg</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="ch">#!/usr/bin/env python</span>
+ <span class="kn">import</span> <span class="nn">os</span>
+ <span class="kn">import</span> <span class="nn">sys</span>
+
+ <span class="k">def</span> <span class="nf">load_add_1</span><span class="p">():</span>
+     <span class="n">fd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&#34;test.txt&#34;</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">O_CREAT</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_SYNC</span><span class="p">,</span> <span class="mo">0644</span><span class="p">)</span>
+     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">10000</span><span class="o">*</span><span class="mi">100</span><span class="p">):</span>
+         <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="s2">&#34; &#34;</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+ <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">fork</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+         <span class="n">load_add_1</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>《Linux Load Averages: Solving the Mystery》 深度解析 loadavg 的历史根源演变和意义</p>
+<p><a href="http://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html">http://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html</a></p>
+<blockquote>
+<p>When load averages first appeared in Linux, they reflected CPU demand, as with other operating systems. But later on Linux changed them to include not only runnable tasks, but also tasks in the uninterruptible state (TASK_UNINTERRUPTIBLE or nr_uninterruptible). This state is used by code paths that want to avoid interruptions by signals, which includes tasks blocked on disk I/O and some locks. You may have seen this state before: it shows up as the &ldquo;D&rdquo; state in the output ps and top. The ps(1) man page calls it &ldquo;uninterruptible sleep (usually IO)&quot;.</p>
+</blockquote>
+<blockquote>
+<p>On Linux, load averages are (or try to be) &ldquo;system load averages&rdquo;, for the system as a whole, measuring the number of threads that are working and waiting to work (CPU, disk, uninterruptible locks). Put differently, it measures the number of threads that aren&rsquo;t completely idle. Advantage: includes demand for different resources.</p>
+</blockquote>
+<p>解释：
+linux 下的  loadavg ，表示 runnable 进程数，加上 uninterruptible 状态的进程数。
+uninterruptible 状态出现在进程不希望被信号打断时，比如阻塞在磁盘  IO 上，或者某些锁上。
+就是有时候会在 ps 或者 top 中看到的 &ldquo;D&rdquo; 状态。</p>
+<p>因此 linux 下的 load average，不是整个系统对各种资源的需求，不仅包含对 cpu 的需求，也包含了对 磁盘 iops 等资源的需求，是一种广义的负载。</p>
+
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">TLS协议分析 与 现代加密通信协议设计</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015/06/05/modern-crypto/">
+            <span class="next-text nav-default">现代密码学实践指南[2015年]</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'byronheblog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
+  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2010 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">byronhe</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-49290834-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

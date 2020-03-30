@@ -128,6 +128,13 @@
   </url>
   
   <url>
+    <loc>https://blog.helong.info/post/2015/08/13/linux-loadavg-competation/</loc>
+    <lastmod>2015-08-13T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://blog.helong.info/post/2015/06/05/modern-crypto/</loc>
     <lastmod>2015-06-05T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>

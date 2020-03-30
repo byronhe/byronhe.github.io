@@ -116,6 +116,15 @@ abstract namespace unix socket 。&lt;/p&gt;
     </item>
     
     <item>
+      <title>Linux LoadAvg 编程比赛</title>
+      <link>https://blog.helong.info/post/2015/08/13/linux-loadavg-competation/</link>
+      <pubDate>Thu, 13 Aug 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2015/08/13/linux-loadavg-competation/</guid>
+      <description>问题背景 https://timyang.net/programming/load-average/ 2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高 多线程写几个 while 循环的方法太 trivial 了，就不提了。 下面是 byronhe 的两个解： 1. 究极版之 stap</description>
+    </item>
+    
+    <item>
       <title>现代密码学实践指南[2015年]</title>
       <link>https://blog.helong.info/post/2015/06/05/modern-crypto/</link>
       <pubDate>Fri, 05 Jun 2015 00:00:00 +0000</pubDate>
