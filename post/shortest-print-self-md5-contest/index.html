@@ -17,7 +17,8 @@
 
 
 <meta name="author" content="byronhe" /><meta name="description" content="一，介绍 比赛题目很简单：构造一个程序，在 stdout 上打印出自身的 MD5，程序越短越好。按最终程序文件大小字节数排名，文件越小，排名越靠前。 只能使用 ld-linux-x86-64.so, libc.so, libdl.so, libgcc_s.so, libm.so, libstdc&#43;&#43;.so 。 禁止了 socket, shmget, fork, execvc 等 syscall 。
-汇编高手如云，本人只做到 752 字节，只拿到 27 名。 不过基本是纯 C 实现，没有动用汇编。 但忙活好几天，学到不少东西，也有苦劳，还是值得记录一下。
+汇编高手如云，本人只做到 752 字节，只拿到 27 名。 但忙活好几天，学到不少东西，也有苦劳，还是值得记录一下。
+基本是纯 C 实现，没有动用汇编。
 " /><meta name="keywords" content="cpp , server, linux" />
 
 
@@ -46,8 +47,8 @@
 只能使用 ld-linux-x86-64.so, libc.so, libdl.so, libgcc_s.so, libm.so, libstdc&#43;&#43;.so 。
 禁止了 socket, shmget, fork, execvc 等 syscall 。
 汇编高手如云，本人只做到 752 字节，只拿到 27 名。
-不过基本是纯 C 实现，没有动用汇编。
-但忙活好几天，学到不少东西，也有苦劳，还是值得记录一下。" />
+但忙活好几天，学到不少东西，也有苦劳，还是值得记录一下。
+基本是纯 C 实现，没有动用汇编。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.helong.info/post/shortest-print-self-md5-contest/" />
 <meta property="article:published_time" content="2020-04-20T00:00:00+00:00" />
@@ -58,11 +59,11 @@
 只能使用 ld-linux-x86-64.so, libc.so, libdl.so, libgcc_s.so, libm.so, libstdc&#43;&#43;.so 。
 禁止了 socket, shmget, fork, execvc 等 syscall 。
 汇编高手如云，本人只做到 752 字节，只拿到 27 名。
-不过基本是纯 C 实现，没有动用汇编。
-但忙活好几天，学到不少东西，也有苦劳，还是值得记录一下。">
+但忙活好几天，学到不少东西，也有苦劳，还是值得记录一下。
+基本是纯 C 实现，没有动用汇编。">
 <meta itemprop="datePublished" content="2020-04-20T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2020-04-20T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1284">
+<meta itemprop="wordCount" content="1282">
 
 
 
@@ -73,8 +74,8 @@
 只能使用 ld-linux-x86-64.so, libc.so, libdl.so, libgcc_s.so, libm.so, libstdc&#43;&#43;.so 。
 禁止了 socket, shmget, fork, execvc 等 syscall 。
 汇编高手如云，本人只做到 752 字节，只拿到 27 名。
-不过基本是纯 C 实现，没有动用汇编。
-但忙活好几天，学到不少东西，也有苦劳，还是值得记录一下。"/>
+但忙活好几天，学到不少东西，也有苦劳，还是值得记录一下。
+基本是纯 C 实现，没有动用汇编。"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -169,8 +170,8 @@
 只能使用 ld-linux-x86-64.so, libc.so, libdl.so, libgcc_s.so, libm.so, libstdc++.so 。
 禁止了 socket, shmget, fork, execvc 等 syscall 。</p>
 <p>汇编高手如云，本人只做到 752 字节，只拿到 27 名。
-不过基本是纯 C 实现，没有动用汇编。
 但忙活好几天，学到不少东西，也有苦劳，还是值得记录一下。</p>
+<p>基本是纯 C 实现，没有动用汇编。</p>
 <h2 id="二用过的一些思路和资源">二，用过的一些思路和资源</h2>
 <p>基于这个 MD5 实现改造
 <a href="https://gist.github.com/creationix/4710780">https://gist.github.com/creationix/4710780</a></p>
