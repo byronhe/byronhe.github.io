@@ -175,9 +175,11 @@
 <p>基于这个 MD5 实现改造
 <a href="https://gist.github.com/creationix/4710780">https://gist.github.com/creationix/4710780</a></p>
 <p><a href="https://www.nayuki.io/page/fast-md5-hash-implementation-in-x86-assembly">https://www.nayuki.io/page/fast-md5-hash-implementation-in-x86-assembly</a></p>
-<p>参照 musl 和 rt0 ，去除对 glibc 依赖
-1.musl libc <a href="https://www.musl-libc.org/">https://www.musl-libc.org/</a>
-2.rt0 : <a href="https://github.com/lpsantil/rt0">https://github.com/lpsantil/rt0</a></p>
+<p>参照 musl 和 rt0 ，去除对 glibc 依赖</p>
+<ol>
+<li>musl libc <a href="https://www.musl-libc.org/">https://www.musl-libc.org/</a></li>
+<li>rt0 : <a href="https://github.com/lpsantil/rt0">https://github.com/lpsantil/rt0</a></li>
+</ol>
 <h2 id="三没有成功的一些思路">三，没有成功的一些思路</h2>
 <ol>
 <li>
@@ -197,16 +199,16 @@ grep -i md5  linux-5.6.2
 </li>
 <li>
 <p>构造碰撞，hardcode 直接 print 出来</p>
-</li>
-</ol>
 <p><a href="https://github.com/corkami/collisions">https://github.com/corkami/collisions</a></p>
 <p><a href="https://www.rogdham.net/2017/03/12/gif-md5-hashquine.en">https://www.rogdham.net/2017/03/12/gif-md5-hashquine.en</a></p>
 <p><a href="https://github.com/Rogdham/gif-md5-hashquine">https://github.com/Rogdham/gif-md5-hashquine</a></p>
 <p><a href="http://www.win.tue.nl/hashclash/">http://www.win.tue.nl/hashclash/</a>
 尝试了  fastcoll_v1 ，但是 fastcoll 构造1个字节的冲突要 2 block = 128 字节 ，则 16 字节就要  2048 字节，还不如 C 语言直接算。</p>
-<ol start="3">
-<li>通过某些 ipc 机制，绕过评判。
-试了简单的 shmget, 不成功。</li>
+</li>
+<li>
+<p>通过某些 ipc 机制，绕过评判。
+试了简单的 shmget, 不成功。</p>
+</li>
 </ol>
 <h2 id="三-代码">三. 代码</h2>
 <p>后续借鉴思路，有优化</p>
