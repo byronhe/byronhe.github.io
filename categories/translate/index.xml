@@ -13,10 +13,10 @@
     
     <item>
       <title>【翻译】密码学一小时必知</title>
-      <link>https://blog.helong.info/post/2015/04/12/translate-everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
+      <link>https://blog.helong.info/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
       <pubDate>Sun, 12 Apr 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/04/12/translate-everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
+      <guid>https://blog.helong.info/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
       <description>&lt;p&gt;本文翻译了Colin Percival 于2010年在bsdcan的演讲ppt&lt;/p&gt;
 &lt;p&gt;原文标题：Everything you need to know about cryptography in 1 hour&lt;/p&gt;
 &lt;p&gt;演讲时间：May 13, 2010&lt;/p&gt;
@@ -69,10 +69,10 @@
     
     <item>
       <title>[翻译]轻松7步，导出Y结合子</title>
-      <link>https://blog.helong.info/post/2012/04/09/translation-y-conbinator-in-seven-steps/</link>
+      <link>https://blog.helong.info/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</link>
       <pubDate>Mon, 09 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2012/04/09/translation-y-conbinator-in-seven-steps/</guid>
+      <guid>https://blog.helong.info/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</guid>
       <description>&lt;p&gt;本文译自 “&lt;em&gt;Deriving the Y Combinator in 7 Easy Steps&lt;/em&gt;“，&lt;/p&gt;
 &lt;p&gt;原文链接：&lt;a href=&#34;http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html&#34;&gt;http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;在没有原生递归支持的语言中，Y结合子（&lt;a href=&#34;http://en.wikipedia.org/wiki/Fixed_point_combinator&#34;&gt;Y Combinator&lt;/a&gt;）是一种实现递归的方式（事实上，它更常被作为一种锻炼程序思维的方式）。要实现Y结合子，要求这种语言支持匿名函数。&lt;/p&gt;

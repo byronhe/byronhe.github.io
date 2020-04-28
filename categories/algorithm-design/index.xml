@@ -38,10 +38,10 @@
     
     <item>
       <title>找出平面上的特殊无向图中的所有三角形的算法</title>
-      <link>https://blog.helong.info/post/2011/08/22/find-uniqpointoftriangle/</link>
+      <link>https://blog.helong.info/post/2011/08/22/find-uniqPointOfTriangle/</link>
       <pubDate>Mon, 22 Aug 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/08/22/find-uniqpointoftriangle/</guid>
+      <guid>https://blog.helong.info/post/2011/08/22/find-uniqPointOfTriangle/</guid>
       <description>&lt;p&gt;问题提出背景：在非结构化三角形网格生成过程中，若采用前沿推进法，在推进过程中是不好构造三角形的（而且也没有要），最好在把所有的边都连好以后再找出所有三角形，于是提出了问题：在由三角形构成的平面无向图中如何找出所有三角形？&lt;/p&gt;
 &lt;p&gt;网格如图：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012041000563687.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;

@@ -163,10 +163,10 @@ abstract namespace unix socket 。&lt;/p&gt;
     
     <item>
       <title>用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</title>
-      <link>https://blog.helong.info/post/2019/11/25/cppjieba-darts-dat-memory_optimize/</link>
+      <link>https://blog.helong.info/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</link>
       <pubDate>Mon, 25 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2019/11/25/cppjieba-darts-dat-memory_optimize/</guid>
+      <guid>https://blog.helong.info/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</guid>
       <description>&lt;h2 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h2&gt;
 &lt;p&gt;中文分词应用比较广泛的开源算法，是 &lt;a href=&#34;https://github.com/fxsjy/jieba&#34;&gt;jieba 结巴分词&lt;/a&gt;，结巴分词较高性能的实现是 C++ 版本的 CppJieba :
 &lt;a href=&#34;https://github.com/yanyiwu/cppjieba&#34;&gt;https://github.com/yanyiwu/cppjieba&lt;/a&gt;&lt;/p&gt;
@@ -199,10 +199,10 @@ abstract namespace unix socket 。&lt;/p&gt;
     
     <item>
       <title>Proxygen http2 代码分析</title>
-      <link>https://blog.helong.info/post/proxygen-http2-code-analysis/</link>
+      <link>https://blog.helong.info/post/Proxygen-http2-code-analysis/</link>
       <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/proxygen-http2-code-analysis/</guid>
+      <guid>https://blog.helong.info/post/Proxygen-http2-code-analysis/</guid>
       <description>&lt;p&gt;Proxygen 的整体架构
 &lt;img src=&#34;https://raw.githubusercontent.com/facebook/proxygen/master/CoreProxygenArchitecture.png&#34; alt=&#34;image&#34;&gt;&lt;/p&gt;
 &lt;p&gt;一个 HTTPSession 对应一个 tcp 连接。&lt;/p&gt;
@@ -213,10 +213,10 @@ Handler 是业务逻辑处理的基类。&lt;/p&gt;</description>
     
     <item>
       <title>TrafficServer http2 代码分析</title>
-      <link>https://blog.helong.info/post/trafficserver-http2-code-analysis/</link>
+      <link>https://blog.helong.info/post/TrafficServer-http2-code-analysis/</link>
       <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/trafficserver-http2-code-analysis/</guid>
+      <guid>https://blog.helong.info/post/TrafficServer-http2-code-analysis/</guid>
       <description>&lt;p&gt;TrafficServer 是Apache基金会的 HTTP/HTTP2 代理服务器。&lt;/p&gt;
 &lt;p&gt;TrafficServer 的 HTTP2 部分主要的代码在 :&lt;/p&gt;
 &lt;ol&gt;
@@ -311,10 +311,10 @@ AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都�
     
     <item>
       <title>【翻译】密码学一小时必知</title>
-      <link>https://blog.helong.info/post/2015/04/12/translate-everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
+      <link>https://blog.helong.info/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
       <pubDate>Sun, 12 Apr 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/04/12/translate-everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
+      <guid>https://blog.helong.info/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
       <description>&lt;p&gt;本文翻译了Colin Percival 于2010年在bsdcan的演讲ppt&lt;/p&gt;
 &lt;p&gt;原文标题：Everything you need to know about cryptography in 1 hour&lt;/p&gt;
 &lt;p&gt;演讲时间：May 13, 2010&lt;/p&gt;
@@ -488,10 +488,10 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &amp;#34;\1\0\0\0\0\0\0\0\250\327Vc
     
     <item>
       <title>[翻译]轻松7步，导出Y结合子</title>
-      <link>https://blog.helong.info/post/2012/04/09/translation-y-conbinator-in-seven-steps/</link>
+      <link>https://blog.helong.info/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</link>
       <pubDate>Mon, 09 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2012/04/09/translation-y-conbinator-in-seven-steps/</guid>
+      <guid>https://blog.helong.info/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</guid>
       <description>&lt;p&gt;本文译自 “&lt;em&gt;Deriving the Y Combinator in 7 Easy Steps&lt;/em&gt;“，&lt;/p&gt;
 &lt;p&gt;原文链接：&lt;a href=&#34;http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html&#34;&gt;http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;在没有原生递归支持的语言中，Y结合子（&lt;a href=&#34;http://en.wikipedia.org/wiki/Fixed_point_combinator&#34;&gt;Y Combinator&lt;/a&gt;）是一种实现递归的方式（事实上，它更常被作为一种锻炼程序思维的方式）。要实现Y结合子，要求这种语言支持匿名函数。&lt;/p&gt;
@@ -577,10 +577,10 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &amp;#34;\1\0\0\0\0\0\0\0\250\327Vc
     
     <item>
       <title>一个基于约束传播的微型计算语言的设计和实现</title>
-      <link>https://blog.helong.info/post/2012/04/09/propagation-of-constraints-lang-in-py/</link>
+      <link>https://blog.helong.info/post/2012/04/09/Propagation-of-Constraints-lang-in-py/</link>
       <pubDate>Mon, 09 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2012/04/09/propagation-of-constraints-lang-in-py/</guid>
+      <guid>https://blog.helong.info/post/2012/04/09/Propagation-of-Constraints-lang-in-py/</guid>
       <description>&lt;p&gt;一个基于约束传播的，玩具级微型计算语言的设计和简单实现。&lt;/p&gt;
 &lt;p&gt;这个程序就是做来玩和练习的，代码是玩具级别的，用的python，基本可以正常工作了。&lt;/p&gt;
 &lt;p&gt;先介绍应用背景：&lt;/p&gt;
@@ -640,10 +640,10 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &amp;#34;\1\0\0\0\0\0\0\0\250\327Vc
     
     <item>
       <title>jdbc使用DataSource连接mysql,postgresql,oracle的代码</title>
-      <link>https://blog.helong.info/post/2011/11/15/jdbc-datasource-connect-mysql-pgsql-oracle/</link>
+      <link>https://blog.helong.info/post/2011/11/15/jdbc-DataSource-connect-mysql-pgsql-oracle/</link>
       <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/15/jdbc-datasource-connect-mysql-pgsql-oracle/</guid>
+      <guid>https://blog.helong.info/post/2011/11/15/jdbc-DataSource-connect-mysql-pgsql-oracle/</guid>
       <description>1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70</description>
     </item>
     
@@ -758,10 +758,10 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &amp;#34;\1\0\0\0\0\0\0\0\250\327Vc
     
     <item>
       <title>找出平面上的特殊无向图中的所有三角形的算法</title>
-      <link>https://blog.helong.info/post/2011/08/22/find-uniqpointoftriangle/</link>
+      <link>https://blog.helong.info/post/2011/08/22/find-uniqPointOfTriangle/</link>
       <pubDate>Mon, 22 Aug 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/08/22/find-uniqpointoftriangle/</guid>
+      <guid>https://blog.helong.info/post/2011/08/22/find-uniqPointOfTriangle/</guid>
       <description>&lt;p&gt;问题提出背景：在非结构化三角形网格生成过程中，若采用前沿推进法，在推进过程中是不好构造三角形的（而且也没有要），最好在把所有的边都连好以后再找出所有三角形，于是提出了问题：在由三角形构成的平面无向图中如何找出所有三角形？&lt;/p&gt;
 &lt;p&gt;网格如图：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012041000563687.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;

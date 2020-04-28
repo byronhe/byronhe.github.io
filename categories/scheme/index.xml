@@ -13,10 +13,10 @@
     
     <item>
       <title>一个基于约束传播的微型计算语言的设计和实现</title>
-      <link>https://blog.helong.info/post/2012/04/09/propagation-of-constraints-lang-in-py/</link>
+      <link>https://blog.helong.info/post/2012/04/09/Propagation-of-Constraints-lang-in-py/</link>
       <pubDate>Mon, 09 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2012/04/09/propagation-of-constraints-lang-in-py/</guid>
+      <guid>https://blog.helong.info/post/2012/04/09/Propagation-of-Constraints-lang-in-py/</guid>
       <description>&lt;p&gt;一个基于约束传播的，玩具级微型计算语言的设计和简单实现。&lt;/p&gt;
 &lt;p&gt;这个程序就是做来玩和练习的，代码是玩具级别的，用的python，基本可以正常工作了。&lt;/p&gt;
 &lt;p&gt;先介绍应用背景：&lt;/p&gt;

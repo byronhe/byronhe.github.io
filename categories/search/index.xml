@@ -66,10 +66,10 @@
     
     <item>
       <title>用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</title>
-      <link>https://blog.helong.info/post/2019/11/25/cppjieba-darts-dat-memory_optimize/</link>
+      <link>https://blog.helong.info/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</link>
       <pubDate>Mon, 25 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2019/11/25/cppjieba-darts-dat-memory_optimize/</guid>
+      <guid>https://blog.helong.info/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</guid>
       <description>&lt;h2 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h2&gt;
 &lt;p&gt;中文分词应用比较广泛的开源算法，是 &lt;a href=&#34;https://github.com/fxsjy/jieba&#34;&gt;jieba 结巴分词&lt;/a&gt;，结巴分词较高性能的实现是 C++ 版本的 CppJieba :
 &lt;a href=&#34;https://github.com/yanyiwu/cppjieba&#34;&gt;https://github.com/yanyiwu/cppjieba&lt;/a&gt;&lt;/p&gt;

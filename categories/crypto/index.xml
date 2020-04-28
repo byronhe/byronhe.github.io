@@ -79,10 +79,10 @@ AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都�
     
     <item>
       <title>【翻译】密码学一小时必知</title>
-      <link>https://blog.helong.info/post/2015/04/12/translate-everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
+      <link>https://blog.helong.info/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
       <pubDate>Sun, 12 Apr 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/04/12/translate-everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
+      <guid>https://blog.helong.info/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
       <description>&lt;p&gt;本文翻译了Colin Percival 于2010年在bsdcan的演讲ppt&lt;/p&gt;
 &lt;p&gt;原文标题：Everything you need to know about cryptography in 1 hour&lt;/p&gt;
 &lt;p&gt;演讲时间：May 13, 2010&lt;/p&gt;
