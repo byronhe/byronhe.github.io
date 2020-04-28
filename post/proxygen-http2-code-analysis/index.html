@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Proxygen http2 代码分析 - Tech Ideas</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="byronhe" /><meta name="description" content="Proxygen 的整体架构 一个 HTTPSession 对应一个 tcp 连接。
+HTTPSession 中包含HTTPCodec ，HTTPCodec用来在 HTTPMessage(Request/Response) 和 字节流之间做转换（就是解析/序列化）。
+一个 HTTPTransaction 对应一个 HTTP2 的Stream ，也就是一次 Req/Resp Handler 是业务逻辑处理的基类。
+" /><meta name="keywords" content="linux, server, http2" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
+
+
+<link rel="canonical" href="https://blog.helong.info/post/proxygen-http2-code-analysis/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Proxygen http2 代码分析" />
+<meta property="og:description" content="Proxygen 的整体架构
+
+一个 HTTPSession 对应一个 tcp 连接。
+HTTPSession 中包含HTTPCodec ，HTTPCodec用来在 HTTPMessage(Request/Response) 和 字节流之间做转换（就是解析/序列化）。
+一个 HTTPTransaction 对应一个 HTTP2  的Stream ，也就是一次 Req/Resp
+Handler 是业务逻辑处理的基类。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.helong.info/post/proxygen-http2-code-analysis/" />
+<meta property="article:published_time" content="2017-03-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-03-08T00:00:00+00:00" />
+<meta itemprop="name" content="Proxygen http2 代码分析">
+<meta itemprop="description" content="Proxygen 的整体架构
+
+一个 HTTPSession 对应一个 tcp 连接。
+HTTPSession 中包含HTTPCodec ，HTTPCodec用来在 HTTPMessage(Request/Response) 和 字节流之间做转换（就是解析/序列化）。
+一个 HTTPTransaction 对应一个 HTTP2  的Stream ，也就是一次 Req/Resp
+Handler 是业务逻辑处理的基类。">
+<meta itemprop="datePublished" content="2017-03-08T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2017-03-08T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="3175">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Proxygen http2 代码分析"/>
+<meta name="twitter:description" content="Proxygen 的整体架构
+
+一个 HTTPSession 对应一个 tcp 连接。
+HTTPSession 中包含HTTPCodec ，HTTPCodec用来在 HTTPMessage(Request/Response) 和 字节流之间做转换（就是解析/序列化）。
+一个 HTTPTransaction 对应一个 HTTP2  的Stream ，也就是一次 Req/Resp
+Handler 是业务逻辑处理的基类。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Tech Ideas</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Tech Ideas</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Proxygen http2 代码分析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-03-08 </span>
+        <div class="post-category">
+            <a href="/categories/linux/"> linux </a>
+            <a href="/categories/server/"> server </a>
+            <a href="/categories/http2/"> http2 </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#1-httpcodech">1. HTTPCodec.h</a>
+          <ul>
+            <li><a href="#1-----httpcodec">1)     HTTPCodec</a></li>
+            <li><a href="#2-----priorityqueue优先级队列">2)     PriorityQueue，优先级队列。</a></li>
+            <li><a href="#3------httpcodeccallback-类">3)      HTTPCodec::Callback 类</a></li>
+          </ul>
+        </li>
+        <li><a href="#2-http2framercpp">2. HTTP2Framer.cpp</a></li>
+        <li><a href="#3-http2codec">3. HTTP2Codec</a>
+          <ul>
+            <li><a href="#1-----输入字节流的解析的时候做">1)     输入字节流的解析的时候，做:</a></li>
+          </ul>
+        </li>
+        <li><a href="#4-compressheadercodeccpp">4. compress/HeaderCodec.cpp</a></li>
+        <li><a href="#5-compresshpackcodeccpp">5. compress/HPACKCodec.cpp</a></li>
+        <li><a href="#6-sessionhttp2priorityqueuecpp">6. session/HTTP2PriorityQueue.cpp</a></li>
+        <li><a href="#7-sessionhttptransactioncpp">7. session/HTTPTransaction.cpp</a>
+          <ul>
+            <li><a href="#1-----httptransactiontransport">1)     HTTPTransaction::Transport</a></li>
+            <li><a href="#2-----httptransactionhandler">2)     HTTPTransactionHandler</a></li>
+            <li><a href="#3---httptransactioningresssm">3)   HTTPTransactionIngressSM</a></li>
+            <li><a href="#4-------httptransaction-的重要成员变量">4)       HTTPTransaction 的重要成员变量：</a></li>
+          </ul>
+        </li>
+        <li><a href="#8-sessionhttpsessioncpp">8. session/HTTPSession.cpp</a>
+          <ul>
+            <li><a href="#1------重要成员变量">1)      重要成员变量：</a></li>
+            <li><a href="#2-------getnexttosend">2)       getNextToSend()</a></li>
+          </ul>
+        </li>
+        <li><a href="#9-细节">9. 细节</a>
+          <ul>
+            <li><a href="#1---iobufqueue">1)   IOBufQueue</a></li>
+            <li><a href="#2----httpheaders">2)    HTTPHeaders</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>Proxygen 的整体架构
+<img src="https://raw.githubusercontent.com/facebook/proxygen/master/CoreProxygenArchitecture.png" alt="image"></p>
+<p>一个 HTTPSession 对应一个 tcp 连接。</p>
+<p>HTTPSession 中包含HTTPCodec ，HTTPCodec用来在 HTTPMessage(Request/Response) 和 字节流之间做转换（就是解析/序列化）。</p>
+<p>一个 HTTPTransaction 对应一个 HTTP2  的Stream ，也就是一次 Req/Resp
+Handler 是业务逻辑处理的基类。</p>
+<p>其中 HTTP2 部分由几个类构成：</p>
+<ol>
+<li>codec/HTTPCodec.h</li>
+<li>codec/HTTP2Framer.cpp</li>
+<li>codec/HTTP2Codec.cpp , HTTPParallelCodec.cpp</li>
+<li>codec/Compress/HeaderCodec.cpp,HPACKCodec.cpp</li>
+<li>session/HTTPSession.cpp</li>
+<li>session/HTTPTransacion.cpp</li>
+<li>session/HTTP2PriorityQueue.cpp</li>
+</ol>
+<h2 id="1-httpcodech">1. HTTPCodec.h</h2>
+<p>定义了 HTTPCodec  这个基类，定义了用来在 内部的 HTTP Request/Response 和 字节流之间做转换的公共接口，是HTTP1.1/SPDY/HTTP2 的公共基类。具体的HTTP2/HTTP1.1等各种协议的编解码，实现在 HTTP1.1/SPDY/HTTP2 等子类中。</p>
+<h3 id="1-----httpcodec">1)     HTTPCodec</h3>
+<p>HTTPCodec  是 HTTP1.1/ HTTP2 接口的超集，即HTTP1.1也被当成 HTTP2 实现</p>
+<p>i.          首先所有的 子类都要支持 StreamID，HTTP1.1 由于有KeepAlive，看成有多个Stream。
+ii.          onIngress()，传入输入数据，驱动解析。
+iii.         generateHeader()/  generateBody() /generateChunkHeader() /generateGoaway()/ generatePingRequest()/ generatePriority() 等，是 http1.1/http2 的超集。HTTP1xCodec.cpp 是没有实现HTTP2 的这些Frame 的generateXXX函数。HTTP1.1</p>
+<h3 id="2-----priorityqueue优先级队列">2)     PriorityQueue，优先级队列。</h3>
+<p>Session/HTTP2PriorityQueue.cpp 实现了这个接口类</p>
+<h3 id="3------httpcodeccallback-类">3)      HTTPCodec::Callback 类</h3>
+<p>解析的过程中，需要通知 HTTPCodec 的使用者做一些操作，因此有个 接口类 HTTPCodec::Callback，HTTPCodec 的使用者实现  Callback 的子类，传给 HTTPCodec 的子类，HTTPCodec 的子类在解析过程中解析出来的各种消息都回调这个callback。
+Callback 的主要方法有:</p>
+<ul>
+<li>onMessageBegin()</li>
+<li>onHeadersComplete()   // HeaderList 接收完</li>
+<li>onBody()  		// Body 开始</li>
+<li>onMessageComplete()   //Message 整个接收完</li>
+<li>onWindowUpdate()   // 收到 WindowUpdate Frame</li>
+<li>onPriority()，   //收到 Priority Frame等</li>
+</ul>
+<p>顾名思义，处理HTTPMessage 开始事件，收到各种 HTTP2 Frame 等等。</p>
+<h2 id="2-http2framercpp">2. HTTP2Framer.cpp</h2>
+<p>10种Frame 的 解析/序列化 工具函数，parseXXXFrame, writeXXXFrame，最底层。供HTTP2Codec 使用。</p>
+<h2 id="3-http2codec">3. HTTP2Codec</h2>
+<p>Framing Layer，即处理 HTTPMesage , HTTP2 Frame 和 输入/输出字节流之间的 解析/序列化。实现了HTTPParallelCodec(HTTP2和SPDY的公共基类，HTTPCodec 的子类)，HeaderCodec两个接口类</p>
+<h3 id="1-----输入字节流的解析的时候做">1)     输入字节流的解析的时候，做:</h3>
+<h4 id="i--headers-frame">i.  HEADERS Frame，</h4>
+<p>做各种 Header 的变换处理。</p>
+<h4 id="ii----priority">ii.    PRIORITY</h4>
+<h2 id="4-compressheadercodeccpp">4. compress/HeaderCodec.cpp</h2>
+<p>HeaderCodec 是 Header List 的编解码器。HeaderCodec解码的结果通过 HeaderCodec::StreamingCallback接口类通知给使用者（即HTTP2Codec）。HeaderCodec::StreamingCallback主要有个 onHeader(name, value) 接口(HTTP2Codec实现了)。</p>
+<h2 id="5-compresshpackcodeccpp">5. compress/HPACKCodec.cpp</h2>
+<p>HPACK保存 int &ndash;&gt; string 的映射，通过发送 int， 代替 string 来压缩。</p>
+<p>HPACK编码，主要需要实现动态表，静态表，Huffman encoding，Header序列化/解析。</p>
+<p>HPACKCodec 主要有 encode(vector<!-- raw HTML omitted -->)/decode(Buffer) 两个接口。重要成员变量：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="n">HPACKEncoder</span> <span class="n">encoder_</span><span class="p">;</span>
+   <span class="n">HPACKDecoder</span> <span class="n">decoder_</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>实际的 动态表/静态表 逻辑，是一个HeaderTable，主要数据结构就是vector<!-- raw HTML omitted --> + ，</p>
+<p>HPACKDecoder 里面的动态表对应的是 HPACKContext，先 peek 一个字节，判断是否用了HPACKDecodeBuffer来解码</p>
+<p>Integer比特编解码，literal编解码，都实现在 HPACKDecodeBuffer / HPACKEncodeBuffer里面。</p>
+<p>Huffman encoding 实际使用的是 256位的trie，不是2位的，为了优化性能。</p>
+<p>在  HeaderTable.cpp 中，可以看到，实际的 vector 是当成一个 环形队列来用的，
+实际是 把 RFC 中规定的 [ 1 &mdash; n ] 的区间，逆向映射到 这个环形队列中，即 index 1 是，对应到 环形队列的 尾，index n 是对应到环形队列的头。
+这样，按照 RFC，增加 Header 进来的时候，应该是加在 1 前面，并把所有的已有 Header 往后挪1个位置，实现上就可以不用做 “挪动”，而且已有的 name&ndash;&gt;index 的映射也不用改。这是一种实现上的小技巧。</p>
+<p>并用 一个</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">Header</span><span class="p">.</span><span class="n">name</span> <span class="p">,</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">index</span><span class="o">&gt;</span> <span class="o">&gt;</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>的形式存储 Header.name 到一组 vector 中的 index 的映射，这是由于 有 相同 name ，对应多个 value 的情况，而且要支持 “查找 name+value 匹配” 和 ”查找 name 匹配“ 两种查找。</p>
+<h2 id="6-sessionhttp2priorityqueuecpp">6. session/HTTP2PriorityQueue.cpp</h2>
+<p>每一个 Stream都 依赖一个 Stream 或者  Stream 0。
+一个 Stream   A 依赖 Stream B ，那么 A 就是 B 的子节点。形成依赖树。
+Stream 0 是树的根节点。</p>
+<p>HTTP2PriorityQueue实现了PriorityQueue接口类，实现了 <code>addPriorityNode(StreamID id, StreamID parent)</code> 接口</p>
+<p>主要的逻辑实现在 Node这个内部类里面。</p>
+<p>PriorityQueue 的数据成员，主要是一个 <code>unorder_map&lt;streamID, Node&gt;</code></p>
+<p>Node内部的数据成员：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="n">Node</span> <span class="p">{</span>
+    <span class="n">HTTP2PriorityQueue</span><span class="o">&amp;</span> <span class="n">queue_</span><span class="p">;</span>  <span class="c1">//属于哪个 PriorityQueue
+</span><span class="c1"></span>    <span class="n">Node</span> <span class="o">*</span><span class="n">parent_</span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span> 		<span class="c1">//树中的父节点
+</span><span class="c1"></span>    <span class="n">HTTPCodec</span><span class="o">::</span><span class="n">StreamID</span> <span class="n">id_</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>    <span class="c1">//
+</span><span class="c1"></span>    <span class="kt">uint16_t</span> <span class="n">weight_</span><span class="p">{</span><span class="mi">16</span><span class="p">};</span>       <span class="c1">//权重
+</span><span class="c1"></span>    <span class="n">HTTPTransaction</span> <span class="o">*</span><span class="n">txn_</span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span> 
+
+    <span class="kt">bool</span> <span class="n">isPermanent_</span><span class="p">{</span><span class="nb">false</span><span class="p">};</span>
+    <span class="kt">bool</span> <span class="n">enqueued_</span><span class="p">{</span><span class="nb">false</span><span class="p">};</span>   <span class="c1">//enqueued 表示在 有输出数据的队列中
+</span><span class="c1"></span>
+    <span class="kt">uint64_t</span> <span class="n">totalEnqueuedWeight_</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span> 
+    <span class="kt">uint64_t</span> <span class="n">totalChildWeight_</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;&gt;</span> <span class="n">children_</span><span class="p">;</span>  <span class="c1">// 子节点
+</span><span class="c1"></span>    <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;&gt;::</span><span class="n">iterator</span> <span class="n">self_</span><span class="p">;</span>   
+
+    <span class="n">folly</span><span class="o">::</span><span class="n">IntrusiveListHook</span> <span class="n">enqueuedHook_</span><span class="p">;</span>     <span class="c1">//一个侵入式链表
+</span><span class="c1"></span>    <span class="n">folly</span><span class="o">::</span><span class="n">IntrusiveList</span><span class="o">&lt;</span><span class="n">Node</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">Node</span><span class="o">::</span><span class="n">enqueuedHook_</span><span class="o">&gt;</span> <span class="n">enqueuedChildren_</span><span class="p">;</span>  <span class="c1">//
+</span><span class="c1"></span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>有输出数据等待发送 (pending Egress) 的 HTTPTransaction ，会加入</p>
+<p>signalPendingEgress() ， 通知 HTTP2PriorityQueue 某一个 Stream 产生了输出数据。
+内部实现是把 这 Stream加入</p>
+<p>clearPendingEgress()， 通知一个 Stream 发完了 输出数据。</p>
+<p>addOrUpdatePriorityNode()，</p>
+<p>nextEgress() ， 获取有输出数据等待发送的 HTTPTransaction 的列表，列表的每个元素是  pair&lt; HTTPTransaction * ，double weight &gt;  ，按照 weight 从大到小排列，列表中的所有weight 加起来等于1。</p>
+<h2 id="7-sessionhttptransactioncpp">7. session/HTTPTransaction.cpp</h2>
+<p>HTTPTransaction 表示一次 Req／Resp，HTTPTransaction 需要和 HTTPSession 交互写入 HTTPMessage 所以提出了Transport 这个概念，这样依赖关系就是单向的，没有 HTTPTransaction – HTTPSession 之间不会产生双向依赖。实际处理业务的代码，定义成一个个 Handler，需要与Handler 交互，</p>
+<h3 id="1-----httptransactiontransport">1)     HTTPTransaction::Transport</h3>
+<p>是 HTTPTransaction 的下层为 HTTPTransaction 提供的输出HTTPMessage  服务。(下层具体指的是 HTTPSession)。</p>
+<p>Transport 的方法有：sendHeaders()/sendBody()/pauseIngress()/resumeIngress()/ sendPriority() / 等</p>
+<h3 id="2-----httptransactionhandler">2)     HTTPTransactionHandler</h3>
+<p>是一个个业务Handler 的基类，Handler的方法有:onHeadersComplete()/onBody()/onChunk/onTrailers/onEgressPaused()/     onEgressResumed等，就是解析出 HTTP Message的各个部分，或者流控发现无法再写了时候的通知。</p>
+<p>i.        HTTPTransaction::Handler 有好几种,业务Handler 比如直接生成 ErrorPage 的 HTTPDirectResponseHandler就是生成 404 页面的 Handler，在其内部，实现 onHeadersComplete 方法，在这个方法内生成 回包数据，然后调用 HTTPTransaction 的 sendHeaders/sendBody  等方法发回给客户端。</p>
+<h3 id="3---httptransactioningresssm">3)   HTTPTransactionIngressSM</h3>
+<p>由于 HTTPTransaction 要调用 Handler 的好几种方法，内部要记录当前已经处理到哪一步了，不能允许在任意时机，任意来的数据都触发回调，所以搞了两个状态机，HTTPTransactionIngressSM/ HTTPTransactionEgressSM 来明确地规定 回调可以触发的顺序。</p>
+<h3 id="4-------httptransaction-的重要成员变量">4)       HTTPTransaction 的重要成员变量：</h3>
+<p>streamId,  handler_ , transport_ ,egressState_ , ingressState_, recvWindow_ , sendWindow_, HTTP2PrioprityQueue::Handle queueHande_,</p>
+<h2 id="8-sessionhttpsessioncpp">8. session/HTTPSession.cpp</h2>
+<p>HTTPSession 针对 HTTP2/HTTP1.1/SPDY的超集的，HTTPSession是一个 HTTPCodec::Callback（接受解析出来的各种 Frame），是 HTTPTransaction::Callback（供HTTPTransaction发送输出 HTTP Message）,是 FlowControlFilter::Callback（接受输出状态打开/关闭的通知）。</p>
+<h3 id="1------重要成员变量">1)      重要成员变量：</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="p">{</span>
+    <span class="n">folly</span><span class="o">::</span><span class="n">IOBufQueue</span> <span class="n">readBuf_</span><span class="p">,</span>
+    <span class="n">folly</span><span class="o">::</span><span class="n">IOBufQueue</span> <span class="n">writeBuf_</span><span class="p">,</span>
+    <span class="n">map</span><span class="o">&lt;</span><span class="n">StreamID</span><span class="p">,</span> <span class="n">HTTPTransaction</span><span class="o">&gt;</span><span class="n">transactions_</span><span class="p">,</span>
+    <span class="n">HTTP2PriorityQueue</span> <span class="n">queue</span><span class="p">,</span>
+    <span class="n">FlowControlFilter</span> <span class="n">connFlowControl_</span><span class="p">,</span>
+<span class="p">}</span>			
+			
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="2-------getnexttosend">2)       getNextToSend()</h3>
+<p>是做发送的，可以看到，proxygen 是按相对权重来分派带宽的。txnEgressQueue_.nextEgress() 取出当前可发送的 HTTPTransaction + 相对权重的列表，然后把可发送字节数 按照相对权重分给各个HTTPTransaction。</p>
+<h2 id="9-细节">9. 细节</h2>
+<h3 id="1---iobufqueue">1)   IOBufQueue</h3>
+<p>多处用到的基础类：IOBufQueue，Zero-Copy，引用计数。一个 Bufffer Chain，设计类似 linux kernel 的sk_buff, BSD 的 mbuf 。</p>
+<p><a href="https://github.com/facebook/folly/blob/master/folly/io/IOBuf.h">https://github.com/facebook/folly/blob/master/folly/io/IOBuf.h</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">
+ * An IOBuf is a pointer to a buffer of data. *
+ * IOBuf objects are intended to be used primarily for networking code, and are
+ * modelled somewhat after FreeBSD&#39;s mbuf data structure, and Linux&#39;s sk_buff structure.
+ * IOBuf objects facilitate zero-copy network programming, by allowing multiple
+ * IOBuf objects to point to the same underlying buffer of data, using a
+ * reference count to track when the buffer is no longer needed and can be freed.
+
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="2----httpheaders">2)    HTTPHeaders</h3>
+<p>HTTPHeaders 有个性能优化，用了 静态完美hash函数，把常用的 83个 Header 各自唯一地hash 成1 字节，HeaderList 的查找使用 汇编实现的memchr。</p>
+<p><a href="https://github.com/facebook/proxygen/blob/master/proxygen/lib/http/HTTPHeaders.h">https://github.com/facebook/proxygen/blob/master/proxygen/lib/http/HTTPHeaders.h</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">
+* Headers are stored as Name/Value pairs, in the order they are received on
+ * the wire. We hash the names of all common HTTP headers (using a static
+ * perfect hash function generated using gperf from HTTPCommonHeaders.gperf)
+ * into 1-byte hashes (we call them &#34;codes&#34;) and only store these. We search
+ * them using memchr, which has an x86_64 assembly implementation with
+ * complexity O(n/16) ;)
+ 
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019/09/18/newwords_discovery/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">GB 规模语料上的高性能新词发现算法</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/trafficserver-http2-code-analysis/">
+            <span class="next-text nav-default">TrafficServer http2 代码分析</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'byronheblog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
+  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2010 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">byronhe</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-49290834-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

@@ -6,10 +6,37 @@
     <description>Recent content in cpp on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 29 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://blog.helong.info/categories/cpp/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>构造程序打印自身的 MD5</title>
+      <link>https://blog.helong.info/post/shortest-print-self-md5-contest/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/shortest-print-self-md5-contest/</guid>
+      <description>&lt;h2 id=&#34;一介绍&#34;&gt;一，介绍&lt;/h2&gt;
+&lt;p&gt;比赛题目很简单：构造一个程序，在 stdout 上打印出自身的 MD5，程序越短越好。按最终程序文件大小字节数排名，文件越小，排名越靠前。
+只能使用 ld-linux-x86-64.so, libc.so, libdl.so, libgcc_s.so, libm.so, libstdc++.so 。
+禁止了 socket, shmget, fork, execvc 等 syscall 。&lt;/p&gt;
+&lt;p&gt;汇编高手如云，本人只做到 752 字节，只拿到 27 名。
+不过基本是纯 C 实现，没有动用汇编。
+但忙活好几天，学到不少东西，也有苦劳，还是值得记录一下。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>mimalloc 代码笔记</title>
+      <link>https://blog.helong.info/2020/04/18/mimalloc-source-notes/</link>
+      <pubDate>Sat, 18 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/2020/04/18/mimalloc-source-notes/</guid>
+      <description>&lt;h2 id=&#34;一介绍&#34;&gt;一，介绍&lt;/h2&gt;
+&lt;p&gt;malloc 的实现有很多种: ptmalloc, tcmalloc, jemalloc 有的复杂有的简单。&lt;/p&gt;
+&lt;p&gt;mimalloc &lt;a href=&#34;https://github.com/microsoft/mimalloc&#34;&gt;https://github.com/microsoft/mimalloc&lt;/a&gt; 是比较新，代码量较少(只有 6k+) 的一个 malloc 。
+翻了一下代码，笔记如下。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈</title>

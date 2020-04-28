@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>GB 规模语料上的高性能新词发现算法 - Tech Ideas</title>
+  <title>mimalloc 代码笔记 - Tech Ideas</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,7 +16,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="byronhe" /><meta name="description" content="现代密码学实践指南[2015年]" /><meta name="keywords" content="search ,  segment,  分词,  algorithm,  server" />
+<meta name="author" content="byronhe" /><meta name="description" content="一，介绍 malloc 的实现有很多种: ptmalloc, tcmalloc, jemalloc 有的复杂有的简单。
+mimalloc https://github.com/microsoft/mimalloc 是比较新，代码量较少(只有 6k&#43;) 的一个 malloc 。 翻了一下代码，笔记如下。
+" /><meta name="keywords" content="cpp , server, algorithm,  server" />
 
 
 
@@ -26,7 +28,7 @@
 <meta name="generator" content="Hugo 0.68.3 with theme even" />
 
 
-<link rel="canonical" href="https://blog.helong.info/post/2019/09/18/newwords_discovery/" />
+<link rel="canonical" href="https://blog.helong.info/2020/04/18/mimalloc-source-notes/" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -38,23 +40,32 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="GB 规模语料上的高性能新词发现算法" />
-<meta property="og:description" content="现代密码学实践指南[2015年]" />
+<meta property="og:title" content="mimalloc 代码笔记" />
+<meta property="og:description" content="一，介绍
+malloc 的实现有很多种: ptmalloc, tcmalloc, jemalloc 有的复杂有的简单。
+mimalloc https://github.com/microsoft/mimalloc 是比较新，代码量较少(只有 6k&#43;) 的一个 malloc 。
+翻了一下代码，笔记如下。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.helong.info/post/2019/09/18/newwords_discovery/" />
-<meta property="article:published_time" content="2019-09-18T00:00:00+00:00" />
-<meta property="article:modified_time" content="2019-09-18T00:00:00+00:00" />
-<meta itemprop="name" content="GB 规模语料上的高性能新词发现算法">
-<meta itemprop="description" content="现代密码学实践指南[2015年]">
-<meta itemprop="datePublished" content="2019-09-18T00:00:00&#43;00:00" />
-<meta itemprop="dateModified" content="2019-09-18T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="398">
+<meta property="og:url" content="https://blog.helong.info/2020/04/18/mimalloc-source-notes/" />
+<meta property="article:published_time" content="2020-04-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-04-18T00:00:00+00:00" />
+<meta itemprop="name" content="mimalloc 代码笔记">
+<meta itemprop="description" content="一，介绍
+malloc 的实现有很多种: ptmalloc, tcmalloc, jemalloc 有的复杂有的简单。
+mimalloc https://github.com/microsoft/mimalloc 是比较新，代码量较少(只有 6k&#43;) 的一个 malloc 。
+翻了一下代码，笔记如下。">
+<meta itemprop="datePublished" content="2020-04-18T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-04-18T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="166">
 
 
 
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="GB 规模语料上的高性能新词发现算法"/>
-<meta name="twitter:description" content="现代密码学实践指南[2015年]"/>
+<meta name="twitter:title" content="mimalloc 代码笔记"/>
+<meta name="twitter:description" content="一，介绍
+malloc 的实现有很多种: ptmalloc, tcmalloc, jemalloc 有的复杂有的简单。
+mimalloc https://github.com/microsoft/mimalloc 是比较新，代码量较少(只有 6k&#43;) 的一个 malloc 。
+翻了一下代码，笔记如下。"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -111,59 +122,30 @@
       <div class="content-wrapper">
         <div id="content" class="content">
           <article class="post">
-    
-    <header class="post-header">
-      <h1 class="post-title">GB 规模语料上的高性能新词发现算法</h1>
-
-      <div class="post-meta">
-        <span class="post-time"> 2019-09-18 </span>
-        <div class="post-category">
-            <a href="/categories/search/"> search </a>
-            <a href="/categories/server/"> server </a>
-            </div>
-        
-      </div>
-    </header>
-
-    <div class="post-toc" id="post-toc">
-  <h2 class="post-toc-title">文章目录</h2>
-  <div class="post-toc-content">
-    <nav id="TableOfContents"></nav>
+  <div class="post-content">
+    <h2 id="一介绍">一，介绍</h2>
+<p>malloc 的实现有很多种: ptmalloc, tcmalloc, jemalloc 有的复杂有的简单。</p>
+<p>mimalloc <a href="https://github.com/microsoft/mimalloc">https://github.com/microsoft/mimalloc</a> 是比较新，代码量较少(只有 6k+) 的一个 malloc 。
+翻了一下代码，笔记如下。</p>
+<h2 id="二目标问题">二，目标问题</h2>
+<p>主要关心几个问题：</p>
+<ol>
+<li>基本设计亮点</li>
+<li>除了 free list，其中还用到什么数据结构？</li>
+<li>怎么解决碎片化的问题？</li>
+<li>best-fit/first-fit 经典问题是否已经过时？</li>
+</ol>
+<h2 id="三设计思路">三，设计思路</h2>
+<p><a href="https://www.microsoft.com/en-us/research/uploads/prod/2019/06/mimalloc-tr-v1.pdf">https://www.microsoft.com/en-us/research/uploads/prod/2019/06/mimalloc-tr-v1.pdf</a></p>
+<h2 id="三-基本概念和类型">三. 基本概念和类型</h2>
+<p>include/mimalloc-types.h</p>
+<p>mi_block_t</p>
+<h2 id="四内存布局">四，内存布局</h2>
+<h2 id="五malloc-流程">五，malloc 流程</h2>
+<h3 id="1">1，</h3>
+<h2 id="六free-流程">六，free 流程</h2>
   </div>
-</div>
-    <div class="post-content">
-      <p>分词是中文搜索的重要环节，目前分词算法已经比较成熟，分词错误的主要是由于未登录词。</p>
-<p>因此发现业务领域语料库中的新词，减少未登录词，对改善搜索引擎的用户体验有重要意义。</p>
-<p>新词发现的一种常用算法，是 matrix67 大神 2012 年提出的 《互联网时代的社会语言学：基于SNS的文本数据挖掘》
-<a href="https://www.matrix67.com/blog/archives/5044">https://www.matrix67.com/blog/archives/5044</a></p>
-<p>其主要思路，是统计语料中出现的所有 ngram 子字符串的凝固度，自由度，信息熵。</p>
-<p>算法中需要统计所有 ngram 子字符串的 左熵右熵，实现该算法时，一般以子字符串为 key，用哈希表来存。</p>
-<p>但随着语料库变大时，内存消耗变大，</p>
-<p>比如之前的 python 版本实现，对 200MB 的语料，就需要约 30G 内存来存哈希表，</p>
-<p>导致单机内存不足无法运行，而且对这样规模的语料库，算法需要跑一两天才能出结果。</p>
-<p>这里我应用一些工程实现方面的技巧，
-把用哈希表统计左熵右熵的计算，拆分成多个子哈希表，分批计算，并利用多核并行，大幅度优化了算法的性能。</p>
-<p>最终实现了 GB 大小语料上的新词发现，并把运行时间缩减到了 30 分钟左右 。</p>
-<p><a href="https://github.com/hankcs/HanLP/wiki/%E6%96%B0%E8%AF%8D%E8%AF%86%E5%88%AB">https://github.com/hankcs/HanLP/wiki/%E6%96%B0%E8%AF%8D%E8%AF%86%E5%88%AB</a></p>
-    </div>
-
-    
-<footer class="post-footer">
-      
-      <nav class="post-nav">
-        <a class="prev" href="/post/2019/11/25/cppjieba-darts-dat-memory_optimize/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</span>
-            <span class="prev-text nav-mobile">上一篇</span>
-          </a>
-        <a class="next" href="/post/proxygen-http2-code-analysis/">
-            <span class="next-text nav-default">Proxygen http2 代码分析</span>
-            <span class="next-text nav-mobile">下一篇</span>
-            <i class="iconfont icon-right"></i>
-          </a>
-      </nav>
-    </footer>
-  </article>
+</article>
         </div>
         <div id="disqus_thread"></div>
     <script type="text/javascript">

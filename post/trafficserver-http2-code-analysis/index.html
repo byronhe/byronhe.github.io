@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>TrafficServer http2 代码分析 - Tech Ideas</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="byronhe" /><meta name="description" content="TrafficServer 是Apache基金会的 HTTP/HTTP2 代理服务器。
+TrafficServer 的 HTTP2 部分主要的代码在 :
+ trafficserver/proxy/http2/HTTP2.h, HTTP2.cc trafficserver/proxy/http2/Http2Stream.h, Http2Stream.cc trafficserver/proxy/http2/Http2ClientSession.h, Http2ClientSession.cc trafficserver/proxy/http2/Http2ConnectionState.h, Http2ConnectionState.cc trafficserver/proxy/http2/ Http2DependencyTree.h, Http2DependencyTree.cc trafficserver/proxy/http2/HPACK.h, HPACK.cc trafficserver/proxy/http2/HuffmanCodec.h, HuffmanCodec.cc " /><meta name="keywords" content="linux, server, http2" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
+
+
+<link rel="canonical" href="https://blog.helong.info/post/trafficserver-http2-code-analysis/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="TrafficServer http2 代码分析" />
+<meta property="og:description" content="TrafficServer 是Apache基金会的 HTTP/HTTP2 代理服务器。
+TrafficServer 的 HTTP2 部分主要的代码在 :
+
+trafficserver/proxy/http2/HTTP2.h, HTTP2.cc
+trafficserver/proxy/http2/Http2Stream.h, Http2Stream.cc
+trafficserver/proxy/http2/Http2ClientSession.h, Http2ClientSession.cc
+trafficserver/proxy/http2/Http2ConnectionState.h, Http2ConnectionState.cc
+trafficserver/proxy/http2/ Http2DependencyTree.h, Http2DependencyTree.cc
+trafficserver/proxy/http2/HPACK.h, HPACK.cc
+trafficserver/proxy/http2/HuffmanCodec.h, HuffmanCodec.cc
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.helong.info/post/trafficserver-http2-code-analysis/" />
+<meta property="article:published_time" content="2017-03-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-03-08T00:00:00+00:00" />
+<meta itemprop="name" content="TrafficServer http2 代码分析">
+<meta itemprop="description" content="TrafficServer 是Apache基金会的 HTTP/HTTP2 代理服务器。
+TrafficServer 的 HTTP2 部分主要的代码在 :
+
+trafficserver/proxy/http2/HTTP2.h, HTTP2.cc
+trafficserver/proxy/http2/Http2Stream.h, Http2Stream.cc
+trafficserver/proxy/http2/Http2ClientSession.h, Http2ClientSession.cc
+trafficserver/proxy/http2/Http2ConnectionState.h, Http2ConnectionState.cc
+trafficserver/proxy/http2/ Http2DependencyTree.h, Http2DependencyTree.cc
+trafficserver/proxy/http2/HPACK.h, HPACK.cc
+trafficserver/proxy/http2/HuffmanCodec.h, HuffmanCodec.cc
+">
+<meta itemprop="datePublished" content="2017-03-08T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2017-03-08T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1501">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="TrafficServer http2 代码分析"/>
+<meta name="twitter:description" content="TrafficServer 是Apache基金会的 HTTP/HTTP2 代理服务器。
+TrafficServer 的 HTTP2 部分主要的代码在 :
+
+trafficserver/proxy/http2/HTTP2.h, HTTP2.cc
+trafficserver/proxy/http2/Http2Stream.h, Http2Stream.cc
+trafficserver/proxy/http2/Http2ClientSession.h, Http2ClientSession.cc
+trafficserver/proxy/http2/Http2ConnectionState.h, Http2ConnectionState.cc
+trafficserver/proxy/http2/ Http2DependencyTree.h, Http2DependencyTree.cc
+trafficserver/proxy/http2/HPACK.h, HPACK.cc
+trafficserver/proxy/http2/HuffmanCodec.h, HuffmanCodec.cc
+"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Tech Ideas</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Tech Ideas</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">TrafficServer http2 代码分析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-03-08 </span>
+        <div class="post-category">
+            <a href="/categories/linux/"> linux </a>
+            <a href="/categories/server/"> server </a>
+            <a href="/categories/http2/"> http2 </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#1--trafficserverproxyhttp2http2h-http2cc">1.  trafficserver/proxy/http2/HTTP2.h, HTTP2.cc</a></li>
+        <li><a href="#2--trafficserverproxyhttp2http2clientsessionh-http2clientsessioncc">2.  trafficserver/proxy/http2/Http2ClientSession.h, Http2ClientSession.cc</a></li>
+        <li><a href="#3--trafficserverproxyhttp2http2connectionstateh-http2connectionstatecc">3.  trafficserver/proxy/http2/Http2ConnectionState.h, Http2ConnectionState.cc</a>
+          <ul>
+            <li><a href="#rcv_data_frame-">rcv_data_frame :</a></li>
+            <li><a href="#rcv_headers_frame">rcv_headers_frame：</a></li>
+            <li><a href="#rcv_priority_frame">rcv_priority_frame:</a></li>
+            <li><a href="#rcv_rst_stream_frame">rcv_rst_stream_frame</a></li>
+            <li><a href="#rcv_settings_frame">rcv_settings_frame:</a></li>
+            <li><a href="#rcv_push_promise_frame-等">rcv_push_promise_frame 等</a></li>
+            <li><a href="#rcv_continuation_frame">rcv_continuation_frame</a></li>
+            <li><a href="#send_data_frames_depends_on_priority">send_data_frames_depends_on_priority</a></li>
+            <li><a href="#send_data_frames-等">send_data_frames 等</a></li>
+          </ul>
+        </li>
+        <li><a href="#4--trafficserverproxyhttp2http2streamh-http2streamcc">4.  trafficserver/proxy/http2/Http2Stream.h, Http2Stream.cc</a></li>
+        <li><a href="#5--trafficserverproxyhttp2http2dependencytreeh-http2dependencytreecc">5.  trafficserver/proxy/http2/Http2DependencyTree.h, Http2DependencyTree.cc</a></li>
+        <li><a href="#6--trafficserverproxyhttp2hpackh-hpackcc">6.  trafficserver/proxy/http2/HPACK.h, HPACK.cc</a></li>
+        <li><a href="#7--trafficserverproxyhttp2huffmancodech-huffmancodeccc">7.  trafficserver/proxy/http2/HuffmanCodec.h, HuffmanCodec.cc</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>TrafficServer 是Apache基金会的 HTTP/HTTP2 代理服务器。</p>
+<p>TrafficServer 的 HTTP2 部分主要的代码在 :</p>
+<ol>
+<li>trafficserver/proxy/http2/HTTP2.h, HTTP2.cc</li>
+<li>trafficserver/proxy/http2/Http2Stream.h, Http2Stream.cc</li>
+<li>trafficserver/proxy/http2/Http2ClientSession.h, Http2ClientSession.cc</li>
+<li>trafficserver/proxy/http2/Http2ConnectionState.h, Http2ConnectionState.cc</li>
+<li>trafficserver/proxy/http2/ Http2DependencyTree.h, Http2DependencyTree.cc</li>
+<li>trafficserver/proxy/http2/HPACK.h, HPACK.cc</li>
+<li>trafficserver/proxy/http2/HuffmanCodec.h, HuffmanCodec.cc</li>
+</ol>
+<h2 id="1--trafficserverproxyhttp2http2h-http2cc">1.  trafficserver/proxy/http2/HTTP2.h, HTTP2.cc</h2>
+<p>10种Frame 的struct定义，解析/序列化函数，HeaderList转换函数，一些常量定义</p>
+<h2 id="2--trafficserverproxyhttp2http2clientsessionh-http2clientsessioncc">2.  trafficserver/proxy/http2/Http2ClientSession.h, Http2ClientSession.cc</h2>
+<p>Http2ClientSession 处理 io event 事件，解析 FrameHeader，</p>
+<p>调用顺序：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Http2ClientSession::main_event_handler()
+
+--&gt; state_read_connection_preface()
+
+--&gt; state_start_frame_read()
+
+--&gt; state_process_frame_read() 解析出一个完整的Frame
+
+--&gt; do_complete_frame_read()
+
+--&gt; Http2ConnectionState::main_event_handler(HTTP2_SESSION_EVENT_RECV )
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="3--trafficserverproxyhttp2http2connectionstateh-http2connectionstatecc">3.  trafficserver/proxy/http2/Http2ConnectionState.h, Http2ConnectionState.cc</h2>
+<p>Http2ConnectionState，对应一个 HTTP2 连接，代码基本等价于 proxygen 的 HTTPSession，主要的成员变量：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="p">{</span>     
+    <span class="err">双链表</span><span class="o">&lt;</span><span class="n">Http2Stream</span><span class="o">&gt;</span> <span class="c1">//略挫，有个find_stream 用的遍历，改map好点。
+</span><span class="c1"></span>
+    <span class="n">Http2ClientSession</span><span class="err">，</span>
+
+    <span class="n">HpackHandle</span> <span class="mi">2</span><span class="err">个，</span>
+
+    <span class="n">DependencyTree</span><span class="err">，</span>
+
+    <span class="n">Http2ConnectionSettingsclient_settings</span> <span class="n">server_settings</span><span class="err">，连接的几个</span> <span class="n">Settings</span> <span class="err">配置项，一个</span><span class="n">int数组</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>主要的方法：各个 rcv_xxx_frame() 和 send_xxx_frame(0
+Http2ConnectionState::main_event_handler(HTTP2_SESSION_EVENT_RECV )里面，解析输入的各种 Frame</p>
+<ul>
+<li>rcv_data_frame,          // HTTP2_FRAME_TYPE_DATA</li>
+<li>rcv_headers_frame,       // HTTP2_FRAME_TYPE_HEADERS</li>
+<li>rcv_priority_frame,      // HTTP2_FRAME_TYPE_PRIORITY</li>
+<li>rcv_rst_stream_frame,    // HTTP2_FRAME_TYPE_RST_STREAM</li>
+<li>rcv_settings_frame,      // HTTP2_FRAME_TYPE_SETTINGS</li>
+<li>rcv_push_promise_frame,  // HTTP2_FRAME_TYPE_PUSH_PROMISE</li>
+<li>rcv_ping_frame,          // HTTP2_FRAME_TYPE_PING</li>
+<li>rcv_goaway_frame,        // HTTP2_FRAME_TYPE_GOAWAY</li>
+<li>rcv_window_update_frame, // HTTP2_FRAME_TYPE_WINDOW_UPDATE</li>
+<li>rcv_continuation_frame,  // HTTP2_FRAME_TYPE_CONTINUATION</li>
+</ul>
+<p>还有发送各类 frame 的接口，send_data_frames()/send_headers_frame() / send_push_promise_frame() / send_rst_stream_frame()  等。</p>
+<p>具体地：</p>
+<h3 id="rcv_data_frame-">rcv_data_frame :</h3>
+<p>find_stream,然后检查stream的state是不是OPEN/HALF_CLOSE_LOCAL，去除 padding，处理END_STREAM flag，检查本端流量控制 window_size ，保存buffer，更新本地的window，发回 Connection 和 Stream Level 的WindowUpdate Frame。</p>
+<h3 id="rcv_headers_frame">rcv_headers_frame：</h3>
+<p>find_stream/create_stream，处理padding，处理PRIORITY flag添加到 PriorityTree 里面，如果 Header Block 结束了（即有END_HEADERS FLAG），那就http2_decode_header_blocks() 做HPACK 解压缩，调用 Http2Stream 处理解析出的HeaderList</p>
+<h3 id="rcv_priority_frame">rcv_priority_frame:</h3>
+<p>find_stream，reprioritize，重新调整树。</p>
+<h3 id="rcv_rst_stream_frame">rcv_rst_stream_frame</h3>
+<h3 id="rcv_settings_frame">rcv_settings_frame:</h3>
+<p>parse检查收到的各个配置项，更新到client_settings中，并发送SETTINGS_ACK</p>
+<h3 id="rcv_push_promise_frame-等">rcv_push_promise_frame 等</h3>
+<p>包括       rcv_ping_frame</p>
+<p>rcv_goaway_frame:</p>
+<p>rcv_window_update_frame</p>
+<p>比较简单，略。</p>
+<h3 id="rcv_continuation_frame">rcv_continuation_frame</h3>
+<p>类似 rcv_headers_frame</p>
+<h3 id="send_data_frames_depends_on_priority">send_data_frames_depends_on_priority</h3>
+<p>取了 DependencyTree的top()，</p>
+<h3 id="send_data_frames-等">send_data_frames 等</h3>
+<p>send_a_data_frame</p>
+<p>send_headers_frame</p>
+<p>send_push_promise_frame</p>
+<p>send_rst_stream_frame</p>
+<p>send_settings_frame</p>
+<p>send_ping_frame</p>
+<p>send_goaway_frame</p>
+<p>send_window_update_frame</p>
+<p>比较简单，就是检查字段合法性，序列化，然后发送。</p>
+<h2 id="4--trafficserverproxyhttp2http2streamh-http2streamcc">4.  trafficserver/proxy/http2/Http2Stream.h, Http2Stream.cc</h2>
+<p>对应实现HTTP2 的Stream，重要的成员变量有：</p>
+<p>Http2StreamState _state;//实现IDLE，OPEN，RESERVED，HALF_CLOSE等的切换。</p>
+<p>DependencyTree::Node *priority_node;// Priority Tree中的节点指针。</p>
+<h2 id="5--trafficserverproxyhttp2http2dependencytreeh-http2dependencytreecc">5.  trafficserver/proxy/http2/Http2DependencyTree.h, Http2DependencyTree.cc</h2>
+<p>Http2DependencyTree::Node 表示一个Stream，成员变量有：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="p">{</span>
+ <span class="kt">bool</span> <span class="n">actived</span><span class="p">;</span>  <span class="c1">//是否有输出数据
+</span><span class="c1"></span> <span class="kt">bool</span> <span class="n">queued</span><span class="p">;</span> <span class="c1">//是否在 actived 队列中
+</span><span class="c1"></span> <span class="kt">uint32_t</span> <span class="n">id</span><span class="p">;</span>
+ <span class="kt">uint32_t</span> <span class="n">weight</span><span class="p">;</span>
+ <span class="kt">uint32_t</span> <span class="n">point</span><span class="p">;</span>   <span class="c1">//queue中的节点按照这个 point 做优先级排序
+</span><span class="c1"></span> <span class="n">Node</span> <span class="o">*</span><span class="n">parent</span><span class="p">;</span>  <span class="c1">//父节点
+</span><span class="c1"></span> <span class="n">DLL</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span> <span class="n">children</span><span class="p">;</span> <span class="c1">//子节点的双列表
+</span><span class="c1"></span> 
+ <span class="n">PriorityQueueEntry</span><span class="o">&lt;</span><span class="n">Node</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">entry</span><span class="p">;</span> <span class="c1">// 
+</span><span class="c1"></span> <span class="n">PriorityQueue</span><span class="o">&lt;</span><span class="n">Node</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">queue</span><span class="p">;</span>   <span class="c1">//有输出数据的所有子节点的队列，按point 优先级降序排列
+</span><span class="c1"></span>
+ <span class="n">Http2Stream</span> <span class="o">*</span><span class="n">t</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Http2DependencyTree 中有个 Node * root  指向 树的根节点。</p>
+<p>Http2DependencyTree的主要方法有：</p>
+<ol>
+<li>
+<p>Node *find(uint32_t id);<br>
+DFS 递归遍历树，查找一个Stream。</p>
+</li>
+<li>
+<p>Node *add(uint32_t parent_id, uint32_t id, uint32_t weight, bool exclusive, T t);
+就是插入 parent 的 children 链表中，兼做 exclusive 处理。</p>
+</li>
+<li>
+<p>void remove(Node *node);
+从parent 的 queue 中移除自己，把自己的 queue 全转给 parent，把自己的 children 全转给 parent</p>
+</li>
+<li>
+<p>void reprioritize(uint32_t new_parent_id, uint32_t id, bool exclusive);
+重排优先级，就是移动节点</p>
+</li>
+<li>
+<p>Node *top();
+返回整个树中，point 最高的叶子节点。递归实现。</p>
+</li>
+<li>
+<p>void activate(Node *node);
+往上遍历，如果当前节点没有 在 parent 的 queue中，加入</p>
+</li>
+<li>
+<p>void deactivate(Node *node, uint32_t sent);
+从parent 的queue中去除自己。</p>
+</li>
+<li>
+<p>void update(Node *node, uint32_t sent);</p>
+</li>
+</ol>
+<p>这里使用 Weighted Fair Queue (WFQ) Scheduling 来调度 Stream 之间的优先级。</p>
+<p>Http2ConnectionState::send_data_frames_depends_on_priority()
+中，是直接取了 树的 top() 节点，</p>
+<h2 id="6--trafficserverproxyhttp2hpackh-hpackcc">6.  trafficserver/proxy/http2/HPACK.h, HPACK.cc</h2>
+<p>实现 HPACK 压缩/解压缩</p>
+<h2 id="7--trafficserverproxyhttp2huffmancodech-huffmancodeccc">7.  trafficserver/proxy/http2/HuffmanCodec.h, HuffmanCodec.cc</h2>
+<p>实现静态的 Huffman 表，接口简单，只有4个函数，，</p>
+<p>是实现成 二叉树，相比proxygen估计效率会低一些。</p>
+    </div>
+
+    
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/proxygen-http2-code-analysis/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Proxygen http2 代码分析</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/">
+            <span class="next-text nav-default">TLS协议分析 与 现代加密通信协议设计</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'byronheblog';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
+  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2010 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">byronhe</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-49290834-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

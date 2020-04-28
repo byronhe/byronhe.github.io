@@ -44,7 +44,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blog.helong.info/" />
-<meta property="og:updated_time" content="2020-03-29T00:00:00+00:00" />
+<meta property="og:updated_time" content="2020-04-18T00:00:00+00:00" />
 <meta itemprop="name" content="Tech Ideas">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Tech Ideas"/>
@@ -107,6 +107,175 @@
           <section id="posts" class="posts">
     <article class="post">
   <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2012/07/25/simulate-object-falling/">圆形坠落模拟算法设计</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2012-07-25 </span>
+      <div class="post-category">
+          <a href="/categories/algorithm-design/"> algorithm design </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>目标：实现一个算法，模拟在一个封闭二维区域，圆形小球朝给定方向坠落的过程，实现二维区域的紧密填充。</p>
+<p>像下面这样：</p>
+<p><img src="/images/2012072600504753.png" alt=""></p>
+<p>难点，及其简单解决：</p>
+<p>1.如何把粒子移动尽可能远？</p>
+<p><img src="/images/2012072601011361.png" alt=""></p>
+<p>图中的粒子i，能往下移动多远？一般情况,碰撞？边界？</p>
+<p>一个简单解法：</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2012/07/25/simulate-object-falling/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2012/04/09/translation-y-conbinator-in-seven-steps/">[翻译]轻松7步，导出Y结合子</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2012-04-09 </span>
+      <div class="post-category">
+          <a href="/categories/translate/"> translate </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>本文译自 “<em>Deriving the Y Combinator in 7 Easy Steps</em>“，</p>
+<p>原文链接：<a href="http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html">http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html</a></p>
+<p>在没有原生递归支持的语言中，Y结合子（<a href="http://en.wikipedia.org/wiki/Fixed_point_combinator">Y Combinator</a>）是一种实现递归的方式（事实上，它更常被作为一种锻炼程序思维的方式）。要实现Y结合子，要求这种语言支持匿名函数。</p>
+<p>此处，我选择JavaScript来推导Y结合子，从递归阶乘函数的定义开始，一步一步进行变换。</p>
+<h2 id="step-1">Step 1</h2>
+<p>最初的实现，使用JavaScript内建的递归机制。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">fact</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="mi">2</span><span class="p">)</span> <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">n</span> <span class="o">*</span> <span class="nx">fact</span><span class="p">(</span><span class="nx">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><p> </p>
+<h2 id="step-2">Step 2</h2>
+<p>获得递归的最简单方法是什么？我们可以定义一个函数，它接受它自身作为参数，并且用这个参数作为参数，调用这个参数。当然，这是一个无限循环，会导致栈溢出。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">f</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">f</span><span class="p">(</span><span class="nx">f</span><span class="p">);</span>
+<span class="p">})(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">f</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">f</span><span class="p">(</span><span class="nx">f</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>我们的阶乘函数套用上面的模板，再做点改动，阶乘函数接受一个我们还不知道的参数，所以我们要的是返回一个接受该参数的函数。然后这个函数可以被用于计算阶乘。同时，这可以让我们的阶乘函数不会无限循环下去。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">fact</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">f</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 终止条件
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="mi">2</span><span class="p">)</span> <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="c1">//因为f返回一个函数，所以这有一个双重调用。 
+</span><span class="c1"></span>        <span class="k">return</span> <span class="nx">n</span> <span class="o">*</span> <span class="nx">f</span><span class="p">(</span><span class="nx">f</span><span class="p">)(</span><span class="nx">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="p">};</span>
+<span class="p">})(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">f</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 终止条件
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="mi">2</span><span class="p">)</span> <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="c1">// 因为f返回一个函数，所以这有一个双重调用。
+</span><span class="c1"></span>        <span class="k">return</span> <span class="nx">n</span> <span class="o">*</span> <span class="nx">f</span><span class="p">(</span><span class="nx">f</span><span class="p">)(</span><span class="nx">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="p">};</span>
+<span class="p">});</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+    <div class="read-more">
+      <a href="/post/2012/04/09/translation-y-conbinator-in-seven-steps/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2012/04/09/propagation-of-constraints-lang-in-py/">一个基于约束传播的微型计算语言的设计和实现</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2012-04-09 </span>
+      <div class="post-category">
+          <a href="/categories/scheme/"> scheme </a>
+          <a href="/categories/python/"> python </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>一个基于约束传播的，玩具级微型计算语言的设计和简单实现。</p>
+<p>这个程序就是做来玩和练习的，代码是玩具级别的，用的python，基本可以正常工作了。</p>
+<p>先介绍应用背景：</p>
+<p>在流体机械设计中，通常根据性能参数进行设计，算出其它变量，但问题是，在设计过程中，需要进行变量的<strong>手工调整</strong>，例如圆整，修正到某一范围，校核等等。</p>
+<p>其计算模式举例如下：</p>
+<p>1.定义变量，如输入压力P<!-- raw HTML omitted -->in<!-- raw HTML omitted -->=0.98，输入温度T<!-- raw HTML omitted -->in<!-- raw HTML omitted -->=27,输入流量Q<!-- raw HTML omitted -->vin<!-- raw HTML omitted -->=400,k<!-- raw HTML omitted -->v2，<!-- raw HTML omitted -->φ<!-- raw HTML omitted -->2r，<!-- raw HTML omitted -->b2，D2，u2，qin等等。。。</p>
+<p>2.根据某些物理公式，算出几个新的量，如转速 <em>n=33.9*sqrt(k<!-- raw HTML omitted -->v2<!-- raw HTML omitted -->*φ<!-- raw HTML omitted -->2r*<!-- raw HTML omitted -->b2/D2*(u2^3)/qin)</em></p>
+<p>3.把n从8296.93圆整为整数8300，</p>
+<p>4.重新计算b2/D2=0.06455，校核可知0.02&lt;0.06455&lt;0.065，符合要求</p>
+<p>5.根据n计算出其它新的变量，修正，校核。。。</p>
+<p>。。。</p>
+<p>观察可以发现，这种计算模式，和《计算机程序的构造与解释》中提到的约束传播系统很像，如果把一个变量看作一个对象，那么，当它位于一个公式的左侧，例如n，也就意味着，右侧变量例如k<!-- raw HTML omitted -->v2<!-- raw HTML omitted -->更新时，应该给它发送一个消息，让它重新计算自己的值，当n更新后，如果它发现有别的变量依赖于自己，它应该发消息通知它们更新自己的值。</p>
+<p>还可以看出，这种依赖关系形成了一个图，例如应该有一条从k<!-- raw HTML omitted -->v2<!-- raw HTML omitted -->到n的边，把n称为k<!-- raw HTML omitted -->v2<!-- raw HTML omitted -->的订阅者。</p>
+<p>所以这种计算模式可以用约束传播系统建模，但是此处和书里的约束传播系统有差异：此处的约束传播系统是<strong>有向图</strong>，而书里是无向图，设计成有向图主要是为了简单，无向图的消息发送顺序是难以控制的，而且构造的时候公式中的每个变量都要持有其它对象的引用，太麻烦，有向图只需要在公式左侧的那个变量哪里保存公式右侧的每个变量的引用。</p>
+<p>形成有向图后，每个变量的状态设为invaild，这种状态下，不会向它的会订阅者发送更新消息，收到获取值的消息时报错。</p>
+<p>有向图中，还有一些源点，是最初给定值的变量。</p>
+<p>当某个变量被赋值时，它把自己设为新值，同时向它的订阅者发送更新消息。订阅者计算自己的新值，如果和旧值相同，就沉默；否则，更新自己，通知订阅者更新。</p>
+<p>so，想象一下，在你的面前，虚空之中漂浮着一张有向图， 由k<!-- raw HTML omitted -->v2<!-- raw HTML omitted -->—&gt;n这样的一条条边练成，当一个点被赋予值，从这点荡出一圈圈涟漪，传到它的下一级，再从更新过的点荡出新的波纹，传开，传开。。。直到所有的点都收敛，水面恢复宁静。</p>
+<p> </p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2012/04/09/propagation-of-constraints-lang-in-py/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/2011/12/22/sicp-02.42-eight-queue/">sicp练习2.42 [解8皇后问题的Scheme语言实现]</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2011-12-22 </span>
@@ -143,69 +312,6 @@
     </div>
     <div class="read-more">
       <a href="/post/2011/12/22/symbol-deriv/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2011/11/20/church-encoding/">Church计数</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2011-11-20 </span>
-      <div class="post-category">
-          <a href="/categories/scheme/"> scheme </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      my code： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 ;Church计数 (define zero (lambda (f) (lambda (x) x))) (define (add-1 n) (lambda (f) (lambda (x) (f ((n
-    </div>
-    <div class="read-more">
-      <a href="/post/2011/11/20/church-encoding/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2011/11/15/java-multithread-download-webpage/">java多线程网页下载代码</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2011-11-15 </span>
-      <div class="post-category">
-          <a href="/categories/java/"> java </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      小项目，练手的。 1.使用了java.util.concurrent包里的线程池，可以飙升到满带宽，在100M带宽上，可以达到10MB/s。 2
-    </div>
-    <div class="read-more">
-      <a href="/post/2011/11/15/java-multithread-download-webpage/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2011/11/15/jdbc-datasource-connect-mysql-pgsql-oracle/">jdbc使用DataSource连接mysql,postgresql,oracle的代码</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2011-11-15 </span>
-      <div class="post-category">
-          <a href="/categories/java/"> java </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70
-    </div>
-    <div class="read-more">
-      <a href="/post/2011/11/15/jdbc-datasource-connect-mysql-pgsql-oracle/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

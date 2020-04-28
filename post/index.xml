@@ -6,10 +6,25 @@
     <description>Recent content in Posts on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 29 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://blog.helong.info/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>构造程序打印自身的 MD5</title>
+      <link>https://blog.helong.info/post/shortest-print-self-md5-contest/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/shortest-print-self-md5-contest/</guid>
+      <description>&lt;h2 id=&#34;一介绍&#34;&gt;一，介绍&lt;/h2&gt;
+&lt;p&gt;比赛题目很简单：构造一个程序，在 stdout 上打印出自身的 MD5，程序越短越好。按最终程序文件大小字节数排名，文件越小，排名越靠前。
+只能使用 ld-linux-x86-64.so, libc.so, libdl.so, libgcc_s.so, libm.so, libstdc++.so 。
+禁止了 socket, shmget, fork, execvc 等 syscall 。&lt;/p&gt;
+&lt;p&gt;汇编高手如云，本人只做到 752 字节，只拿到 27 名。
+不过基本是纯 C 实现，没有动用汇编。
+但忙活好几天，学到不少东西，也有苦劳，还是值得记录一下。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>基于 ElasticSearch 开发垂直搜索系统</title>
@@ -168,6 +183,39 @@ abstract namespace unix socket 。&lt;/p&gt;
 &lt;p&gt;导致单机内存不足无法运行，而且对这样规模的语料库，算法需要跑一两天才能出结果。&lt;/p&gt;
 &lt;p&gt;这里我应用一些工程实现方面的技巧，
 把用哈希表统计左熵右熵的计算，拆分成多个子哈希表，分批计算，并利用多核并行，大幅度优化了算法的性能。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Proxygen http2 代码分析</title>
+      <link>https://blog.helong.info/post/proxygen-http2-code-analysis/</link>
+      <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/proxygen-http2-code-analysis/</guid>
+      <description>&lt;p&gt;Proxygen 的整体架构
+&lt;img src=&#34;https://raw.githubusercontent.com/facebook/proxygen/master/CoreProxygenArchitecture.png&#34; alt=&#34;image&#34;&gt;&lt;/p&gt;
+&lt;p&gt;一个 HTTPSession 对应一个 tcp 连接。&lt;/p&gt;
+&lt;p&gt;HTTPSession 中包含HTTPCodec ，HTTPCodec用来在 HTTPMessage(Request/Response) 和 字节流之间做转换（就是解析/序列化）。&lt;/p&gt;
+&lt;p&gt;一个 HTTPTransaction 对应一个 HTTP2  的Stream ，也就是一次 Req/Resp
+Handler 是业务逻辑处理的基类。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>TrafficServer http2 代码分析</title>
+      <link>https://blog.helong.info/post/trafficserver-http2-code-analysis/</link>
+      <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/trafficserver-http2-code-analysis/</guid>
+      <description>&lt;p&gt;TrafficServer 是Apache基金会的 HTTP/HTTP2 代理服务器。&lt;/p&gt;
+&lt;p&gt;TrafficServer 的 HTTP2 部分主要的代码在 :&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;trafficserver/proxy/http2/HTTP2.h, HTTP2.cc&lt;/li&gt;
+&lt;li&gt;trafficserver/proxy/http2/Http2Stream.h, Http2Stream.cc&lt;/li&gt;
+&lt;li&gt;trafficserver/proxy/http2/Http2ClientSession.h, Http2ClientSession.cc&lt;/li&gt;
+&lt;li&gt;trafficserver/proxy/http2/Http2ConnectionState.h, Http2ConnectionState.cc&lt;/li&gt;
+&lt;li&gt;trafficserver/proxy/http2/ Http2DependencyTree.h, Http2DependencyTree.cc&lt;/li&gt;
+&lt;li&gt;trafficserver/proxy/http2/HPACK.h, HPACK.cc&lt;/li&gt;
+&lt;li&gt;trafficserver/proxy/http2/HuffmanCodec.h, HuffmanCodec.cc&lt;/li&gt;
+&lt;/ol&gt;</description>
     </item>
     
     <item>

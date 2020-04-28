@@ -44,7 +44,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blog.helong.info/" />
-<meta property="og:updated_time" content="2020-03-29T00:00:00+00:00" />
+<meta property="og:updated_time" content="2020-04-18T00:00:00+00:00" />
 <meta itemprop="name" content="Tech Ideas">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Tech Ideas"/>
@@ -107,6 +107,37 @@
           <section id="posts" class="posts">
     <article class="post">
   <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2019/11/25/cppjieba-darts-dat-memory_optimize/">用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-11-25 </span>
+      <div class="post-category">
+          <a href="/categories/search/"> search </a>
+          <a href="/categories/nlp/"> NLP </a>
+          <a href="/categories/server/"> server </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <h2 id="一问题背景">一，问题背景</h2>
+<p>中文分词应用比较广泛的开源算法，是 <a href="https://github.com/fxsjy/jieba">jieba 结巴分词</a>，结巴分词较高性能的实现是 C++ 版本的 CppJieba :
+<a href="https://github.com/yanyiwu/cppjieba">https://github.com/yanyiwu/cppjieba</a></p>
+<p>在实际使用 CppJieba 的过程中，我们发现 CppJieba 的内存占用比较高。</p>
+<p>比如对一个 76W 词 大小 11MB 的词典 ，加载 2份 （比如为了支持平滑改动用户词典）就需要耗费 505MB内存。</p>
+<p>这对一些多进程的后台服务，浪费大量内存，难以接受，因此这里希望削减内存耗费。</p>
+<p>经过初步调查，确定改进方法，然后动手改造，<strong>最终把 505MB 缩减到了 4.7MB ，实现了 99% 内存降低</strong>。</p>
+<p>此处也有 issue 讨论 <a href="https://github.com/yanyiwu/cppjieba/issues/3">https://github.com/yanyiwu/cppjieba/issues/3</a></p>
+<p>代码稍后可能会开源出来。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2019/11/25/cppjieba-darts-dat-memory_optimize/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/2019/09/18/newwords_discovery/">GB 规模语料上的高性能新词发现算法</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2019-09-18 </span>
@@ -139,6 +170,67 @@
 
     <article class="post">
   <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/proxygen-http2-code-analysis/">Proxygen http2 代码分析</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2017-03-08 </span>
+      <div class="post-category">
+          <a href="/categories/linux/"> linux </a>
+          <a href="/categories/server/"> server </a>
+          <a href="/categories/http2/"> http2 </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>Proxygen 的整体架构
+<img src="https://raw.githubusercontent.com/facebook/proxygen/master/CoreProxygenArchitecture.png" alt="image"></p>
+<p>一个 HTTPSession 对应一个 tcp 连接。</p>
+<p>HTTPSession 中包含HTTPCodec ，HTTPCodec用来在 HTTPMessage(Request/Response) 和 字节流之间做转换（就是解析/序列化）。</p>
+<p>一个 HTTPTransaction 对应一个 HTTP2  的Stream ，也就是一次 Req/Resp
+Handler 是业务逻辑处理的基类。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/proxygen-http2-code-analysis/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/trafficserver-http2-code-analysis/">TrafficServer http2 代码分析</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2017-03-08 </span>
+      <div class="post-category">
+          <a href="/categories/linux/"> linux </a>
+          <a href="/categories/server/"> server </a>
+          <a href="/categories/http2/"> http2 </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>TrafficServer 是Apache基金会的 HTTP/HTTP2 代理服务器。</p>
+<p>TrafficServer 的 HTTP2 部分主要的代码在 :</p>
+<ol>
+<li>trafficserver/proxy/http2/HTTP2.h, HTTP2.cc</li>
+<li>trafficserver/proxy/http2/Http2Stream.h, Http2Stream.cc</li>
+<li>trafficserver/proxy/http2/Http2ClientSession.h, Http2ClientSession.cc</li>
+<li>trafficserver/proxy/http2/Http2ConnectionState.h, Http2ConnectionState.cc</li>
+<li>trafficserver/proxy/http2/ Http2DependencyTree.h, Http2DependencyTree.cc</li>
+<li>trafficserver/proxy/http2/HPACK.h, HPACK.cc</li>
+<li>trafficserver/proxy/http2/HuffmanCodec.h, HuffmanCodec.cc</li>
+</ol>
+    </div>
+    <div class="read-more">
+      <a href="/post/trafficserver-http2-code-analysis/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/">TLS协议分析 与 现代加密通信协议设计</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2015-09-06 </span>
@@ -164,107 +256,6 @@
     </div>
     <div class="read-more">
       <a href="/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2015/08/13/linux-loadavg-competation/">Linux LoadAvg 编程比赛</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2015-08-13 </span>
-      <div class="post-category">
-          <a href="/categories/linux/"> linux </a>
-          <a href="/categories/kernel/"> kernel </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <h2 id="问题背景">问题背景</h2>
-<p><a href="https://timyang.net/programming/load-average/">https://timyang.net/programming/load-average/</a></p>
-<p>2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高</p>
-<p>多线程写几个 while 循环的方法太 trivial 了，就不提了。</p>
-<p>下面是 byronhe 的两个解：</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/2015/08/13/linux-loadavg-competation/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2015/06/05/modern-crypto/">现代密码学实践指南[2015年]</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2015-06-05 </span>
-      <div class="post-category">
-          <a href="/categories/crypto/"> crypto </a>
-          <a href="/categories/server/"> server </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <p>本文介绍目前现代密码学的最先进技术，
-前半部分主要翻译自  <a href="https://gist.github.com/tqbf/be58d2d39690c3b366ad">《Cryptographic Right Answers》</a>，附上收集的资料，和byron个人的理解。</p>
-<p>密码学理论艰深，概念繁多，本人知识水平有限，错误难免，如果您发现错误，请务必指出，非常感谢!</p>
-<hr>
-<h5 id="下文分类介绍在各种适用场景下你应该使用的现代密码学算法">下文分类介绍在各种适用场景下，你应该使用的现代密码学算法</h5>
-<h3 id="1--加密数据-">1.  <strong>加密数据</strong> :</h3>
-<p>按照优先级，应该选择:</p>
-<p>(1)   首选 NaCl库，或者libsodium库，使用里面的crypto_secretbox()/crypto_secretbox_open() 函数
-(2)   Chacha20-Poly1305 算法
-(3)   AES-GCM 算法</p>
-<p>适用场景:当你需要避免把明文数据在网络上传输的时候。</p>
-<p>以上3种算法，都是AEAD类的算法，AEAD是2015年最好的选择。
-其中的(2)和(3)在结构上类似：一个流加密模式的算法，配合一个多项式结构的MAC。
-(2)是一个流加密算法，配合一个为通用cpu优化的MAC算法，
-对密码学库的实现者来说，Poly1305也比GCM更容易安全地实现。
-AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都有专门为AES-GCM设计的硬件指令，但是在没有硬件指令支持的CPU上(比如32位的arm)，(3)性能低于(2)。</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/2015/06/05/modern-crypto/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2015/05/08/https-config-optimize-in-nginx/">nginx下配置高性能，高安全性的https TLS服务</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2015-05-08 </span>
-      <div class="post-category">
-          <a href="/categories/tls/"> tls </a>
-          <a href="/categories/crypto/"> crypto </a>
-          <a href="/categories/server/"> server </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <p>下文以nginx为例，介绍如何部署一个高性能，高安全性的https服务器。</p>
-<p>并附送一个优化出来的openssl编译脚本，可以编译出一个高性能，高安全性的openssl库，您可以直接复制粘贴使用。</p>
-<p>此处直接给出实践指导，后续再写文章解释tls协议的这些原理细节。</p>
-<p>nginx下https配置的优化点，主要有:</p>
-<ol>
-<li>session ticket</li>
-<li>session id cache</li>
-<li>ocsp stapling</li>
-<li>http KeepAlive</li>
-<li>ECDHE等ciphersuite优化</li>
-<li>openssl 编译优化</li>
-</ol>
-<h3 id="一-nginx-https的配置">一， nginx https的配置</h3>
-<p>先贴一下nginx配置，如下。</p>
-<p>是根据<a href="https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx">mozilla的权威文档</a>
-,和<a href="https://mozilla.github.io/server-side-tls/ssl-config-generator/">生成工具</a>(选择 nginx，intermediate ) 生成的配置为基础，加入session ticket等配置的结果</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/2015/05/08/https-config-optimize-in-nginx/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

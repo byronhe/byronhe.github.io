@@ -44,7 +44,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blog.helong.info/" />
-<meta property="og:updated_time" content="2020-03-29T00:00:00+00:00" />
+<meta property="og:updated_time" content="2020-04-18T00:00:00+00:00" />
 <meta itemprop="name" content="Tech Ideas">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Tech Ideas"/>
@@ -105,6 +105,35 @@
       <div class="content-wrapper">
         <div id="content" class="content">
           <section id="posts" class="posts">
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/shortest-print-self-md5-contest/">构造程序打印自身的 MD5</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2020-04-20 </span>
+      <div class="post-category">
+          <a href="/categories/cpp/"> cpp </a>
+          <a href="/categories/server/"> server </a>
+          <a href="/categories/linux/"> linux </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <h2 id="一介绍">一，介绍</h2>
+<p>比赛题目很简单：构造一个程序，在 stdout 上打印出自身的 MD5，程序越短越好。按最终程序文件大小字节数排名，文件越小，排名越靠前。
+只能使用 ld-linux-x86-64.so, libc.so, libdl.so, libgcc_s.so, libm.so, libstdc++.so 。
+禁止了 socket, shmget, fork, execvc 等 syscall 。</p>
+<p>汇编高手如云，本人只做到 752 字节，只拿到 27 名。
+不过基本是纯 C 实现，没有动用汇编。
+但忙活好几天，学到不少东西，也有苦劳，还是值得记录一下。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/shortest-print-self-md5-contest/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     <article class="post">
   <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/elasticsearch-dev-arch/">基于 ElasticSearch 开发垂直搜索系统</a></h1>
@@ -278,37 +307,6 @@ abstract namespace unix socket 。</p>
     </div>
     <div class="read-more">
       <a href="/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2019/11/25/cppjieba-darts-dat-memory_optimize/">用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2019-11-25 </span>
-      <div class="post-category">
-          <a href="/categories/search/"> search </a>
-          <a href="/categories/nlp/"> NLP </a>
-          <a href="/categories/server/"> server </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <h2 id="一问题背景">一，问题背景</h2>
-<p>中文分词应用比较广泛的开源算法，是 <a href="https://github.com/fxsjy/jieba">jieba 结巴分词</a>，结巴分词较高性能的实现是 C++ 版本的 CppJieba :
-<a href="https://github.com/yanyiwu/cppjieba">https://github.com/yanyiwu/cppjieba</a></p>
-<p>在实际使用 CppJieba 的过程中，我们发现 CppJieba 的内存占用比较高。</p>
-<p>比如对一个 76W 词 大小 11MB 的词典 ，加载 2份 （比如为了支持平滑改动用户词典）就需要耗费 505MB内存。</p>
-<p>这对一些多进程的后台服务，浪费大量内存，难以接受，因此这里希望削减内存耗费。</p>
-<p>经过初步调查，确定改进方法，然后动手改造，<strong>最终把 505MB 缩减到了 4.7MB ，实现了 99% 内存降低</strong>。</p>
-<p>此处也有 issue 讨论 <a href="https://github.com/yanyiwu/cppjieba/issues/3">https://github.com/yanyiwu/cppjieba/issues/3</a></p>
-<p>代码稍后可能会开源出来。</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/2019/11/25/cppjieba-darts-dat-memory_optimize/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

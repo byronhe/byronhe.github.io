@@ -44,7 +44,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blog.helong.info/" />
-<meta property="og:updated_time" content="2020-03-29T00:00:00+00:00" />
+<meta property="og:updated_time" content="2020-04-18T00:00:00+00:00" />
 <meta itemprop="name" content="Tech Ideas">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Tech Ideas"/>
@@ -105,6 +105,108 @@
       <div class="content-wrapper">
         <div id="content" class="content">
           <section id="posts" class="posts">
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2011/11/15/mysql-backup-script/">【旧代码】mysql备份的shell脚本</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2011-11-15 </span>
+      <div class="post-category">
+          <a href="/categories/linux/"> linux </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      1 2 3 4 5 6 7 8 9 10 11 12 13 14 #!/bin/sh bk_to=&#34;/var/mysql-backup-`date +%Y-%m-%d-%k-%M-%S |tr -d &#39; &#39;`&#34; user_name=&#34;root&#34; user_pw=&#34;dev&#34; sql=&#34; flush tables with read lock; system cp -pR /var/lib/mysql $bk_to; unlock tables; &#34; mysql -u $user_name -p$user_pw -e &#34;$sql&#34; echo $sql tar cjf $bk_to.bz2 $bk_to rm -rf $bk_to
+    </div>
+    <div class="read-more">
+      <a href="/post/2011/11/15/mysql-backup-script/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2011/11/15/heat-grid/">【旧代码】传热过程数值模拟</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2011-11-15 </span>
+      <div class="post-category">
+          <a href="/categories/science/"> science </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>传热过程数值模拟（《传热学》实验指导书第四部分第一题，第一，第二类边界条件）</p>
+<p>2010年十月写的旧代码。</p>
+<p>第一类边界条件是给定边界温度。</p>
+<p>第二类是对流边界。</p>
+<p>区域都是如下形状的:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"> <span class="o">--------------------------------</span>
+<span class="o">|</span>                               <span class="o">|</span>
+<span class="o">|</span>                               <span class="o">|</span>
+<span class="o">|</span>                               <span class="o">|</span>
+<span class="o">|</span>          <span class="o">----------------------</span>
+<span class="o">|</span>         <span class="o">|</span>     
+<span class="o">|</span>         <span class="o">|</span>     
+<span class="o">|</span>         <span class="o">|</span>     
+<span class="o">|</span>         <span class="o">|</span>
+<span class="o">|</span>         <span class="o">|</span>     
+<span class="o">|</span>         <span class="o">|</span>
+<span class="o">|</span>         <span class="o">|</span>     
+<span class="o">|</span>         <span class="o">|</span>
+ <span class="o">---------</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>用C++纯属蛋疼。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2011/11/15/heat-grid/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/">visual studio静态，动态链接库开发工具简单使用</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2011-11-13 </span>
+      <div class="post-category">
+          <a href="/categories/cpp/"> cpp </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      这是2011年8月份做过的一点实验，查了MSDN等等很多资料，基本搞明白了。 这里我不会使用visual studio的图形界面工具，作为专业人
+    </div>
+    <div class="read-more">
+      <a href="/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     <article class="post">
   <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/2011/08/22/find-uniqpointoftriangle/">找出平面上的特殊无向图中的所有三角形的算法</a></h1>
@@ -184,49 +286,6 @@
   </div>
 </article>
 
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2010/08/29/apache-monitor-inotify-script/">一个用inotify监控apache的脚本</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2010-08-29 </span>
-      <div class="post-category">
-          <a href="/categories/linux/"> linux </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 #!/bin/bash #Author:windydays #Date : 2010/8/29 #用于监控apache，如果退出就自动重启apache，原理是在如果apach
-    </div>
-    <div class="read-more">
-      <a href="/post/2010/08/29/apache-monitor-inotify-script/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/">apache的安全增强配置(使用mod_chroot,mod_security)</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2010-08-17 </span>
-      <div class="post-category">
-          <a href="/categories/linux/"> linux </a>
-          <a href="/categories/server/"> server </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      LAMP环境的一般入侵，大致经过sql注入，上传webshell，本地提权至root，安装rootkit等步骤。 采用如下的配置，mod_ch
-    </div>
-    <div class="read-more">
-      <a href="/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
     </section>
   
   <nav class="pagination">
@@ -234,7 +293,10 @@
         <i class="iconfont icon-left"></i>
         <span class="prev-text">上一页</span>
       </a>
-    
+    <a class="next" href="/page/8/">
+        <span class="next-text">下一页</span>
+        <i class="iconfont icon-right"></i>
+      </a>
   </nav>
         </div>
         
