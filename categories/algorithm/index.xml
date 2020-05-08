@@ -53,5 +53,14 @@
 &lt;/div&gt;&lt;p&gt;输入是一个64位的key，和桶的数量（一般对应服务器的数量），输出是一个桶的编号。&lt;/p&gt;</description>
     </item>
     
+    <item>
+      <title>递增子序列数目计算的算法</title>
+      <link>https://blog.helong.info/post/2011/10/17/inc-sub-seq-count-algo/</link>
+      <pubDate>Mon, 17 Oct 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/post/2011/10/17/inc-sub-seq-count-algo/</guid>
+      <description>这是前几天笔试时，考场上想出来的算法，但是算了两次都不一样，最后只好蒙了一个选项，悲催！ 问题如下： 给定一个整数序列，例如 4,2,6,3,7,1 ，该序列有多少个递</description>
+    </item>
+    
   </channel>
 </rss>

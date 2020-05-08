@@ -35,7 +35,7 @@
       <description>&lt;h2 id=&#34;一介绍&#34;&gt;一，介绍&lt;/h2&gt;
 &lt;p&gt;malloc 的实现有很多种: ptmalloc, tcmalloc, jemalloc 有的复杂有的简单。&lt;/p&gt;
 &lt;p&gt;mimalloc &lt;a href=&#34;https://github.com/microsoft/mimalloc&#34;&gt;https://github.com/microsoft/mimalloc&lt;/a&gt; 是比较新，代码量较少(只有 6k+) 的一个 malloc 。
-翻了一下代码，笔记如下。&lt;/p&gt;</description>
+翻了一下 paper +  代码，笔记如下。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -433,7 +433,7 @@ tls是由各类基础算法，作为原语组合而成。
       <pubDate>Mon, 18 Nov 2013 00:00:00 +0000</pubDate>
       
       <guid>https://blog.helong.info/post/2013/11/18/a-http-proxy-script/</guid>
-      <description>1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 #!/usr/local/bin/python # -*- coding: utf-8 -*- import base64 import select import socket import httplib</description>
+      <description>1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56  #!/usr/local/bin/python # -*- coding: utf-8 -*- import base64 import select import socket import httplib import os import sys #base64.</description>
     </item>
     
     <item>

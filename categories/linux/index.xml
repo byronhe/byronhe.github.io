@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Linux on Tech Ideas</title>
-    <link>https://blog.helong.info/categories/Linux/</link>
-    <description>Recent content in Linux on Tech Ideas</description>
+    <title>linux on Tech Ideas</title>
+    <link>https://blog.helong.info/categories/linux/</link>
+    <description>Recent content in linux on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://blog.helong.info/categories/Linux/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://blog.helong.info/categories/linux/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -186,7 +186,7 @@ Handler 是业务逻辑处理的基类。&lt;/p&gt;</description>
       <pubDate>Mon, 18 Nov 2013 00:00:00 +0000</pubDate>
       
       <guid>https://blog.helong.info/post/2013/11/18/a-http-proxy-script/</guid>
-      <description>1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 #!/usr/local/bin/python # -*- coding: utf-8 -*- import base64 import select import socket import httplib</description>
+      <description>1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56  #!/usr/local/bin/python # -*- coding: utf-8 -*- import base64 import select import socket import httplib import os import sys #base64.</description>
     </item>
     
     <item>

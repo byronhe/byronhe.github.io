@@ -35,7 +35,7 @@
       <description>&lt;h2 id=&#34;一介绍&#34;&gt;一，介绍&lt;/h2&gt;
 &lt;p&gt;malloc 的实现有很多种: ptmalloc, tcmalloc, jemalloc 有的复杂有的简单。&lt;/p&gt;
 &lt;p&gt;mimalloc &lt;a href=&#34;https://github.com/microsoft/mimalloc&#34;&gt;https://github.com/microsoft/mimalloc&lt;/a&gt; 是比较新，代码量较少(只有 6k+) 的一个 malloc 。
-翻了一下代码，笔记如下。&lt;/p&gt;</description>
+翻了一下 paper +  代码，笔记如下。&lt;/p&gt;</description>
     </item>
     
     <item>

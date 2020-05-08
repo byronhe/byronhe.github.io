@@ -21,11 +21,11 @@
     </item>
     
     <item>
-      <title>Linux</title>
-      <link>https://blog.helong.info/categories/Linux/</link>
+      <title>linux</title>
+      <link>https://blog.helong.info/categories/linux/</link>
       <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/Linux/</guid>
+      <guid>https://blog.helong.info/categories/linux/</guid>
       <description></description>
     </item>
     
@@ -57,20 +57,20 @@
     </item>
     
     <item>
-      <title>NLP</title>
-      <link>https://blog.helong.info/categories/NLP/</link>
-      <pubDate>Mon, 25 Nov 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.helong.info/categories/NLP/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>http2</title>
       <link>https://blog.helong.info/categories/http2/</link>
       <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
       
       <guid>https://blog.helong.info/categories/http2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>network</title>
+      <link>https://blog.helong.info/categories/network/</link>
+      <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.helong.info/categories/network/</guid>
       <description></description>
     </item>
     
@@ -93,15 +93,6 @@
     </item>
     
     <item>
-      <title>kernel</title>
-      <link>https://blog.helong.info/categories/kernel/</link>
-      <pubDate>Thu, 13 Aug 2015 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.helong.info/categories/kernel/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>translate</title>
       <link>https://blog.helong.info/categories/translate/</link>
       <pubDate>Sun, 12 Apr 2015 00:00:00 +0000</pubDate>
@@ -120,29 +111,11 @@
     </item>
     
     <item>
-      <title>网络</title>
-      <link>https://blog.helong.info/categories/%E7%BD%91%E7%BB%9C/</link>
-      <pubDate>Mon, 18 Nov 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.helong.info/categories/%E7%BD%91%E7%BB%9C/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>文字</title>
-      <link>https://blog.helong.info/categories/%E6%96%87%E5%AD%97/</link>
+      <title>science</title>
+      <link>https://blog.helong.info/categories/science/</link>
       <pubDate>Thu, 11 Jul 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/%E6%96%87%E5%AD%97/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>algorithm design</title>
-      <link>https://blog.helong.info/categories/algorithm-design/</link>
-      <pubDate>Wed, 25 Jul 2012 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.helong.info/categories/algorithm-design/</guid>
+      <guid>https://blog.helong.info/categories/science/</guid>
       <description></description>
     </item>
     
@@ -161,24 +134,6 @@
       <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
       
       <guid>https://blog.helong.info/categories/java/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>other</title>
-      <link>https://blog.helong.info/categories/other/</link>
-      <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.helong.info/categories/other/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>science</title>
-      <link>https://blog.helong.info/categories/science/</link>
-      <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.helong.info/categories/science/</guid>
       <description></description>
     </item>
     
