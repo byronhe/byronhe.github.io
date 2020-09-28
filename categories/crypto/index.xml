@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>crypto on Tech Ideas</title>
-    <link>https://blog.helong.info/categories/crypto/</link>
+    <link>https://byronhe.com/categories/crypto/</link>
     <description>Recent content in crypto on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Sun, 06 Sep 2015 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://blog.helong.info/categories/crypto/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://byronhe.com/categories/crypto/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>TLS协议分析 与 现代加密通信协议设计</title>
-      <link>https://blog.helong.info/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/</link>
+      <link>https://byronhe.com/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/</link>
       <pubDate>Sun, 06 Sep 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/</guid>
+      <guid>https://byronhe.com/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/</guid>
       <description>&lt;p&gt;最近发现密码学很有意思，刚好还和工作有点关系，就研究了一下，本文是其中一部分笔记和一些思考。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;密码学理论艰深，概念繁多，本人知识水平有限，错误难免，如果您发现错误，请务必指出，非常感谢!&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;本文禁止转载&lt;/strong&gt;&lt;/p&gt;
@@ -31,10 +31,10 @@
     
     <item>
       <title>现代密码学实践指南[2015年]</title>
-      <link>https://blog.helong.info/post/2015/06/05/modern-crypto/</link>
+      <link>https://byronhe.com/post/2015/06/05/modern-crypto/</link>
       <pubDate>Fri, 05 Jun 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/06/05/modern-crypto/</guid>
+      <guid>https://byronhe.com/post/2015/06/05/modern-crypto/</guid>
       <description>&lt;p&gt;本文介绍目前现代密码学的最先进技术，
 前半部分主要翻译自  &lt;a href=&#34;https://gist.github.com/tqbf/be58d2d39690c3b366ad&#34;&gt;《Cryptographic Right Answers》&lt;/a&gt;，附上收集的资料，和byron个人的理解。&lt;/p&gt;
 &lt;p&gt;密码学理论艰深，概念繁多，本人知识水平有限，错误难免，如果您发现错误，请务必指出，非常感谢!&lt;/p&gt;
@@ -55,10 +55,10 @@ AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都�
     
     <item>
       <title>nginx下配置高性能，高安全性的https TLS服务</title>
-      <link>https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/</link>
+      <link>https://byronhe.com/post/2015/05/08/https-config-optimize-in-nginx/</link>
       <pubDate>Fri, 08 May 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/</guid>
+      <guid>https://byronhe.com/post/2015/05/08/https-config-optimize-in-nginx/</guid>
       <description>&lt;p&gt;下文以nginx为例，介绍如何部署一个高性能，高安全性的https服务器。&lt;/p&gt;
 &lt;p&gt;并附送一个优化出来的openssl编译脚本，可以编译出一个高性能，高安全性的openssl库，您可以直接复制粘贴使用。&lt;/p&gt;
 &lt;p&gt;此处直接给出实践指导，后续再写文章解释tls协议的这些原理细节。&lt;/p&gt;
@@ -79,10 +79,10 @@ AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都�
     
     <item>
       <title>【翻译】密码学一小时必知</title>
-      <link>https://blog.helong.info/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
+      <link>https://byronhe.com/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
       <pubDate>Sun, 12 Apr 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
+      <guid>https://byronhe.com/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
       <description>&lt;p&gt;本文翻译了Colin Percival 于2010年在bsdcan的演讲ppt&lt;/p&gt;
 &lt;p&gt;原文标题：Everything you need to know about cryptography in 1 hour&lt;/p&gt;
 &lt;p&gt;演讲时间：May 13, 2010&lt;/p&gt;
@@ -93,10 +93,10 @@ AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都�
     
     <item>
       <title>SSL/TLS CipherSuite 介绍</title>
-      <link>https://blog.helong.info/post/2015/01/23/ssl_tls_ciphersuite_intro/</link>
+      <link>https://byronhe.com/post/2015/01/23/ssl_tls_ciphersuite_intro/</link>
       <pubDate>Fri, 23 Jan 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/01/23/ssl_tls_ciphersuite_intro/</guid>
+      <guid>https://byronhe.com/post/2015/01/23/ssl_tls_ciphersuite_intro/</guid>
       <description>&lt;p&gt;本文是关于SSL/TLS的 CipherSuite 的信息摘录，翻译。如有疑问，欢迎指出。&lt;/p&gt;
 &lt;h2 id=&#34;一ciphersuite的概念&#34;&gt;一，CipherSuite的概念&lt;/h2&gt;
 &lt;p&gt;CipherSuite 这个名词目前没看到有好的中文翻译，个人觉得翻译成“加密算法套件”比较合适。Cipher泛指是密码学的加密算法，例如 aes, rsa, ecdh 等。

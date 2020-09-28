@@ -2,138 +2,138 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on Tech Ideas</title>
-    <link>https://blog.helong.info/categories/</link>
+    <link>https://byronhe.com/categories/</link>
     <description>Recent content in Categories on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 04 Jun 2020 06:58:27 +0800</lastBuildDate>
     
-	<atom:link href="https://blog.helong.info/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://byronhe.com/categories/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>cpp</title>
-      <link>https://blog.helong.info/categories/cpp/</link>
-      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.helong.info/categories/cpp/</guid>
-      <description></description>
-    </item>
     
     <item>
       <title>linux</title>
-      <link>https://blog.helong.info/categories/linux/</link>
-      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      <link>https://byronhe.com/categories/linux/</link>
+      <pubDate>Thu, 04 Jun 2020 06:58:27 +0800</pubDate>
       
-      <guid>https://blog.helong.info/categories/linux/</guid>
+      <guid>https://byronhe.com/categories/linux/</guid>
       <description></description>
     </item>
     
     <item>
       <title>server</title>
-      <link>https://blog.helong.info/categories/server/</link>
+      <link>https://byronhe.com/categories/server/</link>
+      <pubDate>Thu, 04 Jun 2020 06:58:27 +0800</pubDate>
+      
+      <guid>https://byronhe.com/categories/server/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cpp</title>
+      <link>https://byronhe.com/categories/cpp/</link>
       <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/server/</guid>
+      <guid>https://byronhe.com/categories/cpp/</guid>
       <description></description>
     </item>
     
     <item>
       <title>search</title>
-      <link>https://blog.helong.info/categories/search/</link>
+      <link>https://byronhe.com/categories/search/</link>
       <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/search/</guid>
+      <guid>https://byronhe.com/categories/search/</guid>
       <description></description>
     </item>
     
     <item>
       <title>python</title>
-      <link>https://blog.helong.info/categories/python/</link>
+      <link>https://byronhe.com/categories/python/</link>
       <pubDate>Fri, 29 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/python/</guid>
+      <guid>https://byronhe.com/categories/python/</guid>
       <description></description>
     </item>
     
     <item>
       <title>http2</title>
-      <link>https://blog.helong.info/categories/http2/</link>
+      <link>https://byronhe.com/categories/http2/</link>
       <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/http2/</guid>
+      <guid>https://byronhe.com/categories/http2/</guid>
       <description></description>
     </item>
     
     <item>
       <title>network</title>
-      <link>https://blog.helong.info/categories/network/</link>
+      <link>https://byronhe.com/categories/network/</link>
       <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/network/</guid>
+      <guid>https://byronhe.com/categories/network/</guid>
       <description></description>
     </item>
     
     <item>
       <title>crypto</title>
-      <link>https://blog.helong.info/categories/crypto/</link>
+      <link>https://byronhe.com/categories/crypto/</link>
       <pubDate>Sun, 06 Sep 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/crypto/</guid>
+      <guid>https://byronhe.com/categories/crypto/</guid>
       <description></description>
     </item>
     
     <item>
       <title>tls</title>
-      <link>https://blog.helong.info/categories/tls/</link>
+      <link>https://byronhe.com/categories/tls/</link>
       <pubDate>Sun, 06 Sep 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/tls/</guid>
+      <guid>https://byronhe.com/categories/tls/</guid>
       <description></description>
     </item>
     
     <item>
       <title>translate</title>
-      <link>https://blog.helong.info/categories/translate/</link>
+      <link>https://byronhe.com/categories/translate/</link>
       <pubDate>Sun, 12 Apr 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/translate/</guid>
+      <guid>https://byronhe.com/categories/translate/</guid>
       <description></description>
     </item>
     
     <item>
       <title>algorithm</title>
-      <link>https://blog.helong.info/categories/algorithm/</link>
+      <link>https://byronhe.com/categories/algorithm/</link>
       <pubDate>Fri, 13 Mar 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/algorithm/</guid>
+      <guid>https://byronhe.com/categories/algorithm/</guid>
       <description></description>
     </item>
     
     <item>
       <title>science</title>
-      <link>https://blog.helong.info/categories/science/</link>
+      <link>https://byronhe.com/categories/science/</link>
       <pubDate>Thu, 11 Jul 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/science/</guid>
+      <guid>https://byronhe.com/categories/science/</guid>
       <description></description>
     </item>
     
     <item>
       <title>scheme</title>
-      <link>https://blog.helong.info/categories/scheme/</link>
+      <link>https://byronhe.com/categories/scheme/</link>
       <pubDate>Mon, 09 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/scheme/</guid>
+      <guid>https://byronhe.com/categories/scheme/</guid>
       <description></description>
     </item>
     
     <item>
       <title>java</title>
-      <link>https://blog.helong.info/categories/java/</link>
+      <link>https://byronhe.com/categories/java/</link>
       <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/categories/java/</guid>
+      <guid>https://byronhe.com/categories/java/</guid>
       <description></description>
     </item>
     

@@ -28,10 +28,10 @@ ElasticSearch 能大幅度提升相关业务的迭代开发速度，实现类似
 
 
 
-<meta name="generator" content="Hugo 0.68.3 with theme even" />
+<meta name="generator" content="Hugo 0.72.0 with theme even" />
 
 
-<link rel="canonical" href="https://blog.helong.info/post/elasticsearch-dev-arch/" />
+<link rel="canonical" href="https://byronhe.com/post/elasticsearch-dev-arch/" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -39,7 +39,8 @@ ElasticSearch 能大幅度提升相关业务的迭代开发速度，实现类似
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
 
-<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+
+<link href="/sass/main.min.0034ec37b35f91907849c9020141a7e99249c6f2301ee1e34aee09cfe5f9ae2e.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -57,7 +58,7 @@ ElasticSearch 能大幅度提升相关业务的迭代开发速度，实现类似
 并在相对高 qps 的在线业务中，保证毫秒级的延迟，提供极高的可用性和稳定性。
 经过持续的研读官方文档，调研业界经验，并在实践中应用反思后，总结出一套架构方案。供参考，欢迎意见建议。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.helong.info/post/elasticsearch-dev-arch/" />
+<meta property="og:url" content="https://byronhe.com/post/elasticsearch-dev-arch/" />
 <meta property="article:published_time" content="2020-03-29T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-03-29T00:00:00+00:00" />
 <meta itemprop="name" content="基于 ElasticSearch 开发垂直搜索系统">
@@ -75,7 +76,7 @@ ElasticSearch 能大幅度提升相关业务的迭代开发速度，实现类似
 经过持续的研读官方文档，调研业界经验，并在实践中应用反思后，总结出一套架构方案。供参考，欢迎意见建议。">
 <meta itemprop="datePublished" content="2020-03-29T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2020-03-29T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="3944">
+<meta itemprop="wordCount" content="3969">
 
 
 
@@ -473,6 +474,7 @@ ES/Lucene 中主要有几种数据结构:</p>
 <li>有赞搜索系统的架构演进 <a href="https://tech.youzan.com/search-tech-1/">https://tech.youzan.com/search-tech-1/</a></li>
 <li>有赞搜索引擎实践(工程篇) <a href="https://tech.youzan.com/search-engine1/">https://tech.youzan.com/search-engine1/</a></li>
 <li>全面理解搜索Query：当你在搜索引擎中敲下回车后，发生了什么？  <a href="https://zhuanlan.zhihu.com/p/112719984">https://zhuanlan.zhihu.com/p/112719984</a></li>
+<li>elasticsearch初学终极教程: 从零到一  <a href="https://kalasearch.cn/blog/elasticsearch-tutorial/">https://kalasearch.cn/blog/elasticsearch-tutorial/</a></li>
 </ul>
     </div>
 
@@ -519,7 +521,7 @@ ES/Lucene 中主要有几种数据结构:</p>
     <footer id="footer" class="footer">
       <div class="social-links">
       <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
-  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+  <a href="https://byronhe.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
 </div>
 
 <div class="copyright">
@@ -555,7 +557,10 @@ ES/Lucene 中主要有几种数据结构:</p>
   <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
-<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.d7b7ada643c9c1a983026e177f141f7363b4640d619caf01d8831a6718cd44ea.js"></script>
   <script type="text/javascript">
     window.MathJax = {
       tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},

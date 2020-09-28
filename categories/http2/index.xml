@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>http2 on Tech Ideas</title>
-    <link>https://blog.helong.info/categories/http2/</link>
+    <link>https://byronhe.com/categories/http2/</link>
     <description>Recent content in http2 on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Wed, 08 Mar 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://blog.helong.info/categories/http2/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://byronhe.com/categories/http2/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Proxygen http2 代码分析</title>
-      <link>https://blog.helong.info/post/Proxygen-http2-code-analysis/</link>
+      <link>https://byronhe.com/post/Proxygen-http2-code-analysis/</link>
       <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/Proxygen-http2-code-analysis/</guid>
+      <guid>https://byronhe.com/post/Proxygen-http2-code-analysis/</guid>
       <description>&lt;p&gt;Proxygen 的整体架构
 &lt;img src=&#34;https://raw.githubusercontent.com/facebook/proxygen/master/CoreProxygenArchitecture.png&#34; alt=&#34;image&#34;&gt;&lt;/p&gt;
 &lt;p&gt;一个 HTTPSession 对应一个 tcp 连接。&lt;/p&gt;
@@ -27,10 +27,10 @@ Handler 是业务逻辑处理的基类。&lt;/p&gt;</description>
     
     <item>
       <title>TrafficServer http2 代码分析</title>
-      <link>https://blog.helong.info/post/TrafficServer-http2-code-analysis/</link>
+      <link>https://byronhe.com/post/TrafficServer-http2-code-analysis/</link>
       <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/TrafficServer-http2-code-analysis/</guid>
+      <guid>https://byronhe.com/post/TrafficServer-http2-code-analysis/</guid>
       <description>&lt;p&gt;TrafficServer 是Apache基金会的 HTTP/HTTP2 代理服务器。&lt;/p&gt;
 &lt;p&gt;TrafficServer 的 HTTP2 部分主要的代码在 :&lt;/p&gt;
 &lt;ol&gt;

@@ -1,2 +1,2 @@
 User-agent: *
-Sitemap: https://blog.helong.info/sitemap.xml
+Sitemap: https://byronhe.com/sitemap.xml

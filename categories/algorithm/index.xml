@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>algorithm on Tech Ideas</title>
-    <link>https://blog.helong.info/categories/algorithm/</link>
+    <link>https://byronhe.com/categories/algorithm/</link>
     <description>Recent content in algorithm on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Fri, 13 Mar 2015 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://blog.helong.info/categories/algorithm/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://byronhe.com/categories/algorithm/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>【翻译/介绍】jump consistent hash 零内存消耗，均匀，快速，简洁，来自Google的一致性哈希算法</title>
-      <link>https://blog.helong.info/post/2015/03/13/jump_consistent_hash/</link>
+      <link>https://byronhe.com/post/2015/03/13/jump_consistent_hash/</link>
       <pubDate>Fri, 13 Mar 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/03/13/jump_consistent_hash/</guid>
+      <guid>https://byronhe.com/post/2015/03/13/jump_consistent_hash/</guid>
       <description>&lt;h2 id=&#34;一简介&#34;&gt;一，简介&lt;/h2&gt;
 &lt;p&gt;jump consistent hash是一种一致性哈希算法, 此算法&lt;strong&gt;零内存消耗&lt;/strong&gt;，&lt;strong&gt;均匀分配&lt;/strong&gt;，&lt;strong&gt;快速&lt;/strong&gt;，并且&lt;strong&gt;只有5行代码&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;此算法适合使用在分shard的分布式存储系统中 。&lt;/p&gt;
@@ -55,10 +55,10 @@
     
     <item>
       <title>递增子序列数目计算的算法</title>
-      <link>https://blog.helong.info/post/2011/10/17/inc-sub-seq-count-algo/</link>
+      <link>https://byronhe.com/post/2011/10/17/inc-sub-seq-count-algo/</link>
       <pubDate>Mon, 17 Oct 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/10/17/inc-sub-seq-count-algo/</guid>
+      <guid>https://byronhe.com/post/2011/10/17/inc-sub-seq-count-algo/</guid>
       <description>这是前几天笔试时，考场上想出来的算法，但是算了两次都不一样，最后只好蒙了一个选项，悲催！ 问题如下： 给定一个整数序列，例如 4,2,6,3,7,1 ，该序列有多少个递</description>
     </item>
     

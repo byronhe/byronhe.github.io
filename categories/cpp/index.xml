@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>cpp on Tech Ideas</title>
-    <link>https://blog.helong.info/categories/cpp/</link>
+    <link>https://byronhe.com/categories/cpp/</link>
     <description>Recent content in cpp on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://blog.helong.info/categories/cpp/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://byronhe.com/categories/cpp/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>构造最短程序打印自身的 MD5</title>
-      <link>https://blog.helong.info/post/shortest-print-self-md5-contest/</link>
+      <link>https://byronhe.com/post/shortest-print-self-md5-contest/</link>
       <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/shortest-print-self-md5-contest/</guid>
+      <guid>https://byronhe.com/post/shortest-print-self-md5-contest/</guid>
       <description>&lt;h2 id=&#34;一介绍&#34;&gt;一，介绍&lt;/h2&gt;
 &lt;p&gt;比赛题目很简单：构造一个程序，在 stdout 上打印出自身的 MD5，程序越短越好。按最终程序文件大小字节数排名，文件越小，排名越靠前。
 只能使用 ld-linux-x86-64.so, libc.so, libdl.so, libgcc_s.so, libm.so, libstdc++.so 。
@@ -28,10 +28,10 @@
     
     <item>
       <title>mimalloc 代码笔记</title>
-      <link>https://blog.helong.info/2020/04/18/mimalloc-source-notes/</link>
+      <link>https://byronhe.com/2020/04/18/mimalloc-source-notes/</link>
       <pubDate>Sat, 18 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/2020/04/18/mimalloc-source-notes/</guid>
+      <guid>https://byronhe.com/2020/04/18/mimalloc-source-notes/</guid>
       <description>&lt;h2 id=&#34;一介绍&#34;&gt;一，介绍&lt;/h2&gt;
 &lt;p&gt;malloc 的实现有很多种: ptmalloc, tcmalloc, jemalloc 有的复杂有的简单。&lt;/p&gt;
 &lt;p&gt;mimalloc &lt;a href=&#34;https://github.com/microsoft/mimalloc&#34;&gt;https://github.com/microsoft/mimalloc&lt;/a&gt; 是比较新，代码量较少(只有 6k+) 的一个 malloc 。
@@ -40,10 +40,10 @@
     
     <item>
       <title>怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈</title>
-      <link>https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/</link>
+      <link>https://byronhe.com/post/cpp-throw-coredump-with-backtrace/</link>
       <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/</guid>
+      <guid>https://byronhe.com/post/cpp-throw-coredump-with-backtrace/</guid>
       <description>&lt;h1 id=&#34;1-问题&#34;&gt;1. 问题&lt;/h1&gt;
 &lt;p&gt;一个 C++ 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump，
 问题是，在 gcc 4.x 版本产生的 coredump 文件中，&lt;em&gt;没有 throw 时候的堆栈信息&lt;/em&gt;，导致不知道是哪里 throw 的，没法查问题。&lt;/p&gt;
@@ -74,10 +74,10 @@
     
     <item>
       <title>mock C&#43;&#43; function for unit test</title>
-      <link>https://blog.helong.info/post/2014/03/27/mock-c-plus-plus-function-for-unit-test/</link>
+      <link>https://byronhe.com/post/2014/03/27/mock-c-plus-plus-function-for-unit-test/</link>
       <pubDate>Thu, 27 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2014/03/27/mock-c-plus-plus-function-for-unit-test/</guid>
+      <guid>https://byronhe.com/post/2014/03/27/mock-c-plus-plus-function-for-unit-test/</guid>
       <description>&lt;p&gt;在单元测试中，我们需要提供业务逻辑的mock版本，
 当业务逻辑实现为C++的virtual function时，这是很容易的，我们只需要写一个子类，
 实现virtual function就行了，Google 的 gmock就针对这种情况设计。&lt;/p&gt;
@@ -87,19 +87,19 @@
     
     <item>
       <title>visual studio静态，动态链接库开发工具简单使用</title>
-      <link>https://blog.helong.info/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/</link>
+      <link>https://byronhe.com/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/</link>
       <pubDate>Sun, 13 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/</guid>
+      <guid>https://byronhe.com/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/</guid>
       <description>这是2011年8月份做过的一点实验，查了MSDN等等很多资料，基本搞明白了。 这里我不会使用visual studio的图形界面工具，作为专业人</description>
     </item>
     
     <item>
       <title>Codeblocks配合gfortran作为fortran开发环境的配置方法</title>
-      <link>https://blog.helong.info/post/2011/05/12/codeblocks-with-gfortran-for-fortran-dev/</link>
+      <link>https://byronhe.com/post/2011/05/12/codeblocks-with-gfortran-for-fortran-dev/</link>
       <pubDate>Thu, 12 May 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/05/12/codeblocks-with-gfortran-for-fortran-dev/</guid>
+      <guid>https://byronhe.com/post/2011/05/12/codeblocks-with-gfortran-for-fortran-dev/</guid>
       <description>（以前在bmy bbs发过一次） 这个方法试过在64位win7和32位winxp上可用。 1，首先安装codeblockes，必须选完全安装（Fu</description>
     </item>
     

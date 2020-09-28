@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>search on Tech Ideas</title>
-    <link>https://blog.helong.info/categories/search/</link>
+    <link>https://byronhe.com/categories/search/</link>
     <description>Recent content in search on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Sun, 29 Mar 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://blog.helong.info/categories/search/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://byronhe.com/categories/search/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>基于 ElasticSearch 开发垂直搜索系统</title>
-      <link>https://blog.helong.info/post/elasticsearch-dev-arch/</link>
+      <link>https://byronhe.com/post/elasticsearch-dev-arch/</link>
       <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/elasticsearch-dev-arch/</guid>
+      <guid>https://byronhe.com/post/elasticsearch-dev-arch/</guid>
       <description>&lt;h2 id=&#34;一背景介绍&#34;&gt;一，背景介绍&lt;/h2&gt;
 &lt;p&gt;ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。&lt;/p&gt;
 &lt;p&gt;近两年在业界热度大增，主要有 3 种应用场景：&lt;/p&gt;
@@ -33,10 +33,10 @@
     
     <item>
       <title>Python 自动翻译成 C&#43;&#43; ，彻底保证离线在线特征一致</title>
-      <link>https://blog.helong.info/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</link>
+      <link>https://byronhe.com/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</link>
       <pubDate>Fri, 29 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</guid>
+      <guid>https://byronhe.com/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</guid>
       <description>&lt;h1 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h1&gt;
 &lt;p&gt;随着深度学习的广泛应用，在搜索引擎/推荐系统/机器视觉等业务系统中，越来越多的深度学习模型部署到线上服务。&lt;/p&gt;
 &lt;p&gt;机器学习模型在离线训练时，一般要将输入的数据做特征工程预处理，再输入模型在 TensorFlow PyTorch 等框架上做训练。&lt;/p&gt;
@@ -66,10 +66,10 @@
     
     <item>
       <title>用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</title>
-      <link>https://blog.helong.info/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</link>
+      <link>https://byronhe.com/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</link>
       <pubDate>Mon, 25 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</guid>
+      <guid>https://byronhe.com/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</guid>
       <description>&lt;h2 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h2&gt;
 &lt;p&gt;中文分词应用比较广泛的开源算法，是 &lt;a href=&#34;https://github.com/fxsjy/jieba&#34;&gt;jieba 结巴分词&lt;/a&gt;，结巴分词较高性能的实现是 C++ 版本的 CppJieba :
 &lt;a href=&#34;https://github.com/yanyiwu/cppjieba&#34;&gt;https://github.com/yanyiwu/cppjieba&lt;/a&gt;&lt;/p&gt;
@@ -78,15 +78,15 @@
 &lt;p&gt;这对一些多进程的后台服务，浪费大量内存，难以接受，因此这里希望削减内存耗费。&lt;/p&gt;
 &lt;p&gt;经过初步调查，确定改进方法，然后动手改造，&lt;strong&gt;最终把 505MB 缩减到了 4.7MB ，实现了 99% 内存降低&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;此处也有 issue 讨论 &lt;a href=&#34;https://github.com/yanyiwu/cppjieba/issues/3&#34;&gt;https://github.com/yanyiwu/cppjieba/issues/3&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;代码稍后可能会开源出来。&lt;/p&gt;</description>
+&lt;p&gt;代码在 &lt;a href=&#34;https://github.com/byronhe/cppjieba&#34;&gt;https://github.com/byronhe/cppjieba&lt;/a&gt; 。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>GB 规模语料上的高性能新词发现算法</title>
-      <link>https://blog.helong.info/post/2019/09/18/newwords_discovery/</link>
+      <link>https://byronhe.com/post/2019/09/18/newwords_discovery/</link>
       <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2019/09/18/newwords_discovery/</guid>
+      <guid>https://byronhe.com/post/2019/09/18/newwords_discovery/</guid>
       <description>&lt;p&gt;分词是中文搜索的重要环节，目前分词算法已经比较成熟，分词错误的主要是由于未登录词。&lt;/p&gt;
 &lt;p&gt;因此发现业务领域语料库中的新词，减少未登录词，对改善搜索引擎的用户体验有重要意义。&lt;/p&gt;
 &lt;p&gt;新词发现的一种常用算法，是 matrix67 大神 2012 年提出的 《互联网时代的社会语言学：基于SNS的文本数据挖掘》

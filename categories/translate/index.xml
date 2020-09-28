@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>translate on Tech Ideas</title>
-    <link>https://blog.helong.info/categories/translate/</link>
+    <link>https://byronhe.com/categories/translate/</link>
     <description>Recent content in translate on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Sun, 12 Apr 2015 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://blog.helong.info/categories/translate/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://byronhe.com/categories/translate/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>【翻译】密码学一小时必知</title>
-      <link>https://blog.helong.info/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
+      <link>https://byronhe.com/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
       <pubDate>Sun, 12 Apr 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
+      <guid>https://byronhe.com/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
       <description>&lt;p&gt;本文翻译了Colin Percival 于2010年在bsdcan的演讲ppt&lt;/p&gt;
 &lt;p&gt;原文标题：Everything you need to know about cryptography in 1 hour&lt;/p&gt;
 &lt;p&gt;演讲时间：May 13, 2010&lt;/p&gt;
@@ -27,10 +27,10 @@
     
     <item>
       <title>【翻译/介绍】jump consistent hash 零内存消耗，均匀，快速，简洁，来自Google的一致性哈希算法</title>
-      <link>https://blog.helong.info/post/2015/03/13/jump_consistent_hash/</link>
+      <link>https://byronhe.com/post/2015/03/13/jump_consistent_hash/</link>
       <pubDate>Fri, 13 Mar 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/03/13/jump_consistent_hash/</guid>
+      <guid>https://byronhe.com/post/2015/03/13/jump_consistent_hash/</guid>
       <description>&lt;h2 id=&#34;一简介&#34;&gt;一，简介&lt;/h2&gt;
 &lt;p&gt;jump consistent hash是一种一致性哈希算法, 此算法&lt;strong&gt;零内存消耗&lt;/strong&gt;，&lt;strong&gt;均匀分配&lt;/strong&gt;，&lt;strong&gt;快速&lt;/strong&gt;，并且&lt;strong&gt;只有5行代码&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;此算法适合使用在分shard的分布式存储系统中 。&lt;/p&gt;
@@ -69,10 +69,10 @@
     
     <item>
       <title>[翻译]轻松7步，导出Y结合子</title>
-      <link>https://blog.helong.info/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</link>
+      <link>https://byronhe.com/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</link>
       <pubDate>Mon, 09 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</guid>
+      <guid>https://byronhe.com/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</guid>
       <description>&lt;p&gt;本文译自 “&lt;em&gt;Deriving the Y Combinator in 7 Easy Steps&lt;/em&gt;“，&lt;/p&gt;
 &lt;p&gt;原文链接：&lt;a href=&#34;http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html&#34;&gt;http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;在没有原生递归支持的语言中，Y结合子（&lt;a href=&#34;http://en.wikipedia.org/wiki/Fixed_point_combinator&#34;&gt;Y Combinator&lt;/a&gt;）是一种实现递归的方式（事实上，它更常被作为一种锻炼程序思维的方式）。要实现Y结合子，要求这种语言支持匿名函数。&lt;/p&gt;

@@ -2,21 +2,45 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>server on Tech Ideas</title>
-    <link>https://blog.helong.info/categories/server/</link>
+    <link>https://byronhe.com/categories/server/</link>
     <description>Recent content in server on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 04 Jun 2020 06:58:27 +0800</lastBuildDate>
     
-	<atom:link href="https://blog.helong.info/categories/server/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://byronhe.com/categories/server/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>用 process_vm_readv() 实现多进程内存队列</title>
+      <link>https://byronhe.com/post/queue-use-process_vm_readv/</link>
+      <pubDate>Thu, 04 Jun 2020 06:58:27 +0800</pubDate>
+      
+      <guid>https://byronhe.com/post/queue-use-process_vm_readv/</guid>
+      <description>&lt;h2 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h2&gt;
+&lt;p&gt;多进程之间需要传输大量数据的时候，比如多进程 RPC 框架的进程之间通信，常用共享内存队列。&lt;/p&gt;
+&lt;p&gt;但是共享内存队列难免会有 入队+出队 2次 memcpy 。&lt;/p&gt;
+&lt;p&gt;而且要变长共享内存队列，如果支持多生产者进程+多消费者进程 ，就要处理线程安全方面的问题， 比较麻烦。&lt;/p&gt;
+&lt;p&gt;process_vm_readv() ,  process_vm_writev() 是 Linux 3.2 新增的 syscall，用于在多个进程的地址空间之间，高效传输大块数据。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.man7.org/linux/man-pages/man2/process_vm_readv.2.html&#34;&gt;https://www.man7.org/linux/man-pages/man2/process_vm_readv.2.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/open-mpi/ompi/blob/master/opal/mca/btl/sm/btl_sm_get.c#L96&#34;&gt;https://github.com/open-mpi/ompi/blob/master/opal/mca/btl/sm/btl_sm_get.c#L96&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;在此， 我提个设想，可以用  process_vm_readv 实现一个多进程内存队列，相比之下，优势是：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在处理 多线程/多进程 并发时，更简单&lt;/li&gt;
+&lt;li&gt;省掉一次 memcpy。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;下面 demo 代码演示了这个思路。
+为了方便，直接用 posix mq 来传输 iovec 数组，也没有考虑多路复用。
+真实项目可能需要 eventfd 之内的机制来做 notify。&lt;/p&gt;
+&lt;p&gt;实测了下，3个进程加起来有 5.5 GB/秒 的速度。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>构造最短程序打印自身的 MD5</title>
-      <link>https://blog.helong.info/post/shortest-print-self-md5-contest/</link>
+      <link>https://byronhe.com/post/shortest-print-self-md5-contest/</link>
       <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/shortest-print-self-md5-contest/</guid>
+      <guid>https://byronhe.com/post/shortest-print-self-md5-contest/</guid>
       <description>&lt;h2 id=&#34;一介绍&#34;&gt;一，介绍&lt;/h2&gt;
 &lt;p&gt;比赛题目很简单：构造一个程序，在 stdout 上打印出自身的 MD5，程序越短越好。按最终程序文件大小字节数排名，文件越小，排名越靠前。
 只能使用 ld-linux-x86-64.so, libc.so, libdl.so, libgcc_s.so, libm.so, libstdc++.so 。
@@ -28,10 +52,10 @@
     
     <item>
       <title>mimalloc 代码笔记</title>
-      <link>https://blog.helong.info/2020/04/18/mimalloc-source-notes/</link>
+      <link>https://byronhe.com/2020/04/18/mimalloc-source-notes/</link>
       <pubDate>Sat, 18 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/2020/04/18/mimalloc-source-notes/</guid>
+      <guid>https://byronhe.com/2020/04/18/mimalloc-source-notes/</guid>
       <description>&lt;h2 id=&#34;一介绍&#34;&gt;一，介绍&lt;/h2&gt;
 &lt;p&gt;malloc 的实现有很多种: ptmalloc, tcmalloc, jemalloc 有的复杂有的简单。&lt;/p&gt;
 &lt;p&gt;mimalloc &lt;a href=&#34;https://github.com/microsoft/mimalloc&#34;&gt;https://github.com/microsoft/mimalloc&lt;/a&gt; 是比较新，代码量较少(只有 6k+) 的一个 malloc 。
@@ -40,10 +64,10 @@
     
     <item>
       <title>基于 ElasticSearch 开发垂直搜索系统</title>
-      <link>https://blog.helong.info/post/elasticsearch-dev-arch/</link>
+      <link>https://byronhe.com/post/elasticsearch-dev-arch/</link>
       <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/elasticsearch-dev-arch/</guid>
+      <guid>https://byronhe.com/post/elasticsearch-dev-arch/</guid>
       <description>&lt;h2 id=&#34;一背景介绍&#34;&gt;一，背景介绍&lt;/h2&gt;
 &lt;p&gt;ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。&lt;/p&gt;
 &lt;p&gt;近两年在业界热度大增，主要有 3 种应用场景：&lt;/p&gt;
@@ -60,10 +84,10 @@
     
     <item>
       <title>用 abstract unix socket 实现进程单实例运行</title>
-      <link>https://blog.helong.info/post/2020/03/03/abstract-unix-socket-single-instance/</link>
+      <link>https://byronhe.com/post/2020/03/03/abstract-unix-socket-single-instance/</link>
       <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2020/03/03/abstract-unix-socket-single-instance/</guid>
+      <guid>https://byronhe.com/post/2020/03/03/abstract-unix-socket-single-instance/</guid>
       <description>&lt;h2 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h2&gt;
 &lt;p&gt;很多时候，我们需要&lt;strong&gt;确保进程只有一个实例运行&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;有几种方法：&lt;/p&gt;
@@ -96,10 +120,10 @@ abstract namespace unix socket 。&lt;/p&gt;
     
     <item>
       <title>Python 自动翻译成 C&#43;&#43; ，彻底保证离线在线特征一致</title>
-      <link>https://blog.helong.info/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</link>
+      <link>https://byronhe.com/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</link>
       <pubDate>Fri, 29 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</guid>
+      <guid>https://byronhe.com/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</guid>
       <description>&lt;h1 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h1&gt;
 &lt;p&gt;随着深度学习的广泛应用，在搜索引擎/推荐系统/机器视觉等业务系统中，越来越多的深度学习模型部署到线上服务。&lt;/p&gt;
 &lt;p&gt;机器学习模型在离线训练时，一般要将输入的数据做特征工程预处理，再输入模型在 TensorFlow PyTorch 等框架上做训练。&lt;/p&gt;
@@ -129,10 +153,10 @@ abstract namespace unix socket 。&lt;/p&gt;
     
     <item>
       <title>用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</title>
-      <link>https://blog.helong.info/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</link>
+      <link>https://byronhe.com/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</link>
       <pubDate>Mon, 25 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</guid>
+      <guid>https://byronhe.com/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</guid>
       <description>&lt;h2 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h2&gt;
 &lt;p&gt;中文分词应用比较广泛的开源算法，是 &lt;a href=&#34;https://github.com/fxsjy/jieba&#34;&gt;jieba 结巴分词&lt;/a&gt;，结巴分词较高性能的实现是 C++ 版本的 CppJieba :
 &lt;a href=&#34;https://github.com/yanyiwu/cppjieba&#34;&gt;https://github.com/yanyiwu/cppjieba&lt;/a&gt;&lt;/p&gt;
@@ -141,15 +165,15 @@ abstract namespace unix socket 。&lt;/p&gt;
 &lt;p&gt;这对一些多进程的后台服务，浪费大量内存，难以接受，因此这里希望削减内存耗费。&lt;/p&gt;
 &lt;p&gt;经过初步调查，确定改进方法，然后动手改造，&lt;strong&gt;最终把 505MB 缩减到了 4.7MB ，实现了 99% 内存降低&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;此处也有 issue 讨论 &lt;a href=&#34;https://github.com/yanyiwu/cppjieba/issues/3&#34;&gt;https://github.com/yanyiwu/cppjieba/issues/3&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;代码稍后可能会开源出来。&lt;/p&gt;</description>
+&lt;p&gt;代码在 &lt;a href=&#34;https://github.com/byronhe/cppjieba&#34;&gt;https://github.com/byronhe/cppjieba&lt;/a&gt; 。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>GB 规模语料上的高性能新词发现算法</title>
-      <link>https://blog.helong.info/post/2019/09/18/newwords_discovery/</link>
+      <link>https://byronhe.com/post/2019/09/18/newwords_discovery/</link>
       <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2019/09/18/newwords_discovery/</guid>
+      <guid>https://byronhe.com/post/2019/09/18/newwords_discovery/</guid>
       <description>&lt;p&gt;分词是中文搜索的重要环节，目前分词算法已经比较成熟，分词错误的主要是由于未登录词。&lt;/p&gt;
 &lt;p&gt;因此发现业务领域语料库中的新词，减少未登录词，对改善搜索引擎的用户体验有重要意义。&lt;/p&gt;
 &lt;p&gt;新词发现的一种常用算法，是 matrix67 大神 2012 年提出的 《互联网时代的社会语言学：基于SNS的文本数据挖掘》
@@ -165,10 +189,10 @@ abstract namespace unix socket 。&lt;/p&gt;
     
     <item>
       <title>Proxygen http2 代码分析</title>
-      <link>https://blog.helong.info/post/Proxygen-http2-code-analysis/</link>
+      <link>https://byronhe.com/post/Proxygen-http2-code-analysis/</link>
       <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/Proxygen-http2-code-analysis/</guid>
+      <guid>https://byronhe.com/post/Proxygen-http2-code-analysis/</guid>
       <description>&lt;p&gt;Proxygen 的整体架构
 &lt;img src=&#34;https://raw.githubusercontent.com/facebook/proxygen/master/CoreProxygenArchitecture.png&#34; alt=&#34;image&#34;&gt;&lt;/p&gt;
 &lt;p&gt;一个 HTTPSession 对应一个 tcp 连接。&lt;/p&gt;
@@ -179,10 +203,10 @@ Handler 是业务逻辑处理的基类。&lt;/p&gt;</description>
     
     <item>
       <title>TrafficServer http2 代码分析</title>
-      <link>https://blog.helong.info/post/TrafficServer-http2-code-analysis/</link>
+      <link>https://byronhe.com/post/TrafficServer-http2-code-analysis/</link>
       <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/TrafficServer-http2-code-analysis/</guid>
+      <guid>https://byronhe.com/post/TrafficServer-http2-code-analysis/</guid>
       <description>&lt;p&gt;TrafficServer 是Apache基金会的 HTTP/HTTP2 代理服务器。&lt;/p&gt;
 &lt;p&gt;TrafficServer 的 HTTP2 部分主要的代码在 :&lt;/p&gt;
 &lt;ol&gt;
@@ -198,10 +222,10 @@ Handler 是业务逻辑处理的基类。&lt;/p&gt;</description>
     
     <item>
       <title>现代密码学实践指南[2015年]</title>
-      <link>https://blog.helong.info/post/2015/06/05/modern-crypto/</link>
+      <link>https://byronhe.com/post/2015/06/05/modern-crypto/</link>
       <pubDate>Fri, 05 Jun 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/06/05/modern-crypto/</guid>
+      <guid>https://byronhe.com/post/2015/06/05/modern-crypto/</guid>
       <description>&lt;p&gt;本文介绍目前现代密码学的最先进技术，
 前半部分主要翻译自  &lt;a href=&#34;https://gist.github.com/tqbf/be58d2d39690c3b366ad&#34;&gt;《Cryptographic Right Answers》&lt;/a&gt;，附上收集的资料，和byron个人的理解。&lt;/p&gt;
 &lt;p&gt;密码学理论艰深，概念繁多，本人知识水平有限，错误难免，如果您发现错误，请务必指出，非常感谢!&lt;/p&gt;
@@ -222,10 +246,10 @@ AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都�
     
     <item>
       <title>nginx下配置高性能，高安全性的https TLS服务</title>
-      <link>https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/</link>
+      <link>https://byronhe.com/post/2015/05/08/https-config-optimize-in-nginx/</link>
       <pubDate>Fri, 08 May 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/</guid>
+      <guid>https://byronhe.com/post/2015/05/08/https-config-optimize-in-nginx/</guid>
       <description>&lt;p&gt;下文以nginx为例，介绍如何部署一个高性能，高安全性的https服务器。&lt;/p&gt;
 &lt;p&gt;并附送一个优化出来的openssl编译脚本，可以编译出一个高性能，高安全性的openssl库，您可以直接复制粘贴使用。&lt;/p&gt;
 &lt;p&gt;此处直接给出实践指导，后续再写文章解释tls协议的这些原理细节。&lt;/p&gt;
@@ -246,10 +270,10 @@ AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都�
     
     <item>
       <title>apache的安全增强配置(使用mod_chroot,mod_security)</title>
-      <link>https://blog.helong.info/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/</link>
+      <link>https://byronhe.com/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/</link>
       <pubDate>Tue, 17 Aug 2010 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/</guid>
+      <guid>https://byronhe.com/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/</guid>
       <description>LAMP环境的一般入侵，大致经过sql注入，上传webshell，本地提权至root，安装rootkit等步骤。 采用如下的配置，mod_ch</description>
     </item>
     

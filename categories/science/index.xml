@@ -2,46 +2,46 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>science on Tech Ideas</title>
-    <link>https://blog.helong.info/categories/science/</link>
+    <link>https://byronhe.com/categories/science/</link>
     <description>Recent content in science on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Thu, 11 Jul 2013 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://blog.helong.info/categories/science/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://byronhe.com/categories/science/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>开始写博客</title>
-      <link>https://blog.helong.info/post/2013/07/11/begin-blog/</link>
+      <link>https://byronhe.com/post/2013/07/11/begin-blog/</link>
       <pubDate>Thu, 11 Jul 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2013/07/11/begin-blog/</guid>
+      <guid>https://byronhe.com/post/2013/07/11/begin-blog/</guid>
       <description>我开始在这写博客了。 这个博客专注在技术方面，C++，Linux，等等，务求原创，务求深度。 可能还会有一些文字。 早于此的，是从cnblogs上</description>
     </item>
     
     <item>
       <title>圆形坠落模拟算法设计</title>
-      <link>https://blog.helong.info/post/2012/07/25/simulate-object-falling/</link>
+      <link>https://byronhe.com/post/2012/07/25/simulate-object-falling/</link>
       <pubDate>Wed, 25 Jul 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2012/07/25/simulate-object-falling/</guid>
+      <guid>https://byronhe.com/post/2012/07/25/simulate-object-falling/</guid>
       <description>&lt;p&gt;目标：实现一个算法，模拟在一个封闭二维区域，圆形小球朝给定方向坠落的过程，实现二维区域的紧密填充。&lt;/p&gt;
 &lt;p&gt;像下面这样：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012072600504753.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://byronhe.com/images/2012072600504753.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;难点，及其简单解决：&lt;/p&gt;
 &lt;p&gt;1.如何把粒子移动尽可能远？&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012072601011361.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://byronhe.com/images/2012072601011361.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;图中的粒子i，能往下移动多远？一般情况,碰撞？边界？&lt;/p&gt;
 &lt;p&gt;一个简单解法：&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>【旧代码】2010年用matlab做的几张理想流场的图</title>
-      <link>https://blog.helong.info/post/2011/11/15/matlab-flow-field/</link>
+      <link>https://byronhe.com/post/2011/11/15/matlab-flow-field/</link>
       <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/15/matlab-flow-field/</guid>
+      <guid>https://byronhe.com/post/2011/11/15/matlab-flow-field/</guid>
       <description>&lt;p&gt;就不贴matlab代码了，图比较大。&lt;/p&gt;
 &lt;p&gt;分别是：&lt;/p&gt;
 &lt;ol&gt;
@@ -58,24 +58,24 @@
 &lt;p&gt;有环量流动,柱面外一个滞止点&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012041000071160.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://byronhe.com/images/2012041000071160.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>【旧代码】fortran中的指针实现链表的代码</title>
-      <link>https://blog.helong.info/post/2011/11/15/linked-list-in-fortran-with-pointer/</link>
+      <link>https://byronhe.com/post/2011/11/15/linked-list-in-fortran-with-pointer/</link>
       <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/15/linked-list-in-fortran-with-pointer/</guid>
+      <guid>https://byronhe.com/post/2011/11/15/linked-list-in-fortran-with-pointer/</guid>
       <description>我不喜欢fortran， 奇怪的词法规则（竟然不用空格分开token）， io操作竟然是语言的一部分（这种非本质的东西像C那样用库来扩展多好） 。</description>
     </item>
     
     <item>
       <title>【旧代码】传热过程数值模拟</title>
-      <link>https://blog.helong.info/post/2011/11/15/heat-grid/</link>
+      <link>https://byronhe.com/post/2011/11/15/heat-grid/</link>
       <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/15/heat-grid/</guid>
+      <guid>https://byronhe.com/post/2011/11/15/heat-grid/</guid>
       <description>&lt;p&gt;传热过程数值模拟（《传热学》实验指导书第四部分第一题，第一，第二类边界条件）&lt;/p&gt;
 &lt;p&gt;2010年十月写的旧代码。&lt;/p&gt;
 &lt;p&gt;第一类边界条件是给定边界温度。&lt;/p&gt;
@@ -120,13 +120,13 @@
     
     <item>
       <title>找出平面上的特殊无向图中的所有三角形的算法</title>
-      <link>https://blog.helong.info/post/2011/08/22/find-uniqPointOfTriangle/</link>
+      <link>https://byronhe.com/post/2011/08/22/find-uniqPointOfTriangle/</link>
       <pubDate>Mon, 22 Aug 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/08/22/find-uniqPointOfTriangle/</guid>
+      <guid>https://byronhe.com/post/2011/08/22/find-uniqPointOfTriangle/</guid>
       <description>&lt;p&gt;问题提出背景：在非结构化三角形网格生成过程中，若采用前沿推进法，在推进过程中是不好构造三角形的（而且也没有要），最好在把所有的边都连好以后再找出所有三角形，于是提出了问题：在由三角形构成的平面无向图中如何找出所有三角形？&lt;/p&gt;
 &lt;p&gt;网格如图：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012041000563687.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://byronhe.com/images/2012041000563687.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;要注意的是，这个无向图很特殊，&lt;/p&gt;
 &lt;p&gt;1.这个图在平面上。&lt;/p&gt;
 &lt;p&gt;2.这个图是由三角形构成的（如果不是由三角行构成，那这个网格就没有用处了）。&lt;/p&gt;

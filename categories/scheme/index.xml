@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>scheme on Tech Ideas</title>
-    <link>https://blog.helong.info/categories/scheme/</link>
+    <link>https://byronhe.com/categories/scheme/</link>
     <description>Recent content in scheme on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Mon, 09 Apr 2012 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://blog.helong.info/categories/scheme/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://byronhe.com/categories/scheme/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>[翻译]轻松7步，导出Y结合子</title>
-      <link>https://blog.helong.info/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</link>
+      <link>https://byronhe.com/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</link>
       <pubDate>Mon, 09 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</guid>
+      <guid>https://byronhe.com/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</guid>
       <description>&lt;p&gt;本文译自 “&lt;em&gt;Deriving the Y Combinator in 7 Easy Steps&lt;/em&gt;“，&lt;/p&gt;
 &lt;p&gt;原文链接：&lt;a href=&#34;http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html&#34;&gt;http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;在没有原生递归支持的语言中，Y结合子（&lt;a href=&#34;http://en.wikipedia.org/wiki/Fixed_point_combinator&#34;&gt;Y Combinator&lt;/a&gt;）是一种实现递归的方式（事实上，它更常被作为一种锻炼程序思维的方式）。要实现Y结合子，要求这种语言支持匿名函数。&lt;/p&gt;
@@ -102,10 +102,10 @@
     
     <item>
       <title>一个基于约束传播的微型计算语言的设计和实现</title>
-      <link>https://blog.helong.info/post/2012/04/09/Propagation-of-Constraints-lang-in-py/</link>
+      <link>https://byronhe.com/post/2012/04/09/Propagation-of-Constraints-lang-in-py/</link>
       <pubDate>Mon, 09 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2012/04/09/Propagation-of-Constraints-lang-in-py/</guid>
+      <guid>https://byronhe.com/post/2012/04/09/Propagation-of-Constraints-lang-in-py/</guid>
       <description>&lt;p&gt;一个基于约束传播的，玩具级微型计算语言的设计和简单实现。&lt;/p&gt;
 &lt;p&gt;这个程序就是做来玩和练习的，代码是玩具级别的，用的python，基本可以正常工作了。&lt;/p&gt;
 &lt;p&gt;先介绍应用背景：&lt;/p&gt;
@@ -129,28 +129,28 @@
     
     <item>
       <title>sicp练习2.42 [解8皇后问题的Scheme语言实现]</title>
-      <link>https://blog.helong.info/post/2011/12/22/sicp-02.42-eight-queue/</link>
+      <link>https://byronhe.com/post/2011/12/22/sicp-02.42-eight-queue/</link>
       <pubDate>Thu, 22 Dec 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/12/22/sicp-02.42-eight-queue/</guid>
+      <guid>https://byronhe.com/post/2011/12/22/sicp-02.42-eight-queue/</guid>
       <description>代码框架来自sicp 练习2.42。算是作业吧。 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47</description>
     </item>
     
     <item>
       <title>符号求导，scheme实现</title>
-      <link>https://blog.helong.info/post/2011/12/22/symbol-deriv/</link>
+      <link>https://byronhe.com/post/2011/12/22/symbol-deriv/</link>
       <pubDate>Thu, 22 Dec 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/12/22/symbol-deriv/</guid>
+      <guid>https://byronhe.com/post/2011/12/22/symbol-deriv/</guid>
       <description>sicp练习2.57 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60</description>
     </item>
     
     <item>
       <title>Church计数</title>
-      <link>https://blog.helong.info/post/2011/11/20/church-encoding/</link>
+      <link>https://byronhe.com/post/2011/11/20/church-encoding/</link>
       <pubDate>Sun, 20 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/20/church-encoding/</guid>
+      <guid>https://byronhe.com/post/2011/11/20/church-encoding/</guid>
       <description>my code： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 ;Church计数 (define zero (lambda (f) (lambda (x) x))) (define (add-1 n) (lambda (f) (lambda (x) (f ((n</description>
     </item>
     

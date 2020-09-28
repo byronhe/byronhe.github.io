@@ -23,12 +23,12 @@
 
 
 
-<meta name="generator" content="Hugo 0.68.3 with theme even" />
+<meta name="generator" content="Hugo 0.72.0 with theme even" />
 
 
-<link rel="canonical" href="https://blog.helong.info/" />
-  <link href="https://blog.helong.info/index.xml" rel="alternate" type="application/rss+xml" title="Tech Ideas" />
-  <link href="https://blog.helong.info/index.xml" rel="feed" type="application/rss+xml" title="Tech Ideas" />
+<link rel="canonical" href="https://byronhe.com/" />
+  <link href="https://byronhe.com/index.xml" rel="alternate" type="application/rss+xml" title="Tech Ideas" />
+  <link href="https://byronhe.com/index.xml" rel="feed" type="application/rss+xml" title="Tech Ideas" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -36,15 +36,16 @@
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
 
-<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+
+<link href="/sass/main.min.0034ec37b35f91907849c9020141a7e99249c6f2301ee1e34aee09cfe5f9ae2e.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
 <meta property="og:title" content="Tech Ideas" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://blog.helong.info/" />
-<meta property="og:updated_time" content="2020-04-18T00:00:00+00:00" />
+<meta property="og:url" content="https://byronhe.com/" />
+<meta property="og:updated_time" content="2020-06-04T06:58:27+08:00" />
 <meta itemprop="name" content="Tech Ideas">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Tech Ideas"/>
@@ -105,6 +106,43 @@
       <div class="content-wrapper">
         <div id="content" class="content">
           <section id="posts" class="posts">
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/queue-use-process_vm_readv/">用 process_vm_readv() 实现多进程内存队列</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2020-06-04 </span>
+      <div class="post-category">
+          <a href="/categories/linux/"> linux </a>
+          <a href="/categories/server/"> server </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <h2 id="一问题背景">一，问题背景</h2>
+<p>多进程之间需要传输大量数据的时候，比如多进程 RPC 框架的进程之间通信，常用共享内存队列。</p>
+<p>但是共享内存队列难免会有 入队+出队 2次 memcpy 。</p>
+<p>而且要变长共享内存队列，如果支持多生产者进程+多消费者进程 ，就要处理线程安全方面的问题， 比较麻烦。</p>
+<p>process_vm_readv() ,  process_vm_writev() 是 Linux 3.2 新增的 syscall，用于在多个进程的地址空间之间，高效传输大块数据。</p>
+<p><a href="https://www.man7.org/linux/man-pages/man2/process_vm_readv.2.html">https://www.man7.org/linux/man-pages/man2/process_vm_readv.2.html</a></p>
+<p><a href="https://github.com/open-mpi/ompi/blob/master/opal/mca/btl/sm/btl_sm_get.c#L96">https://github.com/open-mpi/ompi/blob/master/opal/mca/btl/sm/btl_sm_get.c#L96</a></p>
+<p>在此， 我提个设想，可以用  process_vm_readv 实现一个多进程内存队列，相比之下，优势是：</p>
+<ol>
+<li>在处理 多线程/多进程 并发时，更简单</li>
+<li>省掉一次 memcpy。</li>
+</ol>
+<p>下面 demo 代码演示了这个思路。
+为了方便，直接用 posix mq 来传输 iovec 数组，也没有考虑多路复用。
+真实项目可能需要 eventfd 之内的机制来做 notify。</p>
+<p>实测了下，3个进程加起来有 5.5 GB/秒 的速度。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/queue-use-process_vm_readv/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     <article class="post">
   <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/shortest-print-self-md5-contest/">构造最短程序打印自身的 MD5</a></h1>
@@ -264,53 +302,6 @@ abstract namespace unix socket 。</p>
   </div>
 </article>
 
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/">Python 自动翻译成 C&#43;&#43; ，彻底保证离线在线特征一致</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2019-11-29 </span>
-      <div class="post-category">
-          <a href="/categories/python/"> python </a>
-          <a href="/categories/search/"> search </a>
-          <a href="/categories/server/"> server </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <h1 id="一问题背景">一，问题背景</h1>
-<p>随着深度学习的广泛应用，在搜索引擎/推荐系统/机器视觉等业务系统中，越来越多的深度学习模型部署到线上服务。</p>
-<p>机器学习模型在离线训练时，一般要将输入的数据做特征工程预处理，再输入模型在 TensorFlow PyTorch 等框架上做训练。</p>
-<h3 id="1常见的特征工程逻辑">1.常见的特征工程逻辑</h3>
-<p>常见的特征工程逻辑有：</p>
-<ol>
-<li>分箱/分桶 离散化</li>
-<li>log/exp 对数/幂等 math numpy 常见数学运算</li>
-<li>特征缩放/归一化/截断</li>
-<li>交叉特征生成</li>
-<li>分词匹配程度计算</li>
-<li>字符串分隔匹配判断tong</li>
-<li>缺省值填充等</li>
-<li>数据平滑</li>
-<li>onehot 编码，hash 编码等</li>
-</ol>
-<p>这些特征工程代码，当然一般使用深度学习最主要的语言 <strong>python</strong> 实现。</p>
-<h1 id="二业务痛点">二，业务痛点</h1>
-<p>离线训练完成，模型上线部署后，同样要<strong>用 C++ 重新实现</strong> 这些 python 的特征工程逻辑代码。</p>
-<p>我们发现，<strong>“用 C++ 重新实现”</strong> 这个步骤，给实际业务带来了大量的问题：</p>
-<ol>
-<li>繁琐，费时费力，极容易出现 python 和 C++ 代码<strong>不一致</strong></li>
-<li><strong>不一致</strong>会直接影响模型在线上的效果，导致大盘业务指标不如预期，产生各种 bad case</li>
-<li><strong>不一致</strong>难以发现，无法测试，无法监控，经常要靠用户投诉反馈，甚至大盘数据异常才能发现</li>
-</ol>
-    </div>
-    <div class="read-more">
-      <a href="/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
     </section>
   
   <nav class="pagination">
@@ -329,7 +320,7 @@ abstract namespace unix socket 。</p>
     <footer id="footer" class="footer">
       <div class="social-links">
       <a href="https://github.com/byronhe" class="iconfont icon-github" title="github"></a>
-  <a href="https://blog.helong.info/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+  <a href="https://byronhe.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
 </div>
 
 <div class="copyright">
@@ -365,7 +356,10 @@ abstract namespace unix socket 。</p>
   <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
-<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.d7b7ada643c9c1a983026e177f141f7363b4640d619caf01d8831a6718cd44ea.js"></script>
   <script type="text/javascript">
     window.MathJax = {
       tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},

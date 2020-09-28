@@ -2,21 +2,45 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Tech Ideas</title>
-    <link>https://blog.helong.info/post/</link>
+    <link>https://byronhe.com/post/</link>
     <description>Recent content in Posts on Tech Ideas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 04 Jun 2020 06:58:27 +0800</lastBuildDate>
     
-	<atom:link href="https://blog.helong.info/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://byronhe.com/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>用 process_vm_readv() 实现多进程内存队列</title>
+      <link>https://byronhe.com/post/queue-use-process_vm_readv/</link>
+      <pubDate>Thu, 04 Jun 2020 06:58:27 +0800</pubDate>
+      
+      <guid>https://byronhe.com/post/queue-use-process_vm_readv/</guid>
+      <description>&lt;h2 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h2&gt;
+&lt;p&gt;多进程之间需要传输大量数据的时候，比如多进程 RPC 框架的进程之间通信，常用共享内存队列。&lt;/p&gt;
+&lt;p&gt;但是共享内存队列难免会有 入队+出队 2次 memcpy 。&lt;/p&gt;
+&lt;p&gt;而且要变长共享内存队列，如果支持多生产者进程+多消费者进程 ，就要处理线程安全方面的问题， 比较麻烦。&lt;/p&gt;
+&lt;p&gt;process_vm_readv() ,  process_vm_writev() 是 Linux 3.2 新增的 syscall，用于在多个进程的地址空间之间，高效传输大块数据。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.man7.org/linux/man-pages/man2/process_vm_readv.2.html&#34;&gt;https://www.man7.org/linux/man-pages/man2/process_vm_readv.2.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/open-mpi/ompi/blob/master/opal/mca/btl/sm/btl_sm_get.c#L96&#34;&gt;https://github.com/open-mpi/ompi/blob/master/opal/mca/btl/sm/btl_sm_get.c#L96&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;在此， 我提个设想，可以用  process_vm_readv 实现一个多进程内存队列，相比之下，优势是：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在处理 多线程/多进程 并发时，更简单&lt;/li&gt;
+&lt;li&gt;省掉一次 memcpy。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;下面 demo 代码演示了这个思路。
+为了方便，直接用 posix mq 来传输 iovec 数组，也没有考虑多路复用。
+真实项目可能需要 eventfd 之内的机制来做 notify。&lt;/p&gt;
+&lt;p&gt;实测了下，3个进程加起来有 5.5 GB/秒 的速度。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>构造最短程序打印自身的 MD5</title>
-      <link>https://blog.helong.info/post/shortest-print-self-md5-contest/</link>
+      <link>https://byronhe.com/post/shortest-print-self-md5-contest/</link>
       <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/shortest-print-self-md5-contest/</guid>
+      <guid>https://byronhe.com/post/shortest-print-self-md5-contest/</guid>
       <description>&lt;h2 id=&#34;一介绍&#34;&gt;一，介绍&lt;/h2&gt;
 &lt;p&gt;比赛题目很简单：构造一个程序，在 stdout 上打印出自身的 MD5，程序越短越好。按最终程序文件大小字节数排名，文件越小，排名越靠前。
 只能使用 ld-linux-x86-64.so, libc.so, libdl.so, libgcc_s.so, libm.so, libstdc++.so 。
@@ -28,10 +52,10 @@
     
     <item>
       <title>基于 ElasticSearch 开发垂直搜索系统</title>
-      <link>https://blog.helong.info/post/elasticsearch-dev-arch/</link>
+      <link>https://byronhe.com/post/elasticsearch-dev-arch/</link>
       <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/elasticsearch-dev-arch/</guid>
+      <guid>https://byronhe.com/post/elasticsearch-dev-arch/</guid>
       <description>&lt;h2 id=&#34;一背景介绍&#34;&gt;一，背景介绍&lt;/h2&gt;
 &lt;p&gt;ElasticSearch 是由 Lucene 包装上分布式复制一致性算法等附加功能，构成的开源搜索引擎系统。&lt;/p&gt;
 &lt;p&gt;近两年在业界热度大增，主要有 3 种应用场景：&lt;/p&gt;
@@ -48,10 +72,10 @@
     
     <item>
       <title>怎样让 C&#43;&#43; 中 throw exception 产生的 coredump 带上栈</title>
-      <link>https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/</link>
+      <link>https://byronhe.com/post/cpp-throw-coredump-with-backtrace/</link>
       <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/cpp-throw-coredump-with-backtrace/</guid>
+      <guid>https://byronhe.com/post/cpp-throw-coredump-with-backtrace/</guid>
       <description>&lt;h1 id=&#34;1-问题&#34;&gt;1. 问题&lt;/h1&gt;
 &lt;p&gt;一个 C++ 程序，如果 throw 了 exception ，但是又没有 catch，那么一般会产生 coredump，
 问题是，在 gcc 4.x 版本产生的 coredump 文件中，&lt;em&gt;没有 throw 时候的堆栈信息&lt;/em&gt;，导致不知道是哪里 throw 的，没法查问题。&lt;/p&gt;
@@ -82,10 +106,10 @@
     
     <item>
       <title>用 abstract unix socket 实现进程单实例运行</title>
-      <link>https://blog.helong.info/post/2020/03/03/abstract-unix-socket-single-instance/</link>
+      <link>https://byronhe.com/post/2020/03/03/abstract-unix-socket-single-instance/</link>
       <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2020/03/03/abstract-unix-socket-single-instance/</guid>
+      <guid>https://byronhe.com/post/2020/03/03/abstract-unix-socket-single-instance/</guid>
       <description>&lt;h2 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h2&gt;
 &lt;p&gt;很多时候，我们需要&lt;strong&gt;确保进程只有一个实例运行&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;有几种方法：&lt;/p&gt;
@@ -118,10 +142,10 @@ abstract namespace unix socket 。&lt;/p&gt;
     
     <item>
       <title>Python 自动翻译成 C&#43;&#43; ，彻底保证离线在线特征一致</title>
-      <link>https://blog.helong.info/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</link>
+      <link>https://byronhe.com/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</link>
       <pubDate>Fri, 29 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</guid>
+      <guid>https://byronhe.com/post/2019/11/29/pthran-py-to-cpp-translater-in-feature-engineering/</guid>
       <description>&lt;h1 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h1&gt;
 &lt;p&gt;随着深度学习的广泛应用，在搜索引擎/推荐系统/机器视觉等业务系统中，越来越多的深度学习模型部署到线上服务。&lt;/p&gt;
 &lt;p&gt;机器学习模型在离线训练时，一般要将输入的数据做特征工程预处理，再输入模型在 TensorFlow PyTorch 等框架上做训练。&lt;/p&gt;
@@ -151,10 +175,10 @@ abstract namespace unix socket 。&lt;/p&gt;
     
     <item>
       <title>用 DAT 重实现 CppJieba 中文分词算法，降低 99% 内存消耗</title>
-      <link>https://blog.helong.info/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</link>
+      <link>https://byronhe.com/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</link>
       <pubDate>Mon, 25 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</guid>
+      <guid>https://byronhe.com/post/2019/11/25/cppjieba-darts-DAT-memory_optimize/</guid>
       <description>&lt;h2 id=&#34;一问题背景&#34;&gt;一，问题背景&lt;/h2&gt;
 &lt;p&gt;中文分词应用比较广泛的开源算法，是 &lt;a href=&#34;https://github.com/fxsjy/jieba&#34;&gt;jieba 结巴分词&lt;/a&gt;，结巴分词较高性能的实现是 C++ 版本的 CppJieba :
 &lt;a href=&#34;https://github.com/yanyiwu/cppjieba&#34;&gt;https://github.com/yanyiwu/cppjieba&lt;/a&gt;&lt;/p&gt;
@@ -163,15 +187,15 @@ abstract namespace unix socket 。&lt;/p&gt;
 &lt;p&gt;这对一些多进程的后台服务，浪费大量内存，难以接受，因此这里希望削减内存耗费。&lt;/p&gt;
 &lt;p&gt;经过初步调查，确定改进方法，然后动手改造，&lt;strong&gt;最终把 505MB 缩减到了 4.7MB ，实现了 99% 内存降低&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;此处也有 issue 讨论 &lt;a href=&#34;https://github.com/yanyiwu/cppjieba/issues/3&#34;&gt;https://github.com/yanyiwu/cppjieba/issues/3&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;代码稍后可能会开源出来。&lt;/p&gt;</description>
+&lt;p&gt;代码在 &lt;a href=&#34;https://github.com/byronhe/cppjieba&#34;&gt;https://github.com/byronhe/cppjieba&lt;/a&gt; 。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>GB 规模语料上的高性能新词发现算法</title>
-      <link>https://blog.helong.info/post/2019/09/18/newwords_discovery/</link>
+      <link>https://byronhe.com/post/2019/09/18/newwords_discovery/</link>
       <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2019/09/18/newwords_discovery/</guid>
+      <guid>https://byronhe.com/post/2019/09/18/newwords_discovery/</guid>
       <description>&lt;p&gt;分词是中文搜索的重要环节，目前分词算法已经比较成熟，分词错误的主要是由于未登录词。&lt;/p&gt;
 &lt;p&gt;因此发现业务领域语料库中的新词，减少未登录词，对改善搜索引擎的用户体验有重要意义。&lt;/p&gt;
 &lt;p&gt;新词发现的一种常用算法，是 matrix67 大神 2012 年提出的 《互联网时代的社会语言学：基于SNS的文本数据挖掘》
@@ -187,10 +211,10 @@ abstract namespace unix socket 。&lt;/p&gt;
     
     <item>
       <title>Proxygen http2 代码分析</title>
-      <link>https://blog.helong.info/post/Proxygen-http2-code-analysis/</link>
+      <link>https://byronhe.com/post/Proxygen-http2-code-analysis/</link>
       <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/Proxygen-http2-code-analysis/</guid>
+      <guid>https://byronhe.com/post/Proxygen-http2-code-analysis/</guid>
       <description>&lt;p&gt;Proxygen 的整体架构
 &lt;img src=&#34;https://raw.githubusercontent.com/facebook/proxygen/master/CoreProxygenArchitecture.png&#34; alt=&#34;image&#34;&gt;&lt;/p&gt;
 &lt;p&gt;一个 HTTPSession 对应一个 tcp 连接。&lt;/p&gt;
@@ -201,10 +225,10 @@ Handler 是业务逻辑处理的基类。&lt;/p&gt;</description>
     
     <item>
       <title>TrafficServer http2 代码分析</title>
-      <link>https://blog.helong.info/post/TrafficServer-http2-code-analysis/</link>
+      <link>https://byronhe.com/post/TrafficServer-http2-code-analysis/</link>
       <pubDate>Wed, 08 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/TrafficServer-http2-code-analysis/</guid>
+      <guid>https://byronhe.com/post/TrafficServer-http2-code-analysis/</guid>
       <description>&lt;p&gt;TrafficServer 是Apache基金会的 HTTP/HTTP2 代理服务器。&lt;/p&gt;
 &lt;p&gt;TrafficServer 的 HTTP2 部分主要的代码在 :&lt;/p&gt;
 &lt;ol&gt;
@@ -220,10 +244,10 @@ Handler 是业务逻辑处理的基类。&lt;/p&gt;</description>
     
     <item>
       <title>TLS协议分析 与 现代加密通信协议设计</title>
-      <link>https://blog.helong.info/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/</link>
+      <link>https://byronhe.com/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/</link>
       <pubDate>Sun, 06 Sep 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/</guid>
+      <guid>https://byronhe.com/post/2015/09/06/tls-protocol-analysis-and-crypto-protocol-design/</guid>
       <description>&lt;p&gt;最近发现密码学很有意思，刚好还和工作有点关系，就研究了一下，本文是其中一部分笔记和一些思考。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;密码学理论艰深，概念繁多，本人知识水平有限，错误难免，如果您发现错误，请务必指出，非常感谢!&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;本文禁止转载&lt;/strong&gt;&lt;/p&gt;
@@ -238,10 +262,10 @@ Handler 是业务逻辑处理的基类。&lt;/p&gt;</description>
     
     <item>
       <title>Linux LoadAvg 编程比赛</title>
-      <link>https://blog.helong.info/post/2015/08/13/linux-loadavg-competation/</link>
+      <link>https://byronhe.com/post/2015/08/13/linux-loadavg-competation/</link>
       <pubDate>Thu, 13 Aug 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/08/13/linux-loadavg-competation/</guid>
+      <guid>https://byronhe.com/post/2015/08/13/linux-loadavg-competation/</guid>
       <description>&lt;h2 id=&#34;问题背景&#34;&gt;问题背景&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&#34;https://timyang.net/programming/load-average/&#34;&gt;https://timyang.net/programming/load-average/&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;2015.08.13 高可用架构群 Load 编程比赛，Tim 在群征集一段代码使 load average 最高&lt;/p&gt;
@@ -251,10 +275,10 @@ Handler 是业务逻辑处理的基类。&lt;/p&gt;</description>
     
     <item>
       <title>现代密码学实践指南[2015年]</title>
-      <link>https://blog.helong.info/post/2015/06/05/modern-crypto/</link>
+      <link>https://byronhe.com/post/2015/06/05/modern-crypto/</link>
       <pubDate>Fri, 05 Jun 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/06/05/modern-crypto/</guid>
+      <guid>https://byronhe.com/post/2015/06/05/modern-crypto/</guid>
       <description>&lt;p&gt;本文介绍目前现代密码学的最先进技术，
 前半部分主要翻译自  &lt;a href=&#34;https://gist.github.com/tqbf/be58d2d39690c3b366ad&#34;&gt;《Cryptographic Right Answers》&lt;/a&gt;，附上收集的资料，和byron个人的理解。&lt;/p&gt;
 &lt;p&gt;密码学理论艰深，概念繁多，本人知识水平有限，错误难免，如果您发现错误，请务必指出，非常感谢!&lt;/p&gt;
@@ -275,10 +299,10 @@ AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都�
     
     <item>
       <title>nginx下配置高性能，高安全性的https TLS服务</title>
-      <link>https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/</link>
+      <link>https://byronhe.com/post/2015/05/08/https-config-optimize-in-nginx/</link>
       <pubDate>Fri, 08 May 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/05/08/https-config-optimize-in-nginx/</guid>
+      <guid>https://byronhe.com/post/2015/05/08/https-config-optimize-in-nginx/</guid>
       <description>&lt;p&gt;下文以nginx为例，介绍如何部署一个高性能，高安全性的https服务器。&lt;/p&gt;
 &lt;p&gt;并附送一个优化出来的openssl编译脚本，可以编译出一个高性能，高安全性的openssl库，您可以直接复制粘贴使用。&lt;/p&gt;
 &lt;p&gt;此处直接给出实践指导，后续再写文章解释tls协议的这些原理细节。&lt;/p&gt;
@@ -299,10 +323,10 @@ AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都�
     
     <item>
       <title>【翻译】密码学一小时必知</title>
-      <link>https://blog.helong.info/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
+      <link>https://byronhe.com/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</link>
       <pubDate>Sun, 12 Apr 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
+      <guid>https://byronhe.com/post/2015/04/12/translate-Everything-you-need-to-know-about-cryptgraphy-in-1-hour/</guid>
       <description>&lt;p&gt;本文翻译了Colin Percival 于2010年在bsdcan的演讲ppt&lt;/p&gt;
 &lt;p&gt;原文标题：Everything you need to know about cryptography in 1 hour&lt;/p&gt;
 &lt;p&gt;演讲时间：May 13, 2010&lt;/p&gt;
@@ -313,10 +337,10 @@ AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都�
     
     <item>
       <title>【翻译/介绍】jump consistent hash 零内存消耗，均匀，快速，简洁，来自Google的一致性哈希算法</title>
-      <link>https://blog.helong.info/post/2015/03/13/jump_consistent_hash/</link>
+      <link>https://byronhe.com/post/2015/03/13/jump_consistent_hash/</link>
       <pubDate>Fri, 13 Mar 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/03/13/jump_consistent_hash/</guid>
+      <guid>https://byronhe.com/post/2015/03/13/jump_consistent_hash/</guid>
       <description>&lt;h2 id=&#34;一简介&#34;&gt;一，简介&lt;/h2&gt;
 &lt;p&gt;jump consistent hash是一种一致性哈希算法, 此算法&lt;strong&gt;零内存消耗&lt;/strong&gt;，&lt;strong&gt;均匀分配&lt;/strong&gt;，&lt;strong&gt;快速&lt;/strong&gt;，并且&lt;strong&gt;只有5行代码&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;此算法适合使用在分shard的分布式存储系统中 。&lt;/p&gt;
@@ -355,10 +379,10 @@ AES-GCM是工业标准(TLS目前主要用的就是AES-GCM)，现代CPU通常都�
     
     <item>
       <title>SSL/TLS CipherSuite 介绍</title>
-      <link>https://blog.helong.info/post/2015/01/23/ssl_tls_ciphersuite_intro/</link>
+      <link>https://byronhe.com/post/2015/01/23/ssl_tls_ciphersuite_intro/</link>
       <pubDate>Fri, 23 Jan 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2015/01/23/ssl_tls_ciphersuite_intro/</guid>
+      <guid>https://byronhe.com/post/2015/01/23/ssl_tls_ciphersuite_intro/</guid>
       <description>&lt;p&gt;本文是关于SSL/TLS的 CipherSuite 的信息摘录，翻译。如有疑问，欢迎指出。&lt;/p&gt;
 &lt;h2 id=&#34;一ciphersuite的概念&#34;&gt;一，CipherSuite的概念&lt;/h2&gt;
 &lt;p&gt;CipherSuite 这个名词目前没看到有好的中文翻译，个人觉得翻译成“加密算法套件”比较合适。Cipher泛指是密码学的加密算法，例如 aes, rsa, ecdh 等。
@@ -386,10 +410,10 @@ tls是由各类基础算法，作为原语组合而成。
     
     <item>
       <title>mock C&#43;&#43; function for unit test</title>
-      <link>https://blog.helong.info/post/2014/03/27/mock-c-plus-plus-function-for-unit-test/</link>
+      <link>https://byronhe.com/post/2014/03/27/mock-c-plus-plus-function-for-unit-test/</link>
       <pubDate>Thu, 27 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2014/03/27/mock-c-plus-plus-function-for-unit-test/</guid>
+      <guid>https://byronhe.com/post/2014/03/27/mock-c-plus-plus-function-for-unit-test/</guid>
       <description>&lt;p&gt;在单元测试中，我们需要提供业务逻辑的mock版本，
 当业务逻辑实现为C++的virtual function时，这是很容易的，我们只需要写一个子类，
 实现virtual function就行了，Google 的 gmock就针对这种情况设计。&lt;/p&gt;
@@ -399,37 +423,37 @@ tls是由各类基础算法，作为原语组合而成。
     
     <item>
       <title>博客迁移到octopress</title>
-      <link>https://blog.helong.info/post/2014/03/24/move-to-octopress/</link>
+      <link>https://byronhe.com/post/2014/03/24/move-to-octopress/</link>
       <pubDate>Mon, 24 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2014/03/24/move-to-octopress/</guid>
+      <guid>https://byronhe.com/post/2014/03/24/move-to-octopress/</guid>
       <description>wordpress的编辑器混淆了 结构 和 表现 而markdown，类似latex，结构和表现分离，更符合我的偏好。 在vim里面写博客，更能激起人</description>
     </item>
     
     <item>
       <title>一个使用KuaiPan备份linux服务器的脚本</title>
-      <link>https://blog.helong.info/post/2014/02/08/kuaipan-backup-script/</link>
+      <link>https://byronhe.com/post/2014/02/08/kuaipan-backup-script/</link>
       <pubDate>Sat, 08 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2014/02/08/kuaipan-backup-script/</guid>
+      <guid>https://byronhe.com/post/2014/02/08/kuaipan-backup-script/</guid>
       <description>近日需要给服务器做备份，在网上找到了一个现成的金山快盘的api：https://github.com/deren/python-kuaipa</description>
     </item>
     
     <item>
       <title>a http proxy script</title>
-      <link>https://blog.helong.info/post/2013/11/18/a-http-proxy-script/</link>
+      <link>https://byronhe.com/post/2013/11/18/a-http-proxy-script/</link>
       <pubDate>Mon, 18 Nov 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2013/11/18/a-http-proxy-script/</guid>
+      <guid>https://byronhe.com/post/2013/11/18/a-http-proxy-script/</guid>
       <description>1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56  #!/usr/local/bin/python # -*- coding: utf-8 -*- import base64 import select import socket import httplib import os import sys #base64.</description>
     </item>
     
     <item>
       <title>libpcap试玩</title>
-      <link>https://blog.helong.info/post/2013/08/04/libpcap-sniffer/</link>
+      <link>https://byronhe.com/post/2013/08/04/libpcap-sniffer/</link>
       <pubDate>Sun, 04 Aug 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2013/08/04/libpcap-sniffer/</guid>
+      <guid>https://byronhe.com/post/2013/08/04/libpcap-sniffer/</guid>
       <description>&lt;p&gt;libpcap驱动了tcpdump,和wireshark这类抓包工具.提供了高度灵活的包过滤语言. 据wikipedia,高性能的包过滤最早是在bsd上作为一个问题被解决,被称为bpf,在内核实现了一个解释器,进行包匹配,用户态提供一个字符设备, linux作为后来者,支持与bsd基本相同的packet filter,称为lpf,不同的是,linux是通过在一个raw socket来支持包过滤的,通过setsockopt来SO_ATTACH_FILTER,挂载过滤器. strace 可知,libpcap实际上进行了如下syscall:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -451,35 +475,35 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &amp;#34;\1\0\0\0\0\0\0\0\250\327Vc
     
     <item>
       <title>开始写博客</title>
-      <link>https://blog.helong.info/post/2013/07/11/begin-blog/</link>
+      <link>https://byronhe.com/post/2013/07/11/begin-blog/</link>
       <pubDate>Thu, 11 Jul 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2013/07/11/begin-blog/</guid>
+      <guid>https://byronhe.com/post/2013/07/11/begin-blog/</guid>
       <description>我开始在这写博客了。 这个博客专注在技术方面，C++，Linux，等等，务求原创，务求深度。 可能还会有一些文字。 早于此的，是从cnblogs上</description>
     </item>
     
     <item>
       <title>圆形坠落模拟算法设计</title>
-      <link>https://blog.helong.info/post/2012/07/25/simulate-object-falling/</link>
+      <link>https://byronhe.com/post/2012/07/25/simulate-object-falling/</link>
       <pubDate>Wed, 25 Jul 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2012/07/25/simulate-object-falling/</guid>
+      <guid>https://byronhe.com/post/2012/07/25/simulate-object-falling/</guid>
       <description>&lt;p&gt;目标：实现一个算法，模拟在一个封闭二维区域，圆形小球朝给定方向坠落的过程，实现二维区域的紧密填充。&lt;/p&gt;
 &lt;p&gt;像下面这样：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012072600504753.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://byronhe.com/images/2012072600504753.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;难点，及其简单解决：&lt;/p&gt;
 &lt;p&gt;1.如何把粒子移动尽可能远？&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012072601011361.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://byronhe.com/images/2012072601011361.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;图中的粒子i，能往下移动多远？一般情况,碰撞？边界？&lt;/p&gt;
 &lt;p&gt;一个简单解法：&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>[翻译]轻松7步，导出Y结合子</title>
-      <link>https://blog.helong.info/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</link>
+      <link>https://byronhe.com/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</link>
       <pubDate>Mon, 09 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</guid>
+      <guid>https://byronhe.com/post/2012/04/09/translation-Y-conbinator-in-seven-steps/</guid>
       <description>&lt;p&gt;本文译自 “&lt;em&gt;Deriving the Y Combinator in 7 Easy Steps&lt;/em&gt;“，&lt;/p&gt;
 &lt;p&gt;原文链接：&lt;a href=&#34;http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html&#34;&gt;http://igstan.ro/posts/2010-12-01-deriving-the-y-combinator-in-7-easy-steps.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;在没有原生递归支持的语言中，Y结合子（&lt;a href=&#34;http://en.wikipedia.org/wiki/Fixed_point_combinator&#34;&gt;Y Combinator&lt;/a&gt;）是一种实现递归的方式（事实上，它更常被作为一种锻炼程序思维的方式）。要实现Y结合子，要求这种语言支持匿名函数。&lt;/p&gt;
@@ -565,10 +589,10 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &amp;#34;\1\0\0\0\0\0\0\0\250\327Vc
     
     <item>
       <title>一个基于约束传播的微型计算语言的设计和实现</title>
-      <link>https://blog.helong.info/post/2012/04/09/Propagation-of-Constraints-lang-in-py/</link>
+      <link>https://byronhe.com/post/2012/04/09/Propagation-of-Constraints-lang-in-py/</link>
       <pubDate>Mon, 09 Apr 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2012/04/09/Propagation-of-Constraints-lang-in-py/</guid>
+      <guid>https://byronhe.com/post/2012/04/09/Propagation-of-Constraints-lang-in-py/</guid>
       <description>&lt;p&gt;一个基于约束传播的，玩具级微型计算语言的设计和简单实现。&lt;/p&gt;
 &lt;p&gt;这个程序就是做来玩和练习的，代码是玩具级别的，用的python，基本可以正常工作了。&lt;/p&gt;
 &lt;p&gt;先介绍应用背景：&lt;/p&gt;
@@ -592,55 +616,55 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &amp;#34;\1\0\0\0\0\0\0\0\250\327Vc
     
     <item>
       <title>sicp练习2.42 [解8皇后问题的Scheme语言实现]</title>
-      <link>https://blog.helong.info/post/2011/12/22/sicp-02.42-eight-queue/</link>
+      <link>https://byronhe.com/post/2011/12/22/sicp-02.42-eight-queue/</link>
       <pubDate>Thu, 22 Dec 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/12/22/sicp-02.42-eight-queue/</guid>
+      <guid>https://byronhe.com/post/2011/12/22/sicp-02.42-eight-queue/</guid>
       <description>代码框架来自sicp 练习2.42。算是作业吧。 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47</description>
     </item>
     
     <item>
       <title>符号求导，scheme实现</title>
-      <link>https://blog.helong.info/post/2011/12/22/symbol-deriv/</link>
+      <link>https://byronhe.com/post/2011/12/22/symbol-deriv/</link>
       <pubDate>Thu, 22 Dec 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/12/22/symbol-deriv/</guid>
+      <guid>https://byronhe.com/post/2011/12/22/symbol-deriv/</guid>
       <description>sicp练习2.57 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60</description>
     </item>
     
     <item>
       <title>Church计数</title>
-      <link>https://blog.helong.info/post/2011/11/20/church-encoding/</link>
+      <link>https://byronhe.com/post/2011/11/20/church-encoding/</link>
       <pubDate>Sun, 20 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/20/church-encoding/</guid>
+      <guid>https://byronhe.com/post/2011/11/20/church-encoding/</guid>
       <description>my code： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 ;Church计数 (define zero (lambda (f) (lambda (x) x))) (define (add-1 n) (lambda (f) (lambda (x) (f ((n</description>
     </item>
     
     <item>
       <title>java多线程网页下载代码</title>
-      <link>https://blog.helong.info/post/2011/11/15/java-multithread-download-webpage/</link>
+      <link>https://byronhe.com/post/2011/11/15/java-multithread-download-webpage/</link>
       <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/15/java-multithread-download-webpage/</guid>
+      <guid>https://byronhe.com/post/2011/11/15/java-multithread-download-webpage/</guid>
       <description>小项目，练手的。 1.使用了java.util.concurrent包里的线程池，可以飙升到满带宽，在100M带宽上，可以达到10MB/s。 2</description>
     </item>
     
     <item>
       <title>jdbc使用DataSource连接mysql,postgresql,oracle的代码</title>
-      <link>https://blog.helong.info/post/2011/11/15/jdbc-DataSource-connect-mysql-pgsql-oracle/</link>
+      <link>https://byronhe.com/post/2011/11/15/jdbc-DataSource-connect-mysql-pgsql-oracle/</link>
       <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/15/jdbc-DataSource-connect-mysql-pgsql-oracle/</guid>
+      <guid>https://byronhe.com/post/2011/11/15/jdbc-DataSource-connect-mysql-pgsql-oracle/</guid>
       <description>1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70</description>
     </item>
     
     <item>
       <title>【旧代码】2010年用matlab做的几张理想流场的图</title>
-      <link>https://blog.helong.info/post/2011/11/15/matlab-flow-field/</link>
+      <link>https://byronhe.com/post/2011/11/15/matlab-flow-field/</link>
       <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/15/matlab-flow-field/</guid>
+      <guid>https://byronhe.com/post/2011/11/15/matlab-flow-field/</guid>
       <description>&lt;p&gt;就不贴matlab代码了，图比较大。&lt;/p&gt;
 &lt;p&gt;分别是：&lt;/p&gt;
 &lt;ol&gt;
@@ -657,33 +681,33 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &amp;#34;\1\0\0\0\0\0\0\0\250\327Vc
 &lt;p&gt;有环量流动,柱面外一个滞止点&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012041000071160.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://byronhe.com/images/2012041000071160.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>【旧代码】fortran中的指针实现链表的代码</title>
-      <link>https://blog.helong.info/post/2011/11/15/linked-list-in-fortran-with-pointer/</link>
+      <link>https://byronhe.com/post/2011/11/15/linked-list-in-fortran-with-pointer/</link>
       <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/15/linked-list-in-fortran-with-pointer/</guid>
+      <guid>https://byronhe.com/post/2011/11/15/linked-list-in-fortran-with-pointer/</guid>
       <description>我不喜欢fortran， 奇怪的词法规则（竟然不用空格分开token）， io操作竟然是语言的一部分（这种非本质的东西像C那样用库来扩展多好） 。</description>
     </item>
     
     <item>
       <title>【旧代码】mysql备份的shell脚本</title>
-      <link>https://blog.helong.info/post/2011/11/15/mysql-backup-script/</link>
+      <link>https://byronhe.com/post/2011/11/15/mysql-backup-script/</link>
       <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/15/mysql-backup-script/</guid>
+      <guid>https://byronhe.com/post/2011/11/15/mysql-backup-script/</guid>
       <description>1 2 3 4 5 6 7 8 9 10 11 12 13 14 #!/bin/sh bk_to=&amp;#34;/var/mysql-backup-`date +%Y-%m-%d-%k-%M-%S |tr -d &amp;#39; &amp;#39;`&amp;#34; user_name=&amp;#34;root&amp;#34; user_pw=&amp;#34;dev&amp;#34; sql=&amp;#34; flush tables with read lock; system cp -pR /var/lib/mysql $bk_to; unlock tables; &amp;#34; mysql -u $user_name -p$user_pw -e &amp;#34;$sql&amp;#34; echo $sql tar cjf $bk_to.bz2 $bk_to rm -rf $bk_to</description>
     </item>
     
     <item>
       <title>【旧代码】传热过程数值模拟</title>
-      <link>https://blog.helong.info/post/2011/11/15/heat-grid/</link>
+      <link>https://byronhe.com/post/2011/11/15/heat-grid/</link>
       <pubDate>Tue, 15 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/15/heat-grid/</guid>
+      <guid>https://byronhe.com/post/2011/11/15/heat-grid/</guid>
       <description>&lt;p&gt;传热过程数值模拟（《传热学》实验指导书第四部分第一题，第一，第二类边界条件）&lt;/p&gt;
 &lt;p&gt;2010年十月写的旧代码。&lt;/p&gt;
 &lt;p&gt;第一类边界条件是给定边界温度。&lt;/p&gt;
@@ -728,31 +752,31 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &amp;#34;\1\0\0\0\0\0\0\0\250\327Vc
     
     <item>
       <title>visual studio静态，动态链接库开发工具简单使用</title>
-      <link>https://blog.helong.info/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/</link>
+      <link>https://byronhe.com/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/</link>
       <pubDate>Sun, 13 Nov 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/</guid>
+      <guid>https://byronhe.com/post/2011/11/13/visual-studio-static-dynamic-lib-dev-tools-usage/</guid>
       <description>这是2011年8月份做过的一点实验，查了MSDN等等很多资料，基本搞明白了。 这里我不会使用visual studio的图形界面工具，作为专业人</description>
     </item>
     
     <item>
       <title>递增子序列数目计算的算法</title>
-      <link>https://blog.helong.info/post/2011/10/17/inc-sub-seq-count-algo/</link>
+      <link>https://byronhe.com/post/2011/10/17/inc-sub-seq-count-algo/</link>
       <pubDate>Mon, 17 Oct 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/10/17/inc-sub-seq-count-algo/</guid>
+      <guid>https://byronhe.com/post/2011/10/17/inc-sub-seq-count-algo/</guid>
       <description>这是前几天笔试时，考场上想出来的算法，但是算了两次都不一样，最后只好蒙了一个选项，悲催！ 问题如下： 给定一个整数序列，例如 4,2,6,3,7,1 ，该序列有多少个递</description>
     </item>
     
     <item>
       <title>找出平面上的特殊无向图中的所有三角形的算法</title>
-      <link>https://blog.helong.info/post/2011/08/22/find-uniqPointOfTriangle/</link>
+      <link>https://byronhe.com/post/2011/08/22/find-uniqPointOfTriangle/</link>
       <pubDate>Mon, 22 Aug 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/08/22/find-uniqPointOfTriangle/</guid>
+      <guid>https://byronhe.com/post/2011/08/22/find-uniqPointOfTriangle/</guid>
       <description>&lt;p&gt;问题提出背景：在非结构化三角形网格生成过程中，若采用前沿推进法，在推进过程中是不好构造三角形的（而且也没有要），最好在把所有的边都连好以后再找出所有三角形，于是提出了问题：在由三角形构成的平面无向图中如何找出所有三角形？&lt;/p&gt;
 &lt;p&gt;网格如图：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://blog.helong.info/images/2012041000563687.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://byronhe.com/images/2012041000563687.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;要注意的是，这个无向图很特殊，&lt;/p&gt;
 &lt;p&gt;1.这个图在平面上。&lt;/p&gt;
 &lt;p&gt;2.这个图是由三角形构成的（如果不是由三角行构成，那这个网格就没有用处了）。&lt;/p&gt;
@@ -792,28 +816,28 @@ setsockopt(59, SOL_SOCKET, SO_ATTACH_FILTER, &amp;#34;\1\0\0\0\0\0\0\0\250\327Vc
     
     <item>
       <title>Codeblocks配合gfortran作为fortran开发环境的配置方法</title>
-      <link>https://blog.helong.info/post/2011/05/12/codeblocks-with-gfortran-for-fortran-dev/</link>
+      <link>https://byronhe.com/post/2011/05/12/codeblocks-with-gfortran-for-fortran-dev/</link>
       <pubDate>Thu, 12 May 2011 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2011/05/12/codeblocks-with-gfortran-for-fortran-dev/</guid>
+      <guid>https://byronhe.com/post/2011/05/12/codeblocks-with-gfortran-for-fortran-dev/</guid>
       <description>（以前在bmy bbs发过一次） 这个方法试过在64位win7和32位winxp上可用。 1，首先安装codeblockes，必须选完全安装（Fu</description>
     </item>
     
     <item>
       <title>一个用inotify监控apache的脚本</title>
-      <link>https://blog.helong.info/post/2010/08/29/apache-monitor-inotify-script/</link>
+      <link>https://byronhe.com/post/2010/08/29/apache-monitor-inotify-script/</link>
       <pubDate>Sun, 29 Aug 2010 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2010/08/29/apache-monitor-inotify-script/</guid>
+      <guid>https://byronhe.com/post/2010/08/29/apache-monitor-inotify-script/</guid>
       <description>1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 #!/bin/bash #Author:windydays #Date : 2010/8/29 #用于监控apache，如果退出就自动重启apache，原理是在如果apach</description>
     </item>
     
     <item>
       <title>apache的安全增强配置(使用mod_chroot,mod_security)</title>
-      <link>https://blog.helong.info/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/</link>
+      <link>https://byronhe.com/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/</link>
       <pubDate>Tue, 17 Aug 2010 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.helong.info/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/</guid>
+      <guid>https://byronhe.com/post/2010/08/17/apache-security-enhancement-using-mod_chroot-mod_security/</guid>
       <description>LAMP环境的一般入侵，大致经过sql注入，上传webshell，本地提权至root，安装rootkit等步骤。 采用如下的配置，mod_ch</description>
     </item>
     
